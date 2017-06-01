@@ -1,0 +1,46 @@
+pre[class*="language-"]{
+	border-radius: 0;
+}
+
+#ssg-docbar{
+	@extend %typography;
+
+	font-family: $font-primary;
+
+	position: fixed;
+	z-index: 9998;
+	top: 30px;
+	right: 0;
+
+	display: none;
+	overflow: auto;
+
+	box-sizing: border-box;
+	width: 50%;
+	height: calc(100% - 32px);
+	max-height: calc(100% - 32px);
+	padding: 2em 2em;
+	padding-top: 70px;
+
+	border-left: 1px darken($btn-inactive-bc, 30%) solid;
+	background-color: rgba(white, 1);
+	&-inner{
+		max-height: 100%;
+	}
+	&-actions{
+		position: fixed;
+		top: 30px;
+		right: 0;
+
+		box-sizing: border-box;
+		width: 50%;
+		padding: .75em 2em;
+
+		text-align: right;
+
+		border-width: 0 0 1px 1px;
+		border-style: solid;
+		border-color: darken($btn-inactive-bc, 30%);
+		background-color: rgba($white, .9);
+	}
+}

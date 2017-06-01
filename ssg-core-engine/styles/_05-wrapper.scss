@@ -1,0 +1,19 @@
+.ssg-wrapper{
+	margin-top: 35px;
+}
+
+.ssg-patterns{
+	min-height: 100%;
+
+	background-color: whitesmoke;
+	&-inner{
+		overflow-y: auto;
+
+		min-height: 100%;
+		margin: 0 auto;
+
+		transition: width 1s ease-in-out;
+
+		background-color: white;
+	}
+}

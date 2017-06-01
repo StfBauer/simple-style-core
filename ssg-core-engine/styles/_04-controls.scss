@@ -1,0 +1,61 @@
+// Button
+.ssg-button{
+	font-family: $font-primary;
+	font-size: 10px;
+
+	margin: .25em;
+	padding: .25em .5em;
+
+	transition: all .235s ease-in-out;
+	text-transform: uppercase;
+
+	color: $btn-inactive-text;
+	border: .125em solid $btn-inactive-bc;
+	outline: none;
+	background-color: $btn-inactive-bg;
+
+	& + &{
+		margin-left: .25em;
+	}
+
+	// state
+	&:hover{
+		color: darken($btn-inactive-text, 30%);
+		border: .125em solid darken($btn-inactive-bc, 30%);
+		// background-color: darken($btn-inactive-bg, 30%);
+	}
+	&:disabled{
+		color: lighten($btn-inactive-text, 20%);
+		border-color: $btn-inactive-bg;
+	}
+	&.active{
+		color: white;
+		border-color: $red;
+		background-color: $red;
+	}
+}
+.ssg-label{
+	font-family: $font-primary;
+	font-size: 12px;
+
+	display: inline-block;
+
+	margin: 2.5px 0;
+    padding: 2.5px 0;
+
+	border: .125em solid transparent;
+}
+
+// Textbox
+.ssg-input{
+	font-family: $font-primary;
+	font-size: 10px;
+
+	margin: .25em;
+	padding: .25em .5em;
+
+	text-align: center;
+
+	border: .125em solid darken($btn-inactive-bc, 10%);
+	outline: none;
+}

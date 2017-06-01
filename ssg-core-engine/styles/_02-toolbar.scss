@@ -1,0 +1,10 @@
+.ssg-toolbar{
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+
+	width: 100%;
+
+	border-bottom: 1px darken($btn-inactive-bc, 30%) solid;
+	background-color: $white;
+}

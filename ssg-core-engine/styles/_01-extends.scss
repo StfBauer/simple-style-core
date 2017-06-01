@@ -1,0 +1,40 @@
+%typography{
+	h1{
+		font-size: 200%;
+		font-weight: bold;
+
+		margin: 0 auto;
+
+		letter-spacing: -.01em;
+		text-transform: uppercase;
+	}
+	h2{
+		font-size: 175%;
+		font-weight: bold;
+
+		margin: 0 auto;
+
+		letter-spacing: -.01em;
+		text-transform: uppercase;
+	}
+	h3{
+		font-size: 150%;
+
+		letter-spacing: -.01em;
+		text-transform: uppercase;
+	}
+	h4{
+		font-size: 125%;
+
+		text-transform: uppercase;
+	}
+	p{
+		line-height: 125%;
+		& + p{
+			margin-top: 1em;
+		}
+	}
+	li{
+		line-height: 150%;
+	}
+}

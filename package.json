@@ -1,0 +1,53 @@
+{
+  "name": "simple-style-core",
+  "version": "0.0.1",
+  "description": "Simple Style Core engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Simple",
+    "Style",
+    "Styleguide",
+    "Style",
+    "Guide",
+    "Atomic",
+    "Design",
+    "Style",
+    "Documentation",
+    "SASS",
+    "pattern",
+    "library"
+  ],
+  "author": "Stefan Bauer <stefan.bauer@n8d.at>",
+  "license": "MIT",
+  "dependencies": {
+    "browser-sync": "^2.18.12",
+    "chalk": "^1.1.3",
+    "es6-promise": "^4.1.0",
+    "glob": "^7.1.2",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-declare": "^0.3.0",
+    "gulp-handlebars": "^4.0.0",
+    "gulp-jsoncombine": "^1.0.3",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-marked-json": "^1.0.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-print": "^2.0.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0",
+    "gulp-tslint": "^8.1.0",
+    "gulp-typescript": "^3.1.7",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "gulp-wrap": "^0.13.0",
+    "handlebars": "^4.0.10",
+    "plumber": "^0.4.8",
+    "prismjs": "^1.6.0",
+    "tslint": "^5.3.2",
+    "typescript": "^2.3.4"
+  }
+}

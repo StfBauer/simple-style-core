@@ -1,0 +1,99 @@
+<html>
+
+<head>
+  <title>
+
+  </title>
+  <link rel="stylesheet" href="/prismjs/themes/prism-okaidia.css" type="text/css">
+  <link rel="stylesheet" href="/styles/ssg.core.css" type="text/css">
+</head>
+
+<body>
+  <div class="ssg-toolbar">
+    <div class="ssg-section ssg-core-filter">
+      <button class="ssg-button active" data-filter="atom">atoms</button>
+      <button class="ssg-button" data-filter="molecules">molecules</button>
+      <button class="ssg-button" data-filter="organism">organism</button>
+      <button class="ssg-button" data-filter="templates">templates</button>
+      <button class="ssg-button" data-filter="pages">pages</button>
+    </div>
+    <div class="ssg-section">
+      <button class="ssg-button" date-filter="ssg-toc">toc</button>
+    </div>
+    <div class="ssg-section ssg-core-viewport">
+      <input id="ssg-in-width" class="ssg-input" value="1920" size="4">
+      <span class="ssg-label">x</span>
+      <input id="ssg-in-height" class="ssg-input" value="768" size="4">
+      <button class="ssg-button" data-viewport="320">S</button>
+      <button class="ssg-button" data-viewport="768">M</button>
+      <button class="ssg-button" data-viewport="1024">L</button>
+      <button class="ssg-button" data-viewport="3500">UWD</button>
+      <button class="ssg-button active" data-viewport="full">Full</button>
+      <button class="ssg-button" data-viewport="disco">Disco</button>
+    </div>
+    <div class="ssg-section">
+      <button class="ssg-button" date-filter="ssg-left">&lt;</button>
+      <span class="ssg-label">Current Label</span>
+      <button class="ssg-button" date-filter="ssg-right">&gt;</button>
+    </div>
+    <div class="ssg-section ssg-core-view">
+      <button class="ssg-button" date-filter="ssg-code">Isolate</button>
+      <button class="ssg-button" date-filter="ssg-toc">Code</button>
+      <button class="ssg-button" date-filter="ssg-toc">Annotation</button>
+    </div>
+  </div>
+  <div class="ssg-wrapper">
+    <div class="ssg-patterns">
+      <div class="ssg-patterns-inner" style="width: 100%">
+        <div class="ssg-item" data-cat="atoms" data-file="01-colorbox">
+          <div class="ssg-item-header">
+            <div class="ssg-item-title">Default Colors</div>
+            <div class="ssg-item-description">Shows all default colors used in this design&nbsp;<br><b class="ssg-pattern-label">Pattern name:</b><span class="ssg-pattern-name">01-colorbox</span></div>
+          </div>
+          <div class="sample">
+            <div class="colorbox-01"></div>
+            <div class="colorbox-02"></div>
+            <div class="colorbox-03"></div>
+            <div class="colorbox-04"></div>
+            <div class="colorbox-05"></div>
+            <div class="colorbox-06"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="ssg-content">
+
+    </div>
+    <div id="ssg-docbar" class="ssg-docbar">
+      <div id="ssg-docbar-actions">
+        <button class="ssg-button">
+                &lt;
+            </button>
+        <button class="ssg-button">
+                &gt;
+            </button>
+      </div>
+      <div id="ssg-docbar-inner">
+
+      </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="/es6-promise/dist/es6-promise.js"></script>
+    <script src="/handlebars/dist/handlebars.js"></script>
+    <script src="/scripts/ssgCore.templates.js"></script>
+    <script src="/scripts/ssg.ui.js"></script>
+    <script src="/prismjs/prism.js"></script>
+    <script src="/prismjs/plugins/autoloader/prism-autoloader.js"></script>
+    <script type="text/javascript">
+      Prism.plugins.autoloader.languages_path = '/prismjs/components/';
+    </script>
+    <!-- // Core Scripts -->
+    <!-- Documentation -->
+    <script src="/_documentation/ssg.doc.js"></script>
+    <!-- // Documentation -->
+    <script src="/scripts/main.js"></script>
+
+</body>
+
+</html>
