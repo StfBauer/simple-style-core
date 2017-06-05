@@ -19,6 +19,7 @@ $item-mr: 1em; // margin right
 .ssg-item{
 	margin: 5em 0;
 	font-family: $font-primary;
+	display: block;
 	&-header{
 	}
 	&-title{
@@ -37,5 +38,29 @@ $item-mr: 1em; // margin right
 		padding: $item-mr;
 
 		background-color: $btn-inactive-bg;
+		display: none;
+		&.show{
+			display: block;
+		}
 	}
+	.sample{
+		position: static;
+		margin: $item-mr;
+	}
+	&-code{
+		font-size: 0.9em;
+		display: none;
+		margin: $item-mr;
+		&.show{
+			display: block;
+		}
+	}
+	// States
+	&.hide{
+		display: none;
+	}
+	&.show{
+		display: block;
+	}
+
 }

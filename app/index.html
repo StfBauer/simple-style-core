@@ -9,9 +9,10 @@
 </head>
 
 <body>
+  <div class="ssg-toc"></div>
   <div class="ssg-toolbar">
     <div class="ssg-section ssg-core-filter">
-      <button class="ssg-button active" data-filter="atom">atoms</button>
+      <button class="ssg-button active" data-filter="atoms">atoms</button>
       <button class="ssg-button" data-filter="molecules">molecules</button>
       <button class="ssg-button" data-filter="organism">organism</button>
       <button class="ssg-button" data-filter="templates">templates</button>
@@ -32,33 +33,19 @@
       <button class="ssg-button" data-viewport="disco">Disco</button>
     </div>
     <div class="ssg-section">
-      <button class="ssg-button" date-filter="ssg-left">&lt;</button>
+      <button class="ssg-button" data-filter="ssg-left">&lt;</button>
       <span class="ssg-label">Current Label</span>
-      <button class="ssg-button" date-filter="ssg-right">&gt;</button>
+      <button class="ssg-button" data-filter="ssg-right">&gt;</button>
     </div>
     <div class="ssg-section ssg-core-view">
-      <button class="ssg-button" date-filter="ssg-code">Isolate</button>
-      <button class="ssg-button" date-filter="ssg-toc">Code</button>
-      <button class="ssg-button" date-filter="ssg-toc">Annotation</button>
+      <button class="ssg-button" data-action="ssg-isolate">Isolate</button>
+      <button class="ssg-button" data-action="ssg-code">Code</button>
+      <button class="ssg-button" data-action="ssg-annot">Annotation</button>
     </div>
   </div>
   <div class="ssg-wrapper">
     <div class="ssg-patterns">
       <div class="ssg-patterns-inner" style="width: 100%">
-        <div class="ssg-item" data-cat="atoms" data-file="01-colorbox">
-          <div class="ssg-item-header">
-            <div class="ssg-item-title">Default Colors</div>
-            <div class="ssg-item-description">Shows all default colors used in this design&nbsp;<br><b class="ssg-pattern-label">Pattern name:</b><span class="ssg-pattern-name">01-colorbox</span></div>
-          </div>
-          <div class="sample">
-            <div class="colorbox-01"></div>
-            <div class="colorbox-02"></div>
-            <div class="colorbox-03"></div>
-            <div class="colorbox-04"></div>
-            <div class="colorbox-05"></div>
-            <div class="colorbox-06"></div>
-          </div>
-        </div>
       </div>
     </div>
     <div id="ssg-content">
@@ -82,6 +69,7 @@
     <script src="/es6-promise/dist/es6-promise.js"></script>
     <script src="/handlebars/dist/handlebars.js"></script>
     <script src="/scripts/ssgCore.templates.js"></script>
+    <script src="/scripts/ssg.templates.js"></script>
     <script src="/scripts/ssg.ui.js"></script>
     <script src="/prismjs/prism.js"></script>
     <script src="/prismjs/plugins/autoloader/prism-autoloader.js"></script>

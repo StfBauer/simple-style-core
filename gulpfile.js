@@ -31,7 +31,13 @@ var wathches = () => {
     gulp.watch(config.watches.styles, ['sass:compile'], reload);
 
     // SASS compilation and style changes
-    gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
+    // gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
+
+    // Update configuration
+    gulp.watch('app/_patterns/**/*.hbs')
+        // item was changed
+        .on('change', ssgCoreConfig.fsEvents);
+
 
     // Watch for documentation changes
     gulp.watch(config.watches.documentation, ['doc:markdown'], reload);
@@ -102,7 +108,7 @@ gulp.task('ssg:config', () => {
     gulp.src(patternPath)
         .pipe(ssgCoreConfig.createConfig(curConfig));
 
-    ssgCore(curConfig);
+    // ssgCore(curConfig);
 
 });
 

@@ -208,67 +208,78 @@
             "title": "ms-clear-table",
             "description": "",
             "filename": "ms-clear-table",
-            "filepath": "atoms/05-tables/ms-clear-table.hbs"
+            "filepath": "atoms/05-tables/ms-clear-table.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-0",
             "description": "",
             "filename": "ms-default-table-0",
-            "filepath": "atoms/05-tables/ms-default-table-0.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-0.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-10",
             "description": "",
             "filename": "ms-default-table-10",
-            "filepath": "atoms/05-tables/ms-default-table-10.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-10.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-4",
             "description": "",
             "filename": "ms-default-table-4",
-            "filepath": "atoms/05-tables/ms-default-table-4.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-4.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-5",
             "description": "",
             "filename": "ms-default-table-5",
-            "filepath": "atoms/05-tables/ms-default-table-5.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-5.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-6",
             "description": "",
             "filename": "ms-default-table-6",
-            "filepath": "atoms/05-tables/ms-default-table-6.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-6.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-7",
             "description": "",
             "filename": "ms-default-table-7",
-            "filepath": "atoms/05-tables/ms-default-table-7.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-7.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-8",
             "description": "",
             "filename": "ms-default-table-8",
-            "filepath": "atoms/05-tables/ms-default-table-8.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-8.hbs",
+            "deleted": true
         },
         {
             "title": "ms-default-table-9",
             "description": "",
             "filename": "ms-default-table-9",
-            "filepath": "atoms/05-tables/ms-default-table-9.hbs"
+            "filepath": "atoms/05-tables/ms-default-table-9.hbs",
+            "deleted": true
         },
         {
             "title": "ms-light-band-table",
             "description": "",
             "filename": "ms-light-band-table",
-            "filepath": "atoms/05-tables/ms-light-band-table.hbs"
+            "filepath": "atoms/05-tables/ms-light-band-table.hbs",
+            "deleted": true
         },
         {
             "title": "ms-light-line-table",
             "description": "",
             "filename": "ms-light-line-table",
-            "filepath": "atoms/05-tables/ms-light-line-table.hbs"
+            "filepath": "atoms/05-tables/ms-light-line-table.hbs",
+            "deleted": true
         },
         {
             "title": "01-card-headline",
@@ -287,6 +298,12 @@
             "description": "",
             "filename": "03-card-image",
             "filepath": "atoms/99-specials/03-card-image.hbs"
+        },
+        {
+            "title": "04-card-moses",
+            "description": "",
+            "filename": "04-card-moses",
+            "filepath": "atoms/99-specials/04-card-moses.hbs"
         },
         {
             "title": "hello-world",

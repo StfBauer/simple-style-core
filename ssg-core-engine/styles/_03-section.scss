@@ -1,4 +1,20 @@
-.ssg-section{
+.ssg-section {
     display: inline-block;
     margin: 0.125em 0.5em;
+    &:hover {
+        // state
+        .ssg-button {
+            &:not(.active) {
+                color: darken($btn-inactive-text, 30%);
+            }
+            border: .125em solid darken($btn-inactive-bc, 30%); // background-color: darken($btn-inactive-bg, 30%);
+            &:hover {
+                // color: darken($btn-inactive-text, 30%);
+                // border: .125em solid darken($btn-inactive-bc, 30%);
+                background-color: lighten($red, 5%);
+                border: .125em solid lighten($red, 5%);
+                color: white; // background-color: darken($btn-inactive-bg, 30%);
+            }
+        }
+    }
 }

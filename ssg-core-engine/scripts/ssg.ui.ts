@@ -29,11 +29,14 @@ namespace ssg.UI {
 
     declare var window: Window,
         document: Document,
-        ssgCore: any;
+        ssgCore: any,
+        ssg: any,
+        Prism: any;
 
     var win = window,
         doc = document,
-        ssgTemplates = ssgCore.templates,
+        ssgCoreTemplates = ssgCore.templates,
+        ssgTemplates = ssg.templates,
         patternConfig = null;
 
     let viewports: Array<number> = [
@@ -49,8 +52,13 @@ namespace ssg.UI {
         viewPortButton: '.ssg-core-viewport .ssg-button',
         viewPortTarget: '.ssg-patterns-inner',
         viewPortWidth: '#ssg-in-width',
+        // Buttons
         discoButton: '.ssg-button[data-viewport=\'disco\']',
-        stateActive: '.active'
+        btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
+        btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
+        // State Elements
+        stateActive: '.active',
+        stateHidden: '.hidden'
     };
 
     export namespace Utils {
@@ -95,13 +103,30 @@ namespace ssg.UI {
 
         elements: (filterValue: string) => {
 
-            console.log(filterValue);
+            var allElements = document.querySelectorAll('.ssg-item');
+
+            for (let i = allElements.length - 1; i >= 0; i--) {
+
+                var curElement: HTMLElement = <HTMLElement>allElements[i];
+
+                if (curElement.dataset['cat'] === filterValue) {
+
+                    curElement.classList.remove('hide');
+
+                } else {
+
+                    curElement.classList.add('hide');
+
+                }
+
+            }
 
         }
 
     }
 
     export var initDisco = () => {
+
         var disco = setInterval(
             function () {
 
@@ -121,9 +146,7 @@ namespace ssg.UI {
 
                 }
 
-
             }, 1000);
-
 
     }
 
@@ -267,6 +290,45 @@ namespace ssg.UI {
 
         },
 
+        showSource: (event: Event) => {
+            event.preventDefault();
+            if ((<HTMLElement>event.target).classList.contains('active')) {
+
+                // sho source code by adding class
+                var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                for (let i = codeBlocks.length - 1; i >= 0; i--) {
+                    codeBlocks[i].classList.add('show');
+                }
+
+            } else {
+                // hide source code by removing the class
+                var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                for (let i = codeBlocks.length - 1; i >= 0; i--) {
+                    codeBlocks[i].classList.remove('show');
+                }
+            }
+        },
+        showAnnotation: (event: Event) => {
+
+            event.preventDefault();
+            if ((<HTMLElement>event.target).classList.contains('active')) {
+
+                // sho source code by adding class
+                var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                for (let i = codeBlocks.length - 1; i >= 0; i--) {
+                    codeBlocks[i].classList.add('show');
+                }
+
+            } else {
+                // hide source code by removing the class
+                var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                for (let i = codeBlocks.length - 1; i >= 0; i--) {
+                    codeBlocks[i].classList.remove('show');
+                }
+            }
+
+        },
+
         // register specific event on all notes
         registerEvents: (curElements: NodeList, eventType, handler) => {
 
@@ -282,25 +344,57 @@ namespace ssg.UI {
 
     export var Render = () => {
 
-        console.log('...... SSG Templates Config');
-        console.log(ssgTemplates);
-        console.log('...... Pattern Config');
-        console.log(patternConfig);
+        // console.log('...... SSG Templates Config');
+        // console.log(ssgTemplates);
 
-        console.log(('..... Config'));
+        // console.log('...... Pattern Config');
+        // console.log(patternConfig);
+
+        // console.log(('..... Config'));
         let container: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget);
 
-        console.log('..... All Pattern');
+        // console.log('..... All Pattern');
+
+        var allContent = "";
+
         for (let i = patternConfig.patterns.length - 1; i >= 0; i--) {
 
+            var curPattern = patternConfig.patterns[i],
+                curPatternTitle = curPattern.title,
+                curTemplate = ssgTemplates[curPatternTitle],
+                parser = new DOMParser();
 
-            var content: string = ssgTemplates.patternItem(patternConfig.patterns[i]);
+            // Define base filter
+            curPattern.baseFilter = curPattern.filepath.split('/')[0];
+            // console.log(curPattern.baseFilter);
 
-            container.insertAdjacentHTML('afterbegin', content);
+            // console.log('--->', curPattern.title);
+
+            if (curPattern !== null) {
+
+                curPattern.sample = curTemplate;
+
+                let content = ssgCoreTemplates.patternItem(curPattern);
+
+                try {
+
+                    // Parse Document and check if all elements are properly closed
+                    var domContent = parser.parseFromString(content, 'text/html');
+                    // Append parsed content
+                    allContent = domContent.body.innerHTML + allContent;
+
+                } catch (Exception) {
+
+                    console.log(Exception);
+
+                }
+
+            }
 
         }
 
-        // var patternItem = ssgTemplates.patternItem();
+        container.insertAdjacentHTML('afterbegin', allContent);
+        Prism.highlightAll();
 
     }
 
@@ -334,7 +428,12 @@ namespace ssg.UI {
         var filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
             viewButtons: NodeList = doc.querySelectorAll(coreUiElement.viewButton),
             viewPortButtons: NodeList = doc.querySelectorAll(coreUiElement.viewPortButton),
-            viewPortWidth: NodeList = doc.querySelectorAll(coreUiElement.viewPortWidth);
+            viewPortWidth: NodeList = doc.querySelectorAll(coreUiElement.viewPortWidth),
+            // Action Buttons
+            showCode: NodeList = doc.querySelectorAll(coreUiElement.btnShowCode),
+            showAnnot: NodeList = doc.querySelectorAll(coreUiElement.btnShowAnnotion);
+
+        console.log(showCode);
 
         Events.registerEvents(filterButtons, 'click', Events.changeFilter);
         Events.registerEvents(viewButtons, 'click', Events.changeView);
@@ -342,6 +441,8 @@ namespace ssg.UI {
         Events.registerEvents(viewPortWidth, 'blur', Events.viewPortResizer);
         Events.registerEvents(viewPortWidth, 'focusout', Events.viewPortResizer);
         Events.registerEvents(viewPortWidth, 'keypress', Events.viewPortResizer);
+        Events.registerEvents(showCode, 'click', Events.showSource);
+        Events.registerEvents(showAnnot, 'click', Events.showAnnotation);
     }
 
 };

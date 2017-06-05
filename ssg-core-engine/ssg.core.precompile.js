@@ -9,7 +9,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     merge = require('merge-stream');
 
-module.exports = function(patternConfig) {
+module.exports = function (patternConfig) {
     'use strict';
 
     var callDir = process.cwd();
@@ -17,8 +17,6 @@ module.exports = function(patternConfig) {
     var hbOptions = {
         handlebars: require('handlebars')
     };
-
-    console.log("BALALLALALALLALALALLALALAL", patternConfig);
 
     var config = require(process.cwd() + '/ssg.core.config');
 
@@ -31,7 +29,7 @@ module.exports = function(patternConfig) {
         .pipe(wrap('Handlebars.registerPartial(<%= imports.processPartialName(file.relative) %>,' +
             'Handlebars.template(<%= contents %>));', {}, {
                 imports: {
-                    processPartialName: function(fileName) {
+                    processPartialName: function (fileName) {
                         var patternName = path.basename(fileName, '.js');
                         if (patternName.indexOf("_") === 0) {
                             patternName = patternName.substr(1);
@@ -59,6 +57,6 @@ module.exports = function(patternConfig) {
         // concat
         .pipe(concat(patternConfig.namespace + '.js'))
         // build
-        .pipe(gulp.dest('./' + config.tempFiles + 'scripts'));
+        .pipe(gulp.dest('./' + config.ssg.target + 'scripts'));
 
 };

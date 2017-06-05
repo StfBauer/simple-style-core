@@ -1,9 +1,9 @@
 /// <reference path="../../typings/index.d.ts" />
 var ssg;
-(function (ssg) {
+(function (ssg_1) {
     var UI;
     (function (UI) {
-        var win = window, doc = document, ssgTemplates = ssgCore.templates, patternConfig = null;
+        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null;
         var viewports = [
             320,
             768,
@@ -16,8 +16,13 @@ var ssg;
             viewPortButton: '.ssg-core-viewport .ssg-button',
             viewPortTarget: '.ssg-patterns-inner',
             viewPortWidth: '#ssg-in-width',
+            // Buttons
             discoButton: '.ssg-button[data-viewport=\'disco\']',
-            stateActive: '.active'
+            btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
+            btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
+            // State Elements
+            stateActive: '.active',
+            stateHidden: '.hidden'
         };
         var Utils;
         (function (Utils) {
@@ -54,7 +59,16 @@ var ssg;
         ;
         UI.Filter = {
             elements: function (filterValue) {
-                console.log(filterValue);
+                var allElements = document.querySelectorAll('.ssg-item');
+                for (var i = allElements.length - 1; i >= 0; i--) {
+                    var curElement = allElements[i];
+                    if (curElement.dataset['cat'] === filterValue) {
+                        curElement.classList.remove('hide');
+                    }
+                    else {
+                        curElement.classList.add('hide');
+                    }
+                }
             }
         };
         UI.initDisco = function () {
@@ -147,6 +161,40 @@ var ssg;
                     innerPattern.style.width = newWidth.value;
                 }
             },
+            showSource: function (event) {
+                event.preventDefault();
+                if (event.target.classList.contains('active')) {
+                    // sho source code by adding class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.add('show');
+                    }
+                }
+                else {
+                    // hide source code by removing the class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.remove('show');
+                    }
+                }
+            },
+            showAnnotation: function (event) {
+                event.preventDefault();
+                if (event.target.classList.contains('active')) {
+                    // sho source code by adding class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.add('show');
+                    }
+                }
+                else {
+                    // hide source code by removing the class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.remove('show');
+                    }
+                }
+            },
             // register specific event on all notes
             registerEvents: function (curElements, eventType, handler) {
                 for (var i = curElements.length - 1; i >= 0; i--) {
@@ -155,18 +203,36 @@ var ssg;
             }
         };
         UI.Render = function () {
-            console.log('...... SSG Templates Config');
-            console.log(ssgTemplates);
-            console.log('...... Pattern Config');
-            console.log(patternConfig);
-            console.log(('..... Config'));
+            // console.log('...... SSG Templates Config');
+            // console.log(ssgTemplates);
+            // console.log('...... Pattern Config');
+            // console.log(patternConfig);
+            // console.log(('..... Config'));
             var container = doc.querySelector(coreUiElement.viewPortTarget);
-            console.log('..... All Pattern');
+            // console.log('..... All Pattern');
+            var allContent = "";
             for (var i = patternConfig.patterns.length - 1; i >= 0; i--) {
-                var content = ssgTemplates.patternItem(patternConfig.patterns[i]);
-                container.insertAdjacentHTML('afterbegin', content);
+                var curPattern = patternConfig.patterns[i], curPatternTitle = curPattern.title, curTemplate = ssgTemplates[curPatternTitle], parser = new DOMParser();
+                // Define base filter
+                curPattern.baseFilter = curPattern.filepath.split('/')[0];
+                // console.log(curPattern.baseFilter);
+                // console.log('--->', curPattern.title);
+                if (curPattern !== null) {
+                    curPattern.sample = curTemplate;
+                    var content = ssgCoreTemplates.patternItem(curPattern);
+                    try {
+                        // Parse Document and check if all elements are properly closed
+                        var domContent = parser.parseFromString(content, 'text/html');
+                        // Append parsed content
+                        allContent = domContent.body.innerHTML + allContent;
+                    }
+                    catch (Exception) {
+                        console.log(Exception);
+                    }
+                }
             }
-            // var patternItem = ssgTemplates.patternItem();
+            container.insertAdjacentHTML('afterbegin', allContent);
+            Prism.highlightAll();
         };
         UI.Init = function () {
             console.log('.... Load Configuration');
@@ -187,15 +253,20 @@ var ssg;
                 console.log(error);
             });
             // Render Events
-            var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth);
+            var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth), 
+            // Action Buttons
+            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion);
+            console.log(showCode);
             UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
             UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView);
             UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
             UI.Events.registerEvents(viewPortWidth, 'blur', UI.Events.viewPortResizer);
             UI.Events.registerEvents(viewPortWidth, 'focusout', UI.Events.viewPortResizer);
             UI.Events.registerEvents(viewPortWidth, 'keypress', UI.Events.viewPortResizer);
+            UI.Events.registerEvents(showCode, 'click', UI.Events.showSource);
+            UI.Events.registerEvents(showAnnot, 'click', UI.Events.showAnnotation);
         };
-    })(UI = ssg.UI || (ssg.UI = {}));
+    })(UI = ssg_1.UI || (ssg_1.UI = {}));
 })(ssg || (ssg = {}));
 ;
 ssg.UI.Init();

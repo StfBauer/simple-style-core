@@ -33,13 +33,14 @@ module.exports = (() => {
             path: basepath + '/_patterns/**/*.hbs',
             config: basepath + '/_config/pattern.conf.json',
             partials: [
-                basepath + '_patterns/**/*.hbs',
-                basepath + '_core/**/_*.hbs'
+                basepath + '/_patterns/**/*.hbs',
+                basepath + '/_core/**/_*.hbs'
             ],
             templates: [
-                basepath + '_patterns/**/[^_]*.hbs'
+                basepath + '/_patterns/**/[^_]*.hbs'
             ],
-            namespace: 'ssg.templates'
+            namespace: 'ssg.templates',
+            target: tempdir + "/"
         },
         watches: {
             styles: basepath + '/styles/**/*.scss',

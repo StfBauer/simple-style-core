@@ -191,9 +191,9 @@ module.exports = {
             .on('end', logData);
     },
 
-    fsEvents: function (event, config) {
+    fsEvents: function (event) {
 
-        var patternConfigPath = process.cwd() + '/' + config.patternConfig,
+        var patternConfigPath = process.cwd() + '/app/_config/pattern.conf.json',
             patternConfig = require(patternConfigPath),
             appPath = process.cwd() + '/app/_patterns/';
 
