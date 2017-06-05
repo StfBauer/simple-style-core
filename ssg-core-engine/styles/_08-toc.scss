@@ -1,3 +1,48 @@
+$ssg-toc-animation: 1s;
+$ssg-toc-opacity: .5s;
 .ssg-toc{
-    
+	font-family: $font-primary;
+
+	overflow: hidden;
+
+	box-sizing: border-box;
+	height: 0;
+
+	transition: $ssg-toc-animation height ease-in-out,
+	$ssg-toc-animation border ease-in-out,
+	$ssg-toc-animation background-color ease-in-out,
+	$ssg-toc-opacity opacity ease-in-out;
+
+	opacity: 0;
+	&-inner{
+		padding: 4em 1em;
+		ul{
+			list-style: none;
+			ul{
+				padding: 0;
+
+				text-align: left;
+
+				background-color: lime;
+
+				column-count: 3;
+				li{
+					text-align: left;
+				}
+			}
+			& > li{
+				line-height: 150%;
+
+				display: block;
+			}
+		}
+	}
+	&.show{
+		overflow: auto;
+
+		height: 100%;
+
+		opacity: 1;
+		border-bottom: 1px black solid;
+	}
 }
