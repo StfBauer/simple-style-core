@@ -23,15 +23,20 @@ var ssg;
             btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
             btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
             btnShowToC: '.ssg-button[data-action=\'ssg-toc\']',
-            tocItem: '.ssg-toc-iterm',
-            // State Elements
-            stateActive: '.active',
-            stateHidden: '.hidden',
-            stateShow: 'show'
+            tocItem: '.ssg-toc-item',
+            tocSearchBox: '.ssg-toc-searchbox',
+            tocSearchValue: 'toc-searchbox',
+            patternItem: '.ssg-item',
+            // States
+            state: {
+                active: 'active',
+                hidden: 'hidden',
+                show: 'show'
+            }
         };
         var Utils;
         (function (Utils) {
-            function requestData(method, url) {
+            Utils.requestData = function (method, url) {
                 return new Promise(function (resolve, reject) {
                     var xhr;
                     var loaded = function () {
@@ -57,9 +62,20 @@ var ssg;
                     xhr.onerror = onError;
                     xhr.send();
                 });
-            }
-            Utils.requestData = requestData;
-            ;
+            };
+            Utils.changeItemToSinglePage = function (nodes) {
+                var nodeCount = nodes.length;
+                console.log(nodeCount);
+                while (nodeCount !== 0) {
+                    nodeCount -= 1;
+                    var curNode = nodes[nodeCount];
+                    console.log(curNode);
+                    if (curNode.classList.contains('ssg-item')) {
+                        curNode.classList.remove('ssg-item');
+                        curNode.classList.add('ssg-item-single');
+                    }
+                }
+            };
         })(Utils = UI.Utils || (UI.Utils = {}));
         ;
         UI.Filter = {
@@ -68,7 +84,7 @@ var ssg;
                     case "atoms":
                     case "molecules":
                     case "organism":
-                        var allElements = document.querySelectorAll('.ssg-item');
+                        var allElements = doc.querySelectorAll('.ssg-item');
                         for (var i = allElements.length - 1; i >= 0; i--) {
                             var curElement = allElements[i];
                             if (curElement.dataset['cat'] === filterValue) {
@@ -88,7 +104,7 @@ var ssg;
         };
         UI.initDisco = function () {
             var disco = setInterval(function () {
-                var discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.stateActive), viewPortInner = doc.querySelector(coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(coreUiElement.viewPortWidth);
+                var discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.state.active), viewPortInner = doc.querySelector(coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(coreUiElement.viewPortWidth);
                 if (discoButton !== null) {
                     var curViewPort = Math.floor(Math.random() * (viewports.length - 0)) + 0;
                     viewPortWidth.value = viewPortInner.style.width = viewports[curViewPort].toString();
@@ -105,12 +121,12 @@ var ssg;
                 event.preventDefault();
                 var allButtons = doc.querySelectorAll(coreUiElement.filterButton);
                 for (var i = allButtons.length - 1; i >= 0; i--) {
-                    if (allButtons[i].classList.contains('active')) {
-                        allButtons[i].classList.remove('active');
+                    if (allButtons[i].classList.contains(coreUiElement.state.active)) {
+                        allButtons[i].classList.remove(coreUiElement.state.active);
                     }
                 }
                 var curButton = event.target, filter = curButton.dataset['filter'];
-                curButton.classList.add('active');
+                curButton.classList.add(coreUiElement.state.active);
                 UI.Filter.elements(filter);
             },
             // change view - Add isolated, code, Annotation
@@ -118,35 +134,35 @@ var ssg;
                 // prevent all default
                 event.preventDefault();
                 var curButton = event.target, filter = curButton.dataset['filter'];
-                curButton.classList.contains('active') ?
-                    curButton.classList.remove('active') : curButton.classList.add('active');
+                curButton.classList.contains(coreUiElement.state.active) ?
+                    curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
             },
             // adjust view port to differnet width
             changeViewPort: function (event) {
                 event.preventDefault();
-                var vpButton = event.target, vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + coreUiElement.stateActive), vpData = vpButton.dataset['viewport'], vpTarget = doc.querySelector(coreUiElement.viewPortTarget), widthInput = doc.querySelector(coreUiElement.viewPortWidth);
+                var vpButton = event.target, vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active), vpData = vpButton.dataset['viewport'], vpTarget = doc.querySelector(coreUiElement.viewPortTarget), widthInput = doc.querySelector(coreUiElement.viewPortWidth);
                 // remove current active button
                 if (vpActiveButton !== null) {
-                    vpActiveButton.classList.remove('active');
+                    vpActiveButton.classList.remove(coreUiElement.state.active);
                 }
                 if (vpActiveButton === vpButton) {
-                    vpButton.classList.remove('active');
+                    vpButton.classList.remove(coreUiElement.state.active);
                     vpData = 'full';
                 }
                 else {
-                    vpButton.classList.add('active');
+                    vpButton.classList.add(coreUiElement.state.active);
                 }
                 // recheck Active Buttons
-                vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + coreUiElement.stateActive);
+                vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active);
                 if (vpActiveButton === null) {
                     vpActiveButton = doc.querySelector('.ssg-button[data-viewport=\'full\']');
-                    vpActiveButton.classList.add('active');
+                    vpActiveButton.classList.add(coreUiElement.state.active);
                 }
                 // action what to do
                 if (typeof vpTarget !== undefined) {
                     switch (vpData) {
                         case 'full':
-                            vpData = vpTarget.style.width = window.innerWidth.toString();
+                            vpData = vpTarget.style.width = win.innerWidth.toString();
                             break;
                         case 'disco':
                             ssg.UI.initDisco();
@@ -178,54 +194,97 @@ var ssg;
             },
             showSource: function (event) {
                 event.preventDefault();
-                if (event.target.classList.contains('active')) {
+                if (event.target.classList.contains(coreUiElement.state.active)) {
                     // sho source code by adding class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-code');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.add(coreUiElement.stateShow);
+                        codeBlocks[i].classList.add(coreUiElement.state.show);
                     }
                 }
                 else {
                     // hide source code by removing the class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-code');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.remove(coreUiElement.stateShow);
+                        codeBlocks[i].classList.remove(coreUiElement.state.show);
                     }
                 }
             },
             showAnnotation: function (event) {
                 event.preventDefault();
-                if (event.target.classList.contains('active')) {
+                if (event.target.classList.contains(coreUiElement.state.active)) {
                     // sho source code by adding class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.add(coreUiElement.stateShow);
+                        codeBlocks[i].classList.add(coreUiElement.state.show);
                     }
                 }
                 else {
                     // hide source code by removing the class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.remove(coreUiElement.stateShow);
+                        codeBlocks[i].classList.remove(coreUiElement.state.show);
                     }
                 }
             },
+            // show and collapse table of contents
             showToc: function (event) {
                 event.preventDefault();
-                var containerToc = document.querySelector(coreUiElement.viewToc);
+                var currentButton = event.target, containerToc = doc.querySelector(coreUiElement.viewToc);
+                // setting current button to active
+                console.log(currentButton);
+                currentButton !== null && currentButton.classList.contains(coreUiElement.state.active) ?
+                    currentButton.classList.remove(coreUiElement.state.active) : currentButton.classList.add(coreUiElement.state.active);
                 if (containerToc !== null) {
                     console.log(containerToc);
-                    if (containerToc.classList.contains(coreUiElement.stateShow)) {
-                        containerToc.classList.remove(coreUiElement.stateShow);
+                    if (containerToc.classList.contains(coreUiElement.state.show)) {
+                        containerToc.classList.add(coreUiElement.state.hidden);
+                        containerToc.classList.remove(coreUiElement.state.show);
                     }
                     else {
-                        containerToc.classList.add(coreUiElement.stateShow);
+                        containerToc.classList.remove(coreUiElement.state.hidden);
+                        containerToc.classList.add(coreUiElement.state.show);
                     }
                 }
             },
+            // filter single toc element
             filterToc: function (event) {
                 event.preventDefault();
-                console.log(event.target);
+                var currenToc = event.target, filter = currenToc.dataset['filter'];
+                if (filter !== null) {
+                    var allElements = doc.querySelectorAll(coreUiElement.patternItem), tocElement = doc.querySelector(coreUiElement.viewToc);
+                    for (var i = allElements.length - 1; i >= 0; i--) {
+                        var curItem = allElements[i];
+                        if (curItem.dataset['file'] === filter) {
+                            curItem.classList.remove('hide');
+                        }
+                        else {
+                            curItem.classList.add('hide');
+                        }
+                    }
+                    tocElement.classList.remove('show');
+                }
+            },
+            searchToc: function (event) {
+                event.preventDefault();
+                var searchBox = doc.getElementById(coreUiElement.tocSearchValue);
+                if (searchBox !== null) {
+                    var searchValue = searchBox.value;
+                    console.log(searchValue);
+                    var resetResult = doc.querySelectorAll('.ssg-toc-item');
+                    for (var j = resetResult.length - 1; j >= 0; j--) {
+                        if (resetResult[j].classList.contains('hide')) {
+                            resetResult[j].classList.remove('hide');
+                        }
+                    }
+                    if (searchValue !== "") {
+                        var searchResult = doc.querySelectorAll(".ssg-toc-item:not([data-filter*='" + searchValue + "'])");
+                        if (searchResult !== null) {
+                            for (var i = searchResult.length - 1; i >= 0; i--) {
+                                searchResult[i].classList.add('hide');
+                            }
+                        }
+                    }
+                }
             },
             // register specific event on all notes
             registerEvents: function (curElements, eventType, handler) {
@@ -243,7 +302,7 @@ var ssg;
             var RenderToc = function (patternConfig) {
                 var patterns = patternConfig.patterns.filter(function (object) {
                     return object["deleted"] === undefined;
-                }), folder = patternConfig.folder, ssgToc = document.querySelector(coreUiElement.viewTocInner);
+                }), folder = patternConfig.folder, ssgToc = doc.querySelector(coreUiElement.viewTocInner);
                 for (var i = 0; i < folder.length; i++) {
                     var baseElement = '<ul><li id=ssg-' + folder[i].name + ' class=ssg-toc-header>' +
                         folder[i].name +
@@ -255,12 +314,12 @@ var ssg;
                     var patternTitle = '<li class=ssg-toc-item data-filter=\"' +
                         patterns[j].filename + '\">' +
                         patterns[j].title + '</li>';
-                    var currentSection = document.getElementById('ssg-' + folderpath + '-items');
+                    var currentSection = doc.getElementById('ssg-' + folderpath + '-items');
                     if (currentSection !== null) {
                         currentSection.insertAdjacentHTML('beforeend', patternTitle);
                     }
                 }
-                var tocItems = document.querySelectorAll(coreUiElement.tocItem);
+                var tocItems = doc.querySelectorAll(coreUiElement.tocItem);
                 for (var k = 0; k < tocItems.length; k++) {
                     tocItems[k].addEventListener('click', UI.Events.filterToc);
                 }
@@ -288,12 +347,18 @@ var ssg;
                     }
                 }
             }
-            container.insertAdjacentHTML('afterbegin', allContent);
+            var allContentDOM = parser.parseFromString(allContent, 'text/html');
+            console.log(allContentDOM);
+            // alter templates and pages
+            var allTempLates = allContentDOM.querySelectorAll('div[data-cat=templates]'), allPages = allContentDOM.querySelectorAll('div[data-cat=pages]'), allOrganism = allContentDOM.querySelectorAll('div[data-cat=organism]');
+            Utils.changeItemToSinglePage(allTempLates);
+            Utils.changeItemToSinglePage(allPages);
+            Utils.changeItemToSinglePage(allOrganism);
+            container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
             Prism.highlightAll();
             RenderToc(patternConfig);
         };
         UI.Init = function () {
-            console.log('.... Load Configuration');
             Promise.all([ssg.UI.Utils.requestData('GET', '/_config/pattern.conf.json')])
                 .then(function (result) {
                 try {
@@ -313,8 +378,9 @@ var ssg;
             // Render Events
             var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth), 
             // Action Buttons
-            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(coreUiElement.btnShowToC);
-            console.log(showCode);
+            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(coreUiElement.btnShowToC), 
+            // TOC Eevent
+            filterToc = doc.querySelectorAll(coreUiElement.tocSearchBox);
             UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
             UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView);
             UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
@@ -323,7 +389,10 @@ var ssg;
             UI.Events.registerEvents(viewPortWidth, 'keypress', UI.Events.viewPortResizer);
             UI.Events.registerEvents(showCode, 'click', UI.Events.showSource);
             UI.Events.registerEvents(showAnnot, 'click', UI.Events.showAnnotation);
+            // show and hide table fo contents
             UI.Events.registerEvents(showToc, 'click', UI.Events.showToc);
+            // Search table of contents
+            UI.Events.registerEvents(filterToc, 'keyup', UI.Events.searchToc);
         };
     })(UI = ssg_1.UI || (ssg_1.UI = {}));
 })(ssg || (ssg = {}));

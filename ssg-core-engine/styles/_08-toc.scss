@@ -1,48 +1,135 @@
 $ssg-toc-animation: 1s;
 $ssg-toc-opacity: .5s;
+// .ssg-toc
 .ssg-toc{
 	font-family: $font-primary;
+
+	position: fixed;
+	top: 0;
 
 	overflow: hidden;
 
 	box-sizing: border-box;
-	height: 0;
+	width: 100%;
+	padding-top: 4em;
 
-	transition: $ssg-toc-animation height ease-in-out,
-	$ssg-toc-animation border ease-in-out,
-	$ssg-toc-animation background-color ease-in-out,
-	$ssg-toc-opacity opacity ease-in-out;
+	transition: all $ssg-toc-animation ease-in-out;
 
-	opacity: 0;
+	// background-color: rgba($white, 1); // .ssg-toc-header
+	background-color: lime;
+	z-index: 995;
+	&::after{
+		display: block;
+		clear: both;
+
+		content: " ";
+	}
+	&.hidden{
+		top: -100%;
+
+		height: 0;
+
+		transition: all $ssg-toc-animation ease-in-out;
+		.ssg-toc-inner{
+			top: 0;
+
+			max-height: 0;
+
+			transition: all $ssg-toc-animation ease-in-out;
+		}
+	}
+	// .ssg-toc.show
+	&.show{
+		top: 0;
+
+		overflow: auto;
+
+		height: 100%;
+		min-height: 100%;
+		max-height: auto; // transition: $ssg-toc-animation background-color ease-in-out,
+		// $ssg-toc-animation border ease-in-out,
+		// $ssg-toc-animation background-color ease-in-out,
+		// $ssg-toc-opacity opacity ease-in-out;
+
+		transition: all $ssg-toc-animation ease-in-out;
+
+		border-bottom: 1px black solid;
+		background-color: rgba($white, 1);
+	}
+	// .ssg-toc-inner
 	&-inner{
-		padding: 4em 1em;
+		padding: 0 1em 4em 1em;
 		ul{
+			padding: 0 2em;
+
 			list-style: none;
 			ul{
+				margin-bottom: 4em;
 				padding: 0;
 
 				text-align: left;
 
-				background-color: lime;
-
 				column-count: 3;
-				li{
-					text-align: left;
-				}
-			}
-			& > li{
-				line-height: 150%;
-
-				display: block;
 			}
 		}
 	}
-	&.show{
-		overflow: auto;
+	&-header{
+		font-size: 120%;
+		font-weight: bold;
 
-		height: 100%;
+		text-transform: uppercase;
 
-		opacity: 1;
+		color: $blue;
+	} // .ssg-toc-item
+	&-item{
+		line-height: 125%;
+
+		cursor: pointer;
+		transition: all cubic-bezier(.175, .885, .32, 1.275);
+		&:hover{
+			color: $red;
+		}
+		&.hide{
+			background-color: lime;
+			display: none;
+		}
+	} // .ssg-toc-inner
+}
+
+.ssg-toc-search{
+	height: 2.5em;
+	padding: 0 3em 2em 3em;
+
+	&box{
+		font-size: 1em;
+		line-height: 2.5em;
+
+		float: left;
+
+		width: calc(100% - 6em);
+		padding: 0 .75em;
+
+		border: 0;
+		border-bottom: 1px $black solid;
+		outline: none;
+	}
+	&button{
+		font-size: 1em;
+
+		float: left;
+
+		height: 41px;
+		margin: 0;
+		padding: 0 1em;
+
+		border: 0;
 		border-bottom: 1px black solid;
+		background-color: white;
+	}
+	&::after{
+		display: block;
+		clear: both;
+
+		content: " ";
 	}
 }

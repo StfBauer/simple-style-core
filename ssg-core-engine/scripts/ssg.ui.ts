@@ -59,16 +59,21 @@ namespace ssg.UI {
         btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
         btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
         btnShowToC: '.ssg-button[data-action=\'ssg-toc\']',
-        tocItem: '.ssg-toc-iterm',
-        // State Elements
-        stateActive: '.active',
-        stateHidden: '.hidden',
-        stateShow: 'show'
+        tocItem: '.ssg-toc-item',
+        tocSearchBox: '.ssg-toc-searchbox',
+        tocSearchValue: 'toc-searchbox',
+        patternItem: '.ssg-item',
+        // States
+        state: {
+            active: 'active',
+            hidden: 'hidden',
+            show: 'show'
+        }
     };
 
     export namespace Utils {
 
-        export function requestData(method: string, url: string): Promise<{}> {
+        export var requestData = (method: string, url: string): Promise<{}> => {
 
             return new Promise(function (resolve: Function, reject: Function) {
 
@@ -102,6 +107,28 @@ namespace ssg.UI {
 
         };
 
+        export var changeItemToSinglePage = (nodes: NodeList) => {
+
+            var nodeCount = nodes.length;
+
+            console.log(nodeCount);
+
+            while (nodeCount !== 0) {
+
+                nodeCount -= 1;
+
+                let curNode: HTMLElement = <HTMLElement>nodes[nodeCount];
+                console.log(curNode);
+                if (curNode.classList.contains('ssg-item')) {
+
+                    curNode.classList.remove('ssg-item');
+                    curNode.classList.add('ssg-item-single');
+
+                }
+
+            }
+
+        };
     };
 
     export var Filter = {
@@ -113,7 +140,7 @@ namespace ssg.UI {
                 case "molecules":
                 case "organism":
 
-                    var allElements = document.querySelectorAll('.ssg-item');
+                    var allElements = doc.querySelectorAll('.ssg-item');
 
                     for (let i = allElements.length - 1; i >= 0; i--) {
 
@@ -131,6 +158,7 @@ namespace ssg.UI {
 
                     }
                     break;
+
                 case "templates":
                 case "pages":
                     console.log('templates or pages');
@@ -147,7 +175,7 @@ namespace ssg.UI {
         var disco = setInterval(
             function () {
 
-                let discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.stateActive),
+                let discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.state.active),
                     viewPortInner: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                     viewPortWidth: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
@@ -167,7 +195,6 @@ namespace ssg.UI {
 
     }
 
-
     export var Events = {
 
         // change all filter
@@ -180,8 +207,8 @@ namespace ssg.UI {
 
             for (let i = allButtons.length - 1; i >= 0; i--) {
 
-                if (allButtons[i].classList.contains('active')) {
-                    allButtons[i].classList.remove('active');
+                if (allButtons[i].classList.contains(coreUiElement.state.active)) {
+                    allButtons[i].classList.remove(coreUiElement.state.active);
                 }
 
             }
@@ -189,7 +216,7 @@ namespace ssg.UI {
             var curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
 
-            curButton.classList.add('active');
+            curButton.classList.add(coreUiElement.state.active);
             Filter.elements(filter);
 
         },
@@ -203,8 +230,8 @@ namespace ssg.UI {
             var curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
 
-            curButton.classList.contains('active') ?
-                curButton.classList.remove('active') : curButton.classList.add('active');
+            curButton.classList.contains(coreUiElement.state.active) ?
+                curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
 
         },
 
@@ -214,7 +241,7 @@ namespace ssg.UI {
             event.preventDefault();
 
             var vpButton: HTMLElement = <HTMLElement>event.target,
-                vpActiveButton: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + coreUiElement.stateActive),
+                vpActiveButton: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active),
                 vpData = vpButton.dataset['viewport'],
                 vpTarget: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                 widthInput: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
@@ -223,28 +250,29 @@ namespace ssg.UI {
             // remove current active button
             if (vpActiveButton !== null) {
 
-                vpActiveButton.classList.remove('active');
+                vpActiveButton.classList.remove(coreUiElement.state.active);
+
             }
 
             if (vpActiveButton === vpButton) {
 
-                vpButton.classList.remove('active');
+                vpButton.classList.remove(coreUiElement.state.active);
                 vpData = 'full';
 
             } else {
 
-                vpButton.classList.add('active');
+                vpButton.classList.add(coreUiElement.state.active);
 
             }
 
             // recheck Active Buttons
-            vpActiveButton = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + coreUiElement.stateActive);
+            vpActiveButton = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active);
 
             if (vpActiveButton === null) {
 
                 vpActiveButton = <HTMLElement>doc.querySelector('.ssg-button[data-viewport=\'full\']');
 
-                vpActiveButton.classList.add('active');
+                vpActiveButton.classList.add(coreUiElement.state.active);
 
             }
 
@@ -255,7 +283,7 @@ namespace ssg.UI {
 
                     case 'full':
 
-                        vpData = vpTarget.style.width = window.innerWidth.toString();
+                        vpData = vpTarget.style.width = win.innerWidth.toString();
                         break;
 
                     case 'disco':
@@ -309,70 +337,149 @@ namespace ssg.UI {
 
         showSource: (event: Event) => {
             event.preventDefault();
-            if ((<HTMLElement>event.target).classList.contains('active')) {
+            if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
                 var codeBlocks = doc.querySelectorAll('.ssg-item-code');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
-                    codeBlocks[i].classList.add(coreUiElement.stateShow);
+                    codeBlocks[i].classList.add(coreUiElement.state.show);
                 }
 
             } else {
                 // hide source code by removing the class
                 var codeBlocks = doc.querySelectorAll('.ssg-item-code');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
-                    codeBlocks[i].classList.remove(coreUiElement.stateShow);
+                    codeBlocks[i].classList.remove(coreUiElement.state.show);
                 }
             }
         },
         showAnnotation: (event: Event) => {
 
             event.preventDefault();
-            if ((<HTMLElement>event.target).classList.contains('active')) {
+            if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
                 var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
-                    codeBlocks[i].classList.add(coreUiElement.stateShow);
+                    codeBlocks[i].classList.add(coreUiElement.state.show);
                 }
 
             } else {
                 // hide source code by removing the class
                 var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
-                    codeBlocks[i].classList.remove(coreUiElement.stateShow);
+                    codeBlocks[i].classList.remove(coreUiElement.state.show);
                 }
             }
 
         },
+        // show and collapse table of contents
         showToc: (event: Event) => {
 
             event.preventDefault();
-            var containerToc = document.querySelector(coreUiElement.viewToc);
+            let currentButton = <HTMLElement>event.target,
+                containerToc = doc.querySelector(coreUiElement.viewToc);
+
+            // setting current button to active
+            console.log(currentButton);
+
+            currentButton !== null && currentButton.classList.contains(coreUiElement.state.active) ?
+                currentButton.classList.remove(coreUiElement.state.active) : currentButton.classList.add(coreUiElement.state.active)
 
             if (containerToc !== null) {
 
                 console.log(containerToc);
 
-                if (containerToc.classList.contains(coreUiElement.stateShow)) {
+                if (containerToc.classList.contains(coreUiElement.state.show)) {
 
-                    containerToc.classList.remove(coreUiElement.stateShow);
+                    containerToc.classList.add(coreUiElement.state.hidden);
+                    containerToc.classList.remove(coreUiElement.state.show);
 
                 } else {
 
-                    containerToc.classList.add(coreUiElement.stateShow);
+                    containerToc.classList.remove(coreUiElement.state.hidden);
+                    containerToc.classList.add(coreUiElement.state.show);
 
                 }
 
             }
 
         },
-
+        // filter single toc element
         filterToc: (event: Event) => {
 
             event.preventDefault();
-            console.log(event.target);
+            var currenToc = <HTMLElement>event.target,
+                filter = currenToc.dataset['filter'];
 
+            if (filter !== null) {
+
+                let allElements = doc.querySelectorAll(coreUiElement.patternItem),
+                    tocElement = doc.querySelector(coreUiElement.viewToc);
+
+                for (let i = allElements.length - 1; i >= 0; i--) {
+
+                    let curItem = <HTMLElement>allElements[i];
+
+                    if (curItem.dataset['file'] === filter) {
+
+                        curItem.classList.remove('hide');
+
+                    } else {
+
+                        curItem.classList.add('hide');
+
+                    }
+
+                }
+
+                tocElement.classList.remove('show');
+
+            }
+
+        },
+
+        searchToc: (event: Event) => {
+
+            event.preventDefault();
+
+            let searchBox: HTMLInputElement = <HTMLInputElement>doc.getElementById(coreUiElement.tocSearchValue);
+
+            if (searchBox !== null) {
+
+                let searchValue = searchBox.value;
+
+                console.log(searchValue);
+
+                var resetResult = doc.querySelectorAll('.ssg-toc-item');
+
+                for (var j = resetResult.length - 1; j >= 0; j--) {
+
+                    if (resetResult[j].classList.contains('hide')) {
+
+                        resetResult[j].classList.remove('hide');
+
+                    }
+
+                }
+
+                if (searchValue !== "") {
+
+                    var searchResult = doc.querySelectorAll(".ssg-toc-item:not([data-filter*='" + searchValue + "'])");
+
+                    if (searchResult !== null) {
+
+                        for (var i = searchResult.length - 1; i >= 0; i--) {
+
+                            searchResult[i].classList.add('hide');
+
+                        }
+
+                    }
+
+                }
+
+            }
         },
 
         // register specific event on all notes
@@ -404,7 +511,7 @@ namespace ssg.UI {
                 return object["deleted"] === undefined;
             }),
                 folder: PatternFolder[] = patternConfig.folder,
-                ssgToc: HTMLElement = <HTMLElement>document.querySelector(coreUiElement.viewTocInner);
+                ssgToc: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewTocInner);
 
             for (let i: number = 0; i < folder.length; i++) {
 
@@ -425,7 +532,7 @@ namespace ssg.UI {
                     patterns[j].filename + '\">' +
                     patterns[j].title + '</li>';
 
-                let currentSection: HTMLElement = document.getElementById('ssg-' + folderpath + '-items');
+                let currentSection: HTMLElement = doc.getElementById('ssg-' + folderpath + '-items');
 
                 if (currentSection !== null) {
 
@@ -435,7 +542,7 @@ namespace ssg.UI {
 
             }
 
-            let tocItems: NodeList = document.querySelectorAll(coreUiElement.tocItem);
+            let tocItems: NodeList = doc.querySelectorAll(coreUiElement.tocItem);
 
             for (let k: number = 0; k < tocItems.length; k++) {
 
@@ -490,7 +597,20 @@ namespace ssg.UI {
 
         }
 
-        container.insertAdjacentHTML('afterbegin', allContent);
+        let allContentDOM = parser.parseFromString(allContent, 'text/html');
+        console.log(allContentDOM);
+        // alter templates and pages
+        var allTempLates = allContentDOM.querySelectorAll('div[data-cat=templates]'),
+            allPages = allContentDOM.querySelectorAll('div[data-cat=pages]'),
+            allOrganism = allContentDOM.querySelectorAll('div[data-cat=organism]');
+        Utils.changeItemToSinglePage(allTempLates);
+        Utils.changeItemToSinglePage(allPages);
+        Utils.changeItemToSinglePage(allOrganism);
+
+
+
+        container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
+
 
         Prism.highlightAll();
 
@@ -501,7 +621,6 @@ namespace ssg.UI {
 
     export var Init = () => {
 
-        console.log('.... Load Configuration');
         Promise.all([ssg.UI.Utils.requestData('GET', '/_config/pattern.conf.json')])
             .then(function (result: any): void {
                 try {
@@ -532,9 +651,9 @@ namespace ssg.UI {
             // Action Buttons
             showCode: NodeList = doc.querySelectorAll(coreUiElement.btnShowCode),
             showAnnot: NodeList = doc.querySelectorAll(coreUiElement.btnShowAnnotion),
-            showToc: NodeList = doc.querySelectorAll(coreUiElement.btnShowToC);
-
-        console.log(showCode);
+            showToc: NodeList = doc.querySelectorAll(coreUiElement.btnShowToC),
+            // TOC Eevent
+            filterToc: NodeList = doc.querySelectorAll(coreUiElement.tocSearchBox);
 
         Events.registerEvents(filterButtons, 'click', Events.changeFilter);
         Events.registerEvents(viewButtons, 'click', Events.changeView);
@@ -544,10 +663,12 @@ namespace ssg.UI {
         Events.registerEvents(viewPortWidth, 'keypress', Events.viewPortResizer);
         Events.registerEvents(showCode, 'click', Events.showSource);
         Events.registerEvents(showAnnot, 'click', Events.showAnnotation);
+        // show and hide table fo contents
         Events.registerEvents(showToc, 'click', Events.showToc);
+        // Search table of contents
+        Events.registerEvents(filterToc, 'keyup', Events.searchToc);
     }
 
 };
-
 
 ssg.UI.Init();
