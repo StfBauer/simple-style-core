@@ -3,7 +3,7 @@ var ssg;
 (function (ssg_1) {
     var UI;
     (function (UI) {
-        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null;
+        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [];
         var viewports = [
             320,
             768,
@@ -65,11 +65,9 @@ var ssg;
             };
             Utils.changeItemToSinglePage = function (nodes) {
                 var nodeCount = nodes.length;
-                console.log(nodeCount);
                 while (nodeCount !== 0) {
                     nodeCount -= 1;
                     var curNode = nodes[nodeCount];
-                    console.log(curNode);
                     if (curNode.classList.contains('ssg-item')) {
                         curNode.classList.remove('ssg-item');
                         curNode.classList.add('ssg-item-single');
@@ -83,8 +81,7 @@ var ssg;
                 switch (filterValue) {
                     case "atoms":
                     case "molecules":
-                    case "organism":
-                        var allElements = doc.querySelectorAll('.ssg-item');
+                        var allElements = doc.querySelectorAll('div[data-cat]');
                         for (var i = allElements.length - 1; i >= 0; i--) {
                             var curElement = allElements[i];
                             if (curElement.dataset['cat'] === filterValue) {
@@ -95,9 +92,34 @@ var ssg;
                             }
                         }
                         break;
+                    case "organism":
                     case "templates":
                     case "pages":
-                        console.log('templates or pages');
+                        var allElements = doc.querySelectorAll('div[data-cat]'), firstItemFound = false;
+                        // reset currentSingleItem
+                        currentSingleItems = [];
+                        for (var i = 0; i < allElements.length; i++) {
+                            var curElement = allElements[i];
+                            if (curElement.dataset['cat'] === filterValue) {
+                                var curSingleItem = {
+                                    title: curElement.dataset['file']
+                                };
+                                currentSingleItems.push(curSingleItem);
+                                if (firstItemFound === false) {
+                                    firstItemFound = true;
+                                    if (curElement.classList.contains('hide')) {
+                                        curElement.classList.remove('hide');
+                                    }
+                                }
+                            }
+                            else {
+                                curElement.classList.add('hide');
+                            }
+                        }
+                        if (currentSingleItems.length !== 0) {
+                            console.log(ssg.UI);
+                            // ssg.UI.Render.initElementNavigation(curElement);
+                        }
                         break;
                 }
             }
@@ -192,6 +214,7 @@ var ssg;
                     innerPattern.style.width = newWidth.value;
                 }
             },
+            // Show and hides source code
             showSource: function (event) {
                 event.preventDefault();
                 if (event.target.classList.contains(coreUiElement.state.active)) {
@@ -209,6 +232,7 @@ var ssg;
                     }
                 }
             },
+            // show and hides annotations
             showAnnotation: function (event) {
                 event.preventDefault();
                 if (event.target.classList.contains(coreUiElement.state.active)) {
@@ -230,12 +254,9 @@ var ssg;
             showToc: function (event) {
                 event.preventDefault();
                 var currentButton = event.target, containerToc = doc.querySelector(coreUiElement.viewToc);
-                // setting current button to active
-                console.log(currentButton);
                 currentButton !== null && currentButton.classList.contains(coreUiElement.state.active) ?
                     currentButton.classList.remove(coreUiElement.state.active) : currentButton.classList.add(coreUiElement.state.active);
                 if (containerToc !== null) {
-                    console.log(containerToc);
                     if (containerToc.classList.contains(coreUiElement.state.show)) {
                         containerToc.classList.add(coreUiElement.state.hidden);
                         containerToc.classList.remove(coreUiElement.state.show);
@@ -264,12 +285,12 @@ var ssg;
                     tocElement.classList.remove('show');
                 }
             },
+            // search for item in toc
             searchToc: function (event) {
                 event.preventDefault();
                 var searchBox = doc.getElementById(coreUiElement.tocSearchValue);
                 if (searchBox !== null) {
                     var searchValue = searchBox.value;
-                    console.log(searchValue);
                     var resetResult = doc.querySelectorAll('.ssg-toc-item');
                     for (var j = resetResult.length - 1; j >= 0; j--) {
                         if (resetResult[j].classList.contains('hide')) {
@@ -294,11 +315,6 @@ var ssg;
             }
         };
         UI.Render = function () {
-            // console.log('...... SSG Templates Config');
-            // console.log(ssgTemplates);
-            // console.log('...... Pattern Config');
-            // console.log(patternConfig);
-            // console.log(('..... Config'));
             var RenderToc = function (patternConfig) {
                 var patterns = patternConfig.patterns.filter(function (object) {
                     return object["deleted"] === undefined;
@@ -331,8 +347,6 @@ var ssg;
                 var curPattern = patternConfig.patterns[i], curPatternTitle = curPattern.title, curTemplate = ssgTemplates[curPatternTitle], parser = new DOMParser();
                 // Define base filter
                 curPattern.baseFilter = curPattern.filepath.split('/')[0];
-                // console.log(curPattern.baseFilter);
-                // console.log('--->', curPattern.title);
                 if (curPattern !== null) {
                     curPattern.sample = curTemplate;
                     var content = ssgCoreTemplates.patternItem(curPattern);
@@ -348,7 +362,6 @@ var ssg;
                 }
             }
             var allContentDOM = parser.parseFromString(allContent, 'text/html');
-            console.log(allContentDOM);
             // alter templates and pages
             var allTempLates = allContentDOM.querySelectorAll('div[data-cat=templates]'), allPages = allContentDOM.querySelectorAll('div[data-cat=pages]'), allOrganism = allContentDOM.querySelectorAll('div[data-cat=organism]');
             Utils.changeItemToSinglePage(allTempLates);
@@ -357,6 +370,29 @@ var ssg;
             container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
             Prism.highlightAll();
             RenderToc(patternConfig);
+        };
+        UI.EnableSingleSlider = function (currentSingleItems) {
+            console.log(currentSingleItems);
+        };
+        UI.InitEvents = function () {
+            // Render Events
+            var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth), 
+            // Action Buttons
+            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(coreUiElement.btnShowToC), 
+            // TOC Eevent
+            allTocItems = doc.querySelectorAll(coreUiElement.tocSearchBox);
+            UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
+            UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView);
+            UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
+            UI.Events.registerEvents(viewPortWidth, 'blur', UI.Events.viewPortResizer);
+            UI.Events.registerEvents(viewPortWidth, 'focusout', UI.Events.viewPortResizer);
+            UI.Events.registerEvents(viewPortWidth, 'keypress', UI.Events.viewPortResizer);
+            UI.Events.registerEvents(showCode, 'click', UI.Events.showSource);
+            UI.Events.registerEvents(showAnnot, 'click', UI.Events.showAnnotation);
+            // show and hide table fo contents
+            UI.Events.registerEvents(showToc, 'click', UI.Events.showToc);
+            // Search table of contents
+            UI.Events.registerEvents(allTocItems, 'keyup', UI.Events.searchToc);
         };
         UI.Init = function () {
             Promise.all([ssg.UI.Utils.requestData('GET', '/_config/pattern.conf.json')])
@@ -371,28 +407,11 @@ var ssg;
             })
                 .then(function () {
                 UI.Render();
+                UI.InitEvents();
             })
                 .catch(function (error) {
                 console.log(error);
             });
-            // Render Events
-            var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth), 
-            // Action Buttons
-            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(coreUiElement.btnShowToC), 
-            // TOC Eevent
-            filterToc = doc.querySelectorAll(coreUiElement.tocSearchBox);
-            UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
-            UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView);
-            UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
-            UI.Events.registerEvents(viewPortWidth, 'blur', UI.Events.viewPortResizer);
-            UI.Events.registerEvents(viewPortWidth, 'focusout', UI.Events.viewPortResizer);
-            UI.Events.registerEvents(viewPortWidth, 'keypress', UI.Events.viewPortResizer);
-            UI.Events.registerEvents(showCode, 'click', UI.Events.showSource);
-            UI.Events.registerEvents(showAnnot, 'click', UI.Events.showAnnotation);
-            // show and hide table fo contents
-            UI.Events.registerEvents(showToc, 'click', UI.Events.showToc);
-            // Search table of contents
-            UI.Events.registerEvents(filterToc, 'keyup', UI.Events.searchToc);
         };
     })(UI = ssg_1.UI || (ssg_1.UI = {}));
 })(ssg || (ssg = {}));

@@ -37,7 +37,8 @@ namespace ssg.UI {
         doc = document,
         ssgCoreTemplates = ssgCore.templates,
         ssgTemplates = ssg.templates,
-        patternConfig = null;
+        patternConfig = null,
+        currentSingleItems = [];
 
     let viewports: Array<number> = [
         320,
@@ -111,14 +112,12 @@ namespace ssg.UI {
 
             var nodeCount = nodes.length;
 
-            console.log(nodeCount);
-
             while (nodeCount !== 0) {
 
                 nodeCount -= 1;
 
                 let curNode: HTMLElement = <HTMLElement>nodes[nodeCount];
-                console.log(curNode);
+
                 if (curNode.classList.contains('ssg-item')) {
 
                     curNode.classList.remove('ssg-item');
@@ -138,9 +137,8 @@ namespace ssg.UI {
             switch (filterValue) {
                 case "atoms":
                 case "molecules":
-                case "organism":
 
-                    var allElements = doc.querySelectorAll('.ssg-item');
+                    var allElements = doc.querySelectorAll('div[data-cat]');
 
                     for (let i = allElements.length - 1; i >= 0; i--) {
 
@@ -159,9 +157,53 @@ namespace ssg.UI {
                     }
                     break;
 
+                case "organism":
                 case "templates":
                 case "pages":
-                    console.log('templates or pages');
+
+                    var allElements = doc.querySelectorAll('div[data-cat]'),
+                        firstItemFound = false;
+
+                    // reset currentSingleItem
+                    currentSingleItems = [];
+
+                    for (let i = 0; i < allElements.length; i++) {
+
+                        var curElement: HTMLElement = <HTMLElement>allElements[i];
+
+                        if (curElement.dataset['cat'] === filterValue) {
+
+                            var curSingleItem = {
+                                title: curElement.dataset['file']
+                            };
+
+                            currentSingleItems.push(curSingleItem);
+
+                            if (firstItemFound === false) {
+
+                                firstItemFound = true;
+
+                                if (curElement.classList.contains('hide')) {
+
+                                    curElement.classList.remove('hide');
+
+                                }
+
+                            }
+
+                        } else {
+
+                            curElement.classList.add('hide');
+
+                        }
+
+                    }
+
+                    if (currentSingleItems.length !== 0) {
+                        console.log(ssg.UI);
+                        // ssg.UI.Render.initElementNavigation(curElement);
+                    }
+
                     break;
 
             }
@@ -335,6 +377,7 @@ namespace ssg.UI {
 
         },
 
+        // Show and hides source code
         showSource: (event: Event) => {
             event.preventDefault();
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
@@ -353,6 +396,7 @@ namespace ssg.UI {
                 }
             }
         },
+        // show and hides annotations
         showAnnotation: (event: Event) => {
 
             event.preventDefault();
@@ -380,15 +424,10 @@ namespace ssg.UI {
             let currentButton = <HTMLElement>event.target,
                 containerToc = doc.querySelector(coreUiElement.viewToc);
 
-            // setting current button to active
-            console.log(currentButton);
-
             currentButton !== null && currentButton.classList.contains(coreUiElement.state.active) ?
                 currentButton.classList.remove(coreUiElement.state.active) : currentButton.classList.add(coreUiElement.state.active)
 
             if (containerToc !== null) {
-
-                console.log(containerToc);
 
                 if (containerToc.classList.contains(coreUiElement.state.show)) {
 
@@ -438,7 +477,7 @@ namespace ssg.UI {
             }
 
         },
-
+        // search for item in toc
         searchToc: (event: Event) => {
 
             event.preventDefault();
@@ -448,8 +487,6 @@ namespace ssg.UI {
             if (searchBox !== null) {
 
                 let searchValue = searchBox.value;
-
-                console.log(searchValue);
 
                 var resetResult = doc.querySelectorAll('.ssg-toc-item');
 
@@ -496,14 +533,6 @@ namespace ssg.UI {
     }
 
     export var Render = () => {
-
-        // console.log('...... SSG Templates Config');
-        // console.log(ssgTemplates);
-
-        // console.log('...... Pattern Config');
-        // console.log(patternConfig);
-
-        // console.log(('..... Config'));
 
         let RenderToc = (patternConfig) => {
 
@@ -570,10 +599,6 @@ namespace ssg.UI {
             // Define base filter
             curPattern.baseFilter = curPattern.filepath.split('/')[0];
 
-            // console.log(curPattern.baseFilter);
-
-            // console.log('--->', curPattern.title);
-
             if (curPattern !== null) {
 
                 curPattern.sample = curTemplate;
@@ -598,7 +623,7 @@ namespace ssg.UI {
         }
 
         let allContentDOM = parser.parseFromString(allContent, 'text/html');
-        console.log(allContentDOM);
+
         // alter templates and pages
         var allTempLates = allContentDOM.querySelectorAll('div[data-cat=templates]'),
             allPages = allContentDOM.querySelectorAll('div[data-cat=pages]'),
@@ -606,8 +631,6 @@ namespace ssg.UI {
         Utils.changeItemToSinglePage(allTempLates);
         Utils.changeItemToSinglePage(allPages);
         Utils.changeItemToSinglePage(allOrganism);
-
-
 
         container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
 
@@ -618,6 +641,36 @@ namespace ssg.UI {
 
     }
 
+    export var EnableSingleSlider = (currentSingleItems) => {
+        console.log(currentSingleItems);
+    }
+
+    export var InitEvents = () => {
+        // Render Events
+        var filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
+            viewButtons: NodeList = doc.querySelectorAll(coreUiElement.viewButton),
+            viewPortButtons: NodeList = doc.querySelectorAll(coreUiElement.viewPortButton),
+            viewPortWidth: NodeList = doc.querySelectorAll(coreUiElement.viewPortWidth),
+            // Action Buttons
+            showCode: NodeList = doc.querySelectorAll(coreUiElement.btnShowCode),
+            showAnnot: NodeList = doc.querySelectorAll(coreUiElement.btnShowAnnotion),
+            showToc: NodeList = doc.querySelectorAll(coreUiElement.btnShowToC),
+            // TOC Eevent
+            allTocItems: NodeList = doc.querySelectorAll(coreUiElement.tocSearchBox);
+
+        Events.registerEvents(filterButtons, 'click', Events.changeFilter);
+        Events.registerEvents(viewButtons, 'click', Events.changeView);
+        Events.registerEvents(viewPortButtons, 'click', Events.changeViewPort);
+        Events.registerEvents(viewPortWidth, 'blur', Events.viewPortResizer);
+        Events.registerEvents(viewPortWidth, 'focusout', Events.viewPortResizer);
+        Events.registerEvents(viewPortWidth, 'keypress', Events.viewPortResizer);
+        Events.registerEvents(showCode, 'click', Events.showSource);
+        Events.registerEvents(showAnnot, 'click', Events.showAnnotation);
+        // show and hide table fo contents
+        Events.registerEvents(showToc, 'click', Events.showToc);
+        // Search table of contents
+        Events.registerEvents(allTocItems, 'keyup', Events.searchToc);
+    }
 
     export var Init = () => {
 
@@ -638,35 +691,13 @@ namespace ssg.UI {
             .then(function (): void {
 
                 Render();
+                InitEvents();
 
             })
             .catch(function (error: any): void {
                 console.log(error);
             })
-        // Render Events
-        var filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
-            viewButtons: NodeList = doc.querySelectorAll(coreUiElement.viewButton),
-            viewPortButtons: NodeList = doc.querySelectorAll(coreUiElement.viewPortButton),
-            viewPortWidth: NodeList = doc.querySelectorAll(coreUiElement.viewPortWidth),
-            // Action Buttons
-            showCode: NodeList = doc.querySelectorAll(coreUiElement.btnShowCode),
-            showAnnot: NodeList = doc.querySelectorAll(coreUiElement.btnShowAnnotion),
-            showToc: NodeList = doc.querySelectorAll(coreUiElement.btnShowToC),
-            // TOC Eevent
-            filterToc: NodeList = doc.querySelectorAll(coreUiElement.tocSearchBox);
 
-        Events.registerEvents(filterButtons, 'click', Events.changeFilter);
-        Events.registerEvents(viewButtons, 'click', Events.changeView);
-        Events.registerEvents(viewPortButtons, 'click', Events.changeViewPort);
-        Events.registerEvents(viewPortWidth, 'blur', Events.viewPortResizer);
-        Events.registerEvents(viewPortWidth, 'focusout', Events.viewPortResizer);
-        Events.registerEvents(viewPortWidth, 'keypress', Events.viewPortResizer);
-        Events.registerEvents(showCode, 'click', Events.showSource);
-        Events.registerEvents(showAnnot, 'click', Events.showAnnotation);
-        // show and hide table fo contents
-        Events.registerEvents(showToc, 'click', Events.showToc);
-        // Search table of contents
-        Events.registerEvents(filterToc, 'keyup', Events.searchToc);
     }
 
 };

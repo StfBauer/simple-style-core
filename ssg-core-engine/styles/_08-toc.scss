@@ -16,7 +16,7 @@ $ssg-toc-opacity: .5s;
 	transition: all $ssg-toc-animation ease-in-out;
 
 	// background-color: rgba($white, 1); // .ssg-toc-header
-	background-color: lime;
+	background-color: white;
 	z-index: 995;
 	&::after{
 		display: block;
@@ -90,7 +90,7 @@ $ssg-toc-opacity: .5s;
 			color: $red;
 		}
 		&.hide{
-			background-color: lime;
+			background-color: white;
 			display: none;
 		}
 	} // .ssg-toc-inner

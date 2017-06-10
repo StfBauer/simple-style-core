@@ -328,6 +328,18 @@
             "description": "",
             "filename": "multiple-card",
             "filepath": "organism/multiple-card.hbs"
+        },
+        {
+            "title": "new-test-organism",
+            "description": "",
+            "filename": "new-test-organism",
+            "filepath": "organism/new-test-organism.hbs"
+        },
+        {
+            "title": "third-organism",
+            "description": "",
+            "filename": "third-organism",
+            "filepath": "organism/third-organism.hbs"
         }
     ],
     "folder": [
