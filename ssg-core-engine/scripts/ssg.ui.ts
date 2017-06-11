@@ -38,7 +38,8 @@ namespace ssg.UI {
         ssgCoreTemplates = ssgCore.templates,
         ssgTemplates = ssg.templates,
         patternConfig = null,
-        currentSingleItems = [];
+        currentSingleItems = [],
+        currentSingleCount = 0;
 
     let viewports: Array<number> = [
         320,
@@ -63,7 +64,11 @@ namespace ssg.UI {
         tocItem: '.ssg-toc-item',
         tocSearchBox: '.ssg-toc-searchbox',
         tocSearchValue: 'toc-searchbox',
-        patternItem: '.ssg-item',
+        patternItem: 'div[class^=ssg-item]',
+        singleItemNavTitle: '#ssg-item-nav-label',
+        singleItemNav: 'ssg-core-nav',
+        singleNavLeft: 'ssg-left',
+        singleNavRight: 'ssg-right',
         // States
         state: {
             active: 'active',
@@ -128,6 +133,26 @@ namespace ssg.UI {
             }
 
         };
+
+        export var hideShowSingleItemSlider = (hide: boolean) => {
+
+            var singleItemSelector = doc.querySelector(coreUiElement.singleItemNav);
+
+            if (singleItemSelector !== undefined && singleItemSelector !== null) {
+
+                if(hide === true){
+
+                    singleItemSelector.classList.add(coreUiElement.state.hidden);
+
+                } else {
+
+                    singleItemSelector.classList.remove(coreUiElement.state.hidden);
+
+                }
+
+            }
+
+        }
     };
 
     export var Filter = {
@@ -174,13 +199,15 @@ namespace ssg.UI {
                         if (curElement.dataset['cat'] === filterValue) {
 
                             var curSingleItem = {
-                                title: curElement.dataset['file']
+                                title: curElement.getAttribute('title'),
+                                file: curElement.dataset['file'],
+                                category: filterValue
                             };
 
                             currentSingleItems.push(curSingleItem);
 
                             if (firstItemFound === false) {
-
+                                currentSingleCount = 0;
                                 firstItemFound = true;
 
                                 if (curElement.classList.contains('hide')) {
@@ -188,6 +215,10 @@ namespace ssg.UI {
                                     curElement.classList.remove('hide');
 
                                 }
+
+                            } else {
+
+                                curElement.classList.add('hide')
 
                             }
 
@@ -200,7 +231,8 @@ namespace ssg.UI {
                     }
 
                     if (currentSingleItems.length !== 0) {
-                        console.log(ssg.UI);
+
+                        ssg.UI.EnableSingleSlider(currentSingleItems);
                         // ssg.UI.Render.initElementNavigation(curElement);
                     }
 
@@ -451,6 +483,8 @@ namespace ssg.UI {
             var currenToc = <HTMLElement>event.target,
                 filter = currenToc.dataset['filter'];
 
+            console.log('FILTER TOC', filter);
+
             if (filter !== null) {
 
                 let allElements = doc.querySelectorAll(coreUiElement.patternItem),
@@ -471,9 +505,9 @@ namespace ssg.UI {
                     }
 
                 }
-
                 tocElement.classList.remove('show');
-
+                tocElement.classList.add('hidden');
+                console.log(tocElement);
             }
 
         },
@@ -592,7 +626,7 @@ namespace ssg.UI {
         for (let i = patternConfig.patterns.length - 1; i >= 0; i--) {
 
             var curPattern = patternConfig.patterns[i],
-                curPatternTitle = curPattern.title,
+                curPatternTitle = curPattern.filename,
                 curTemplate = ssgTemplates[curPatternTitle],
                 parser = new DOMParser();
 
@@ -642,7 +676,72 @@ namespace ssg.UI {
     }
 
     export var EnableSingleSlider = (currentSingleItems) => {
-        console.log(currentSingleItems);
+
+        var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
+
+        currentTitle.textContent = currentSingleItems[0].title;
+
+        var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
+
+        for (let i = 0; i < slider.length; i++) {
+
+            slider[i].addEventListener('click', function (event) {
+
+                event.preventDefault();
+
+                var currentButton: HTMLElement = <HTMLElement>event.target;
+
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+
+                    currentSingleCount -= 1;
+
+                };
+
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+
+                    currentSingleCount += 1;
+
+                };
+
+                if (currentSingleCount > currentSingleItems.length - 1) {
+
+                    currentSingleCount = 0;
+
+                }
+
+                if (currentSingleCount < 0) {
+
+                    currentSingleCount = currentSingleItems.length - 1;
+
+                }
+
+                let curElement = currentSingleItems[currentSingleCount];
+
+                currentTitle.textContent = curElement.title;
+
+                var allElements =
+                    doc.querySelectorAll('div[data-cat=\'' + currentSingleItems[currentSingleCount].category + '\']');
+
+                for (let j = 0; j < allElements.length; j++) {
+
+                    var curPatternElement: HTMLElement = <HTMLElement>allElements[j];
+
+                    if (curPatternElement.dataset['file'] === curElement.file) {
+
+                        curPatternElement.classList.remove('hide');
+
+                    } else {
+
+                        curPatternElement.classList.add('hide');
+
+                    }
+
+                }
+
+            });
+
+        }
+
     }
 
     export var InitEvents = () => {
@@ -692,6 +791,14 @@ namespace ssg.UI {
 
                 Render();
                 InitEvents();
+                if (PostRender.length !== 0) {
+
+                    PostRender.forEach(element => {
+                        element();
+                    });
+
+                }
+
 
             })
             .catch(function (error: any): void {
@@ -700,6 +807,10 @@ namespace ssg.UI {
 
     }
 
+    export var PostRender = [];
+
 };
+
+
 
 ssg.UI.Init();

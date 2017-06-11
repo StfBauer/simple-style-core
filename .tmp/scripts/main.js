@@ -9,3 +9,9 @@ console.log("hello World");
         // mainDoc.insertAdjacentHTML('afterbegin', ssgDoc[name].body);
     }
 })();
+// ssg.UI.PostRender.push(function(){
+//     console.log('>>>>>>>>>>> Hello World 1');
+// })
+// ssg.UI.PostRender.push(function(){
+//     console.log('>>>>>>>>>>> Hello World 2');
+// }) 

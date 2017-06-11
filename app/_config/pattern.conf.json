@@ -326,20 +326,20 @@
         {
             "title": "multiple-card",
             "description": "",
-            "filename": "multiple-card",
-            "filepath": "organism/multiple-card.hbs"
+            "filename": "01-multiple-card",
+            "filepath": "organism/01-multiple-card.hbs"
         },
         {
             "title": "new-test-organism",
             "description": "",
-            "filename": "new-test-organism",
-            "filepath": "organism/new-test-organism.hbs"
+            "filename": "02-new-test-organism",
+            "filepath": "organism/02-new-test-organism.hbs"
         },
         {
             "title": "third-organism",
             "description": "",
-            "filename": "third-organism",
-            "filepath": "organism/third-organism.hbs"
+            "filename": "03-third-organism",
+            "filepath": "organism/03-third-organism.hbs"
         }
     ],
     "folder": [

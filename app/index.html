@@ -38,9 +38,9 @@
       <button class="ssg-button active" data-viewport="full">Full</button>
       <button class="ssg-button" data-viewport="disco">Disco</button>
     </div>
-    <div class="ssg-section ssg-core-nav">
+    <div class="ssg-section ssg-core-nav hidden">
       <button class="ssg-button" data-filter="ssg-left">&lt;</button>
-      <span class="ssg-label">Current Label</span>
+      <span class="ssg-label" id="ssg-item-nav-label">Current Label</span>
       <button class="ssg-button" data-filter="ssg-right">&gt;</button>
     </div>
     <div class="ssg-section ssg-core-view">
@@ -72,6 +72,8 @@
     </div>
 
     <!-- Core Scripts -->
+
+
     <script src="/es6-promise/dist/es6-promise.js"></script>
     <script src="/handlebars/dist/handlebars.js"></script>
     <script src="/scripts/ssgCore.templates.js"></script>
@@ -87,7 +89,6 @@
     <script src="/_documentation/ssg.doc.js"></script>
     <!-- // Documentation -->
     <script src="/scripts/main.js"></script>
-
 </body>
 
 </html>

@@ -3,7 +3,7 @@ var ssg;
 (function (ssg_1) {
     var UI;
     (function (UI) {
-        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [];
+        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [], currentSingleCount = 0;
         var viewports = [
             320,
             768,
@@ -26,7 +26,11 @@ var ssg;
             tocItem: '.ssg-toc-item',
             tocSearchBox: '.ssg-toc-searchbox',
             tocSearchValue: 'toc-searchbox',
-            patternItem: '.ssg-item',
+            patternItem: 'div[class^=ssg-item]',
+            singleItemNavTitle: '#ssg-item-nav-label',
+            singleItemNav: 'ssg-core-nav',
+            singleNavLeft: 'ssg-left',
+            singleNavRight: 'ssg-right',
             // States
             state: {
                 active: 'active',
@@ -74,6 +78,17 @@ var ssg;
                     }
                 }
             };
+            Utils.hideShowSingleItemSlider = function (hide) {
+                var singleItemSelector = doc.querySelector(coreUiElement.singleItemNav);
+                if (singleItemSelector !== undefined && singleItemSelector !== null) {
+                    if (hide === true) {
+                        singleItemSelector.classList.add(coreUiElement.state.hidden);
+                    }
+                    else {
+                        singleItemSelector.classList.remove(coreUiElement.state.hidden);
+                    }
+                }
+            };
         })(Utils = UI.Utils || (UI.Utils = {}));
         ;
         UI.Filter = {
@@ -102,14 +117,20 @@ var ssg;
                             var curElement = allElements[i];
                             if (curElement.dataset['cat'] === filterValue) {
                                 var curSingleItem = {
-                                    title: curElement.dataset['file']
+                                    title: curElement.getAttribute('title'),
+                                    file: curElement.dataset['file'],
+                                    category: filterValue
                                 };
                                 currentSingleItems.push(curSingleItem);
                                 if (firstItemFound === false) {
+                                    currentSingleCount = 0;
                                     firstItemFound = true;
                                     if (curElement.classList.contains('hide')) {
                                         curElement.classList.remove('hide');
                                     }
+                                }
+                                else {
+                                    curElement.classList.add('hide');
                                 }
                             }
                             else {
@@ -117,7 +138,7 @@ var ssg;
                             }
                         }
                         if (currentSingleItems.length !== 0) {
-                            console.log(ssg.UI);
+                            ssg.UI.EnableSingleSlider(currentSingleItems);
                             // ssg.UI.Render.initElementNavigation(curElement);
                         }
                         break;
@@ -271,6 +292,7 @@ var ssg;
             filterToc: function (event) {
                 event.preventDefault();
                 var currenToc = event.target, filter = currenToc.dataset['filter'];
+                console.log('FILTER TOC', filter);
                 if (filter !== null) {
                     var allElements = doc.querySelectorAll(coreUiElement.patternItem), tocElement = doc.querySelector(coreUiElement.viewToc);
                     for (var i = allElements.length - 1; i >= 0; i--) {
@@ -283,6 +305,8 @@ var ssg;
                         }
                     }
                     tocElement.classList.remove('show');
+                    tocElement.classList.add('hidden');
+                    console.log(tocElement);
                 }
             },
             // search for item in toc
@@ -344,7 +368,7 @@ var ssg;
             // console.log('..... All Pattern');
             var allContent = "", allToc = "";
             for (var i = patternConfig.patterns.length - 1; i >= 0; i--) {
-                var curPattern = patternConfig.patterns[i], curPatternTitle = curPattern.title, curTemplate = ssgTemplates[curPatternTitle], parser = new DOMParser();
+                var curPattern = patternConfig.patterns[i], curPatternTitle = curPattern.filename, curTemplate = ssgTemplates[curPatternTitle], parser = new DOMParser();
                 // Define base filter
                 curPattern.baseFilter = curPattern.filepath.split('/')[0];
                 if (curPattern !== null) {
@@ -372,7 +396,41 @@ var ssg;
             RenderToc(patternConfig);
         };
         UI.EnableSingleSlider = function (currentSingleItems) {
-            console.log(currentSingleItems);
+            var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
+            currentTitle.textContent = currentSingleItems[0].title;
+            var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
+            for (var i = 0; i < slider.length; i++) {
+                slider[i].addEventListener('click', function (event) {
+                    event.preventDefault();
+                    var currentButton = event.target;
+                    if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+                        currentSingleCount -= 1;
+                    }
+                    ;
+                    if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+                        currentSingleCount += 1;
+                    }
+                    ;
+                    if (currentSingleCount > currentSingleItems.length - 1) {
+                        currentSingleCount = 0;
+                    }
+                    if (currentSingleCount < 0) {
+                        currentSingleCount = currentSingleItems.length - 1;
+                    }
+                    var curElement = currentSingleItems[currentSingleCount];
+                    currentTitle.textContent = curElement.title;
+                    var allElements = doc.querySelectorAll('div[data-cat=\'' + currentSingleItems[currentSingleCount].category + '\']');
+                    for (var j = 0; j < allElements.length; j++) {
+                        var curPatternElement = allElements[j];
+                        if (curPatternElement.dataset['file'] === curElement.file) {
+                            curPatternElement.classList.remove('hide');
+                        }
+                        else {
+                            curPatternElement.classList.add('hide');
+                        }
+                    }
+                });
+            }
         };
         UI.InitEvents = function () {
             // Render Events
@@ -408,11 +466,17 @@ var ssg;
                 .then(function () {
                 UI.Render();
                 UI.InitEvents();
+                if (UI.PostRender.length !== 0) {
+                    UI.PostRender.forEach(function (element) {
+                        element();
+                    });
+                }
             })
                 .catch(function (error) {
                 console.log(error);
             });
         };
+        UI.PostRender = [];
     })(UI = ssg_1.UI || (ssg_1.UI = {}));
 })(ssg || (ssg = {}));
 ;
