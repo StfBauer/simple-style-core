@@ -1,9 +1,10 @@
 /// <reference path="../../typings/index.d.ts" />
+;
 var ssg;
 (function (ssg_1) {
     var UI;
     (function (UI) {
-        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [], currentSingleCount = 0;
+        var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [], currentSingleCount = 0, currentUIState = ssg.UI.State;
         var viewports = [
             320,
             768,
@@ -38,6 +39,88 @@ var ssg;
                 show: 'show'
             }
         };
+        UI.State = (function () {
+            var STATE_KEY = "ssg.UI.State", XTRAS = ['isolate', 'code', 'annotation'], FILTERS = ['atoms', 'molecules', 'organism', 'templates', 'pages', 'single'], SCREEN = ['s', 'm', 'l', 'uwd', 'full', 'disco'];
+            var _currentUIState = null;
+            // default UI State;
+            var defState = {
+                "filter": "atoms",
+                "xtras": [],
+                "screen": window.screen.availWidth
+            };
+            // Validate current state entry
+            var _validateState = function (state) {
+                // checking if all states are valid
+                var checkSumXtras = 0, checkSumFilter = 0, checkSumScreen = 0;
+                // Check current xtra selection
+                for (var i = state.xtras.length; i > 0; i--) {
+                    var curState = state.xtras[i];
+                    if (XTRAS.indexOf(curState) === -1) {
+                        checkSumXtras += 1;
+                    }
+                }
+                // Check current filter
+                if (FILTERS.indexOf(state.filter) === -1) {
+                    checkSumFilter += 1;
+                }
+                // check if single is current selected filter and item has filter selector
+                if (state.filter === "single" &&
+                    !state.filterSelector) {
+                    checkSumFilter += 1;
+                }
+                // remote filter selector when single is selected
+                if (state.filter !== "single") {
+                    /// removing filter selector
+                    delete state.filterSelector;
+                }
+                // check current screen
+                try {
+                    parseInt(state.screen.toString());
+                }
+                catch (exception) {
+                    console.log(exception);
+                    checkSumScreen += 1;
+                }
+                console.log('checkSumXtras', checkSumXtras);
+                console.log('filters', checkSumXtras);
+                console.log('screen', checkSumScreen);
+                console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
+                console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
+                if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
+                    return true;
+                }
+                return false;
+            };
+            var _updateState = function (state) {
+                if (_validateState(state)) {
+                    console.log('>> State is valid');
+                    console.log(state);
+                    sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
+                }
+                else {
+                    throw "There are some errors with the state";
+                }
+            };
+            (function () {
+                var sessionState = sessionStorage.getItem(STATE_KEY);
+                // If session already exists
+                if (sessionState) {
+                    _currentUIState = JSON.parse(sessionState);
+                }
+                else {
+                    sessionStorage.setItem(STATE_KEY, JSON.stringify(defState));
+                    _currentUIState = defState;
+                }
+            })();
+            return {
+                current: function () {
+                    return _currentUIState;
+                },
+                update: function (state) {
+                    _updateState(state);
+                }
+            };
+        })();
         var Utils;
         (function (Utils) {
             Utils.requestData = function (method, url) {
@@ -79,7 +162,7 @@ var ssg;
                 }
             };
             Utils.hideShowSingleItemSlider = function (hide) {
-                var singleItemSelector = doc.querySelector(coreUiElement.singleItemNav);
+                var singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
                 if (singleItemSelector !== undefined && singleItemSelector !== null) {
                     if (hide === true) {
                         singleItemSelector.classList.add(coreUiElement.state.hidden);
@@ -93,6 +176,10 @@ var ssg;
         ;
         UI.Filter = {
             elements: function (filterValue) {
+                var newState = ssg.UI.State.current();
+                newState.filter = filterValue;
+                ssg.UI.State.update(newState);
+                console.log(newState);
                 switch (filterValue) {
                     case "atoms":
                     case "molecules":
@@ -106,6 +193,7 @@ var ssg;
                                 curElement.classList.add('hide');
                             }
                         }
+                        ssg.UI.Utils.hideShowSingleItemSlider(true);
                         break;
                     case "organism":
                     case "templates":
@@ -139,7 +227,10 @@ var ssg;
                         }
                         if (currentSingleItems.length !== 0) {
                             ssg.UI.EnableSingleSlider(currentSingleItems);
-                            // ssg.UI.Render.initElementNavigation(curElement);
+                            ssg.UI.Utils.hideShowSingleItemSlider(false);
+                        }
+                        else {
+                            ssg.UI.Utils.hideShowSingleItemSlider(true);
                         }
                         break;
                 }
@@ -147,7 +238,7 @@ var ssg;
         };
         UI.initDisco = function () {
             var disco = setInterval(function () {
-                var discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.state.active), viewPortInner = doc.querySelector(coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(coreUiElement.viewPortWidth);
+                var discoButton = document.querySelector(coreUiElement.discoButton + "." + coreUiElement.state.active), viewPortInner = doc.querySelector(coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(coreUiElement.viewPortWidth);
                 if (discoButton !== null) {
                     var curViewPort = Math.floor(Math.random() * (viewports.length - 0)) + 0;
                     viewPortWidth.value = viewPortInner.style.width = viewports[curViewPort].toString();
@@ -177,6 +268,7 @@ var ssg;
                 // prevent all default
                 event.preventDefault();
                 var curButton = event.target, filter = curButton.dataset['filter'];
+                console.log(filter);
                 curButton.classList.contains(coreUiElement.state.active) ?
                     curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
             },
@@ -184,6 +276,12 @@ var ssg;
             changeViewPort: function (event) {
                 event.preventDefault();
                 var vpButton = event.target, vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active), vpData = vpButton.dataset['viewport'], vpTarget = doc.querySelector(coreUiElement.viewPortTarget), widthInput = doc.querySelector(coreUiElement.viewPortWidth);
+                // Updating State
+                console.log('Updating UI State');
+                var newState = ssg.UI.State.current();
+                newState.screen = vpData;
+                ssg.UI.State.update(newState);
+                console.log('Updating UI State');
                 // remove current active button
                 if (vpActiveButton !== null) {
                     vpActiveButton.classList.remove(coreUiElement.state.active);
@@ -292,7 +390,13 @@ var ssg;
             filterToc: function (event) {
                 event.preventDefault();
                 var currenToc = event.target, filter = currenToc.dataset['filter'];
-                console.log('FILTER TOC', filter);
+                // Updating State
+                console.log('Updating UI State');
+                var newState = ssg.UI.State.current();
+                newState.filter = "single";
+                newState.filterSelector = "." + filter;
+                ssg.UI.State.update(newState);
+                console.log('Updating UI State');
                 if (filter !== null) {
                     var allElements = doc.querySelectorAll(coreUiElement.patternItem), tocElement = doc.querySelector(coreUiElement.viewToc);
                     for (var i = allElements.length - 1; i >= 0; i--) {
@@ -430,6 +534,15 @@ var ssg;
                         }
                     }
                 });
+            }
+        };
+        UI.ShowSliderCtrl = function (show) {
+            var singleSliderControl = document.querySelector("." + coreUiElement.singleItemNav);
+            if (show) {
+                singleSliderControl.classList.remove('hidden');
+            }
+            else {
+                singleSliderControl.classList.add('hidden');
             }
         };
         UI.InitEvents = function () {

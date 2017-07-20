@@ -340,6 +340,18 @@
             "description": "",
             "filename": "03-third-organism",
             "filepath": "organism/03-third-organism.hbs"
+        },
+        {
+            "title": "pages",
+            "description": "",
+            "filename": "pages",
+            "filepath": "pages/pages.hbs"
+        },
+        {
+            "title": "templates",
+            "description": "",
+            "filename": "templates",
+            "filepath": "templates/templates.hbs"
         }
     ],
     "folder": [

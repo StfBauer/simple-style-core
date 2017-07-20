@@ -1,6 +1,7 @@
 
 /// <reference path="../../typings/index.d.ts" />
 
+// import * as UIState from './ssg.uistate';
 
 // pattern Config Response
 // pattern Item Config Entry
@@ -25,6 +26,14 @@ interface PatternConfig {
     folder: PatternFolder[]
 }
 
+interface UIState {
+    filter: string,
+    filterSelector?: string,
+    xtras: string[],
+    screen: number;
+};
+
+
 namespace ssg.UI {
 
     declare var window: Window,
@@ -39,7 +48,8 @@ namespace ssg.UI {
         ssgTemplates = ssg.templates,
         patternConfig = null,
         currentSingleItems = [],
-        currentSingleCount = 0;
+        currentSingleCount = 0,
+        currentUIState = ssg.UI.State;
 
     let viewports: Array<number> = [
         320,
@@ -69,6 +79,7 @@ namespace ssg.UI {
         singleItemNav: 'ssg-core-nav',
         singleNavLeft: 'ssg-left',
         singleNavRight: 'ssg-right',
+
         // States
         state: {
             active: 'active',
@@ -76,6 +87,139 @@ namespace ssg.UI {
             show: 'show'
         }
     };
+
+    export var State = (() => {
+
+
+        const STATE_KEY = "ssg.UI.State",
+            XTRAS = ['isolate', 'code', 'annotation'],
+            FILTERS = ['atoms', 'molecules', 'organism', 'templates', 'pages', 'single'],
+            SCREEN = ['s', 'm', 'l', 'uwd', 'full', 'disco'];
+
+        let _currentUIState = null;
+
+        // default UI State;
+        let defState: UIState = {
+            "filter": "atoms",
+            "xtras": [],
+            "screen": window.screen.availWidth
+        };
+
+        // Validate current state entry
+        var _validateState = (state: UIState): boolean => {
+
+            // checking if all states are valid
+            var checkSumXtras = 0,
+                checkSumFilter = 0,
+                checkSumScreen = 0;
+
+            // Check current xtra selection
+            for (let i = state.xtras.length; i > 0; i--) {
+
+                var curState = state.xtras[i];
+
+                if (XTRAS.indexOf(curState) === -1) {
+
+                    checkSumXtras += 1;
+
+                }
+
+            }
+
+            // Check current filter
+            if (FILTERS.indexOf(state.filter) === -1) {
+
+                checkSumFilter += 1;
+
+            }
+
+            // check if single is current selected filter and item has filter selector
+            if (state.filter === "single" &&
+                !state.filterSelector) {
+
+                checkSumFilter += 1;
+
+            }
+
+            // remote filter selector when single is selected
+            if (state.filter !== "single") {
+
+                /// removing filter selector
+                delete state.filterSelector;
+            }
+
+            // check current screen
+            try {
+
+                parseInt(state.screen.toString());
+
+            } catch (exception) {
+
+                console.log(exception);
+                checkSumScreen += 1;
+
+            }
+
+            console.log('checkSumXtras', checkSumXtras);
+            console.log('filters', checkSumXtras);
+            console.log('screen', checkSumScreen);
+            console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
+            console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
+
+            if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
+                return true;
+            }
+
+            return false;
+
+        };
+
+        var _updateState = (state: UIState) => {
+
+            if (_validateState(state)) {
+                console.log('>> State is valid');
+                console.log(state);
+                sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
+
+            } else {
+
+                throw "There are some errors with the state";
+
+            }
+
+        }
+
+        (() => {
+
+            let sessionState = sessionStorage.getItem(STATE_KEY);
+
+            // If session already exists
+            if (sessionState) {
+
+                _currentUIState = JSON.parse(sessionState);
+
+            } else {
+
+                sessionStorage.setItem(STATE_KEY, JSON.stringify(defState));
+                _currentUIState = defState;
+
+            }
+
+        })();
+
+        return {
+
+            current: () => {
+                return _currentUIState
+            },
+            update: (state: UIState) => {
+
+                _updateState(state);
+
+            }
+        }
+
+    })();
 
     export namespace Utils {
 
@@ -136,11 +280,11 @@ namespace ssg.UI {
 
         export var hideShowSingleItemSlider = (hide: boolean) => {
 
-            var singleItemSelector = doc.querySelector(coreUiElement.singleItemNav);
+            var singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
 
             if (singleItemSelector !== undefined && singleItemSelector !== null) {
 
-                if(hide === true){
+                if (hide === true) {
 
                     singleItemSelector.classList.add(coreUiElement.state.hidden);
 
@@ -158,6 +302,12 @@ namespace ssg.UI {
     export var Filter = {
 
         elements: (filterValue: string) => {
+
+            var newState = ssg.UI.State.current();
+            newState.filter = filterValue;
+            ssg.UI.State.update(newState);
+
+            console.log(newState);
 
             switch (filterValue) {
                 case "atoms":
@@ -180,6 +330,8 @@ namespace ssg.UI {
                         }
 
                     }
+
+                    ssg.UI.Utils.hideShowSingleItemSlider(true);
                     break;
 
                 case "organism":
@@ -233,7 +385,12 @@ namespace ssg.UI {
                     if (currentSingleItems.length !== 0) {
 
                         ssg.UI.EnableSingleSlider(currentSingleItems);
-                        // ssg.UI.Render.initElementNavigation(curElement);
+                        ssg.UI.Utils.hideShowSingleItemSlider(false);
+
+                    } else {
+
+                        ssg.UI.Utils.hideShowSingleItemSlider(true);
+
                     }
 
                     break;
@@ -249,7 +406,7 @@ namespace ssg.UI {
         var disco = setInterval(
             function () {
 
-                let discoButton = doc.querySelector(coreUiElement.discoButton + coreUiElement.state.active),
+                let discoButton = document.querySelector(coreUiElement.discoButton + "." + coreUiElement.state.active),
                     viewPortInner: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                     viewPortWidth: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
@@ -304,6 +461,8 @@ namespace ssg.UI {
             var curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
 
+            console.log(filter);
+
             curButton.classList.contains(coreUiElement.state.active) ?
                 curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
 
@@ -320,6 +479,12 @@ namespace ssg.UI {
                 vpTarget: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                 widthInput: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
+            // Updating State
+            console.log('Updating UI State');
+            var newState = ssg.UI.State.current();
+            newState.screen = vpData;
+            ssg.UI.State.update(newState);
+            console.log('Updating UI State');
 
             // remove current active button
             if (vpActiveButton !== null) {
@@ -483,7 +648,14 @@ namespace ssg.UI {
             var currenToc = <HTMLElement>event.target,
                 filter = currenToc.dataset['filter'];
 
-            console.log('FILTER TOC', filter);
+            // Updating State
+            console.log('Updating UI State');
+            var newState = ssg.UI.State.current();
+            newState.filter = "single";
+            newState.filterSelector = "." + filter;
+            ssg.UI.State.update(newState);
+            console.log('Updating UI State');
+
 
             if (filter !== null) {
 
@@ -744,6 +916,22 @@ namespace ssg.UI {
 
     }
 
+    export var ShowSliderCtrl = (show) => {
+
+        var singleSliderControl = document.querySelector("." + coreUiElement.singleItemNav);
+
+        if (show) {
+
+            singleSliderControl.classList.remove('hidden');
+
+        } else {
+
+            singleSliderControl.classList.add('hidden');
+
+        }
+
+    }
+
     export var InitEvents = () => {
         // Render Events
         var filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
@@ -797,8 +985,9 @@ namespace ssg.UI {
                         element();
                     });
 
-                }
 
+
+                }
 
             })
             .catch(function (error: any): void {

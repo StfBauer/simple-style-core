@@ -1,23 +1,34 @@
-.ssg-section {
-    display: inline-block;
-    margin: 0.125em 0.5em;
-    &:hover {
-        // state
-        .ssg-button {
-            &:not(.active) {
-                color: darken($btn-inactive-text, 30%);
-            }
-            border: .125em solid darken($btn-inactive-bc, 30%); // background-color: darken($btn-inactive-bg, 30%);
-            &:hover {
-                // color: darken($btn-inactive-text, 30%);
-                // border: .125em solid darken($btn-inactive-bc, 30%);
-                background-color: lighten($red, 5%);
-                border: .125em solid lighten($red, 5%);
-                color: white; // background-color: darken($btn-inactive-bg, 30%);
-            }
-        }
-    }
-    .hide{
+.ssg-section{
+	display: inline-block;
+
+	margin: .125em .5em;
+	&:hover{
+		// state
+		.ssg-button{
+			border: .125em solid darken($btn-inactive-bc, 30%); // background-color: darken($btn-inactive-bg, 30%);
+			&:not(.active){
+				color: darken($btn-inactive-text, 30%);
+			}
+			&:hover{
+				color: white; // background-color: darken($btn-inactive-bg, 30%);
+				border: .125em solid lighten($red, 5%);
+				// color: darken($btn-inactive-text, 30%);
+				// border: .125em solid darken($btn-inactive-bc, 30%);
+				background-color: lighten($red, 5%);
+			}
+		}
+	}
+	.hide{
+		display: none;
+	}
+}
+
+.ssg-core-nav{
+    transition: all 5s ease-in-out;
+    max-width: 250px;
+    &.hidden{
         display: none;
+        width: 0px;
+		transition: all 5s ease-in-out;
     }
 }
