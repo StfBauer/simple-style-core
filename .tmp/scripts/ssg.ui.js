@@ -53,7 +53,7 @@ var ssg;
                 // checking if all states are valid
                 var checkSumXtras = 0, checkSumFilter = 0, checkSumScreen = 0;
                 // Check current xtra selection
-                for (var i = state.xtras.length; i > 0; i--) {
+                for (var i = state.xtras.length - 1; i > 0; i--) {
                     var curState = state.xtras[i];
                     if (XTRAS.indexOf(curState) === -1) {
                         checkSumXtras += 1;
@@ -175,11 +175,46 @@ var ssg;
         })(Utils = UI.Utils || (UI.Utils = {}));
         ;
         UI.Filter = {
+            sliderSelection: function (filter) {
+                var allElements = doc.querySelectorAll('div[data-cat]'), firstItemFound = false;
+                // reset currentSingleItem
+                currentSingleItems = [];
+                for (var i = 0; i < allElements.length; i++) {
+                    var curElement = allElements[i];
+                    if (curElement.dataset['cat'] === filter) {
+                        var curSingleItem = {
+                            title: curElement.getAttribute('title'),
+                            file: curElement.dataset['file'],
+                            category: filter
+                        };
+                        currentSingleItems.push(curSingleItem);
+                        if (firstItemFound === false) {
+                            currentSingleCount = 0;
+                            firstItemFound = true;
+                            if (curElement.classList.contains('hide')) {
+                                curElement.classList.remove('hide');
+                            }
+                        }
+                        else {
+                            curElement.classList.add('hide');
+                        }
+                    }
+                    else {
+                        curElement.classList.add('hide');
+                    }
+                }
+                ssg.UI.EnableSingleSlider(currentSingleItems, filter);
+                if (currentSingleItems.length > 1) {
+                    ssg.UI.Utils.hideShowSingleItemSlider(false);
+                }
+                else {
+                    ssg.UI.Utils.hideShowSingleItemSlider(true);
+                }
+            },
             elements: function (filterValue) {
                 var newState = ssg.UI.State.current();
                 newState.filter = filterValue;
                 ssg.UI.State.update(newState);
-                console.log(newState);
                 switch (filterValue) {
                     case "atoms":
                     case "molecules":
@@ -196,42 +231,25 @@ var ssg;
                         ssg.UI.Utils.hideShowSingleItemSlider(true);
                         break;
                     case "organism":
+                        console.log("Called Organism");
+                        console.log(currentSingleItems);
+                        console.log(currentSingleItems = []);
+                        console.log(currentSingleItems);
+                        ssg.UI.Filter.sliderSelection(filterValue);
+                        break;
                     case "templates":
+                        console.log("Called Templates");
+                        console.log(currentSingleItems);
+                        console.log(currentSingleItems = []);
+                        console.log(currentSingleItems);
+                        ssg.UI.Filter.sliderSelection(filterValue);
+                        break;
                     case "pages":
-                        var allElements = doc.querySelectorAll('div[data-cat]'), firstItemFound = false;
-                        // reset currentSingleItem
-                        currentSingleItems = [];
-                        for (var i = 0; i < allElements.length; i++) {
-                            var curElement = allElements[i];
-                            if (curElement.dataset['cat'] === filterValue) {
-                                var curSingleItem = {
-                                    title: curElement.getAttribute('title'),
-                                    file: curElement.dataset['file'],
-                                    category: filterValue
-                                };
-                                currentSingleItems.push(curSingleItem);
-                                if (firstItemFound === false) {
-                                    currentSingleCount = 0;
-                                    firstItemFound = true;
-                                    if (curElement.classList.contains('hide')) {
-                                        curElement.classList.remove('hide');
-                                    }
-                                }
-                                else {
-                                    curElement.classList.add('hide');
-                                }
-                            }
-                            else {
-                                curElement.classList.add('hide');
-                            }
-                        }
-                        if (currentSingleItems.length !== 0) {
-                            ssg.UI.EnableSingleSlider(currentSingleItems);
-                            ssg.UI.Utils.hideShowSingleItemSlider(false);
-                        }
-                        else {
-                            ssg.UI.Utils.hideShowSingleItemSlider(true);
-                        }
+                        console.log("Called Pages");
+                        console.log(currentSingleItems);
+                        console.log(currentSingleItems = []);
+                        console.log(currentSingleItems);
+                        ssg.UI.Filter.sliderSelection(filterValue);
                         break;
                 }
             }
@@ -262,13 +280,13 @@ var ssg;
                 var curButton = event.target, filter = curButton.dataset['filter'];
                 curButton.classList.add(coreUiElement.state.active);
                 UI.Filter.elements(filter);
+                return false;
             },
             // change view - Add isolated, code, Annotation
             changeView: function (event) {
                 // prevent all default
                 event.preventDefault();
                 var curButton = event.target, filter = curButton.dataset['filter'];
-                console.log(filter);
                 curButton.classList.contains(coreUiElement.state.active) ?
                     curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
             },
@@ -336,6 +354,17 @@ var ssg;
             // Show and hides source code
             showSource: function (event) {
                 event.preventDefault();
+                // Updating State
+                console.log('Updating UI State');
+                var newState = ssg.UI.State.current();
+                // check if code is already included in UI Extras
+                if (newState.xtras.indexOf('code')) {
+                    newState.xtras.push('code');
+                }
+                else {
+                    newState.xtras.pop('code');
+                }
+                ssg.UI.State.update(newState);
                 if (event.target.classList.contains(coreUiElement.state.active)) {
                     // sho source code by adding class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-code');
@@ -354,6 +383,17 @@ var ssg;
             // show and hides annotations
             showAnnotation: function (event) {
                 event.preventDefault();
+                // Updating State
+                console.log('Updating UI State');
+                var newState = ssg.UI.State.current();
+                // check if code is already included in UI Extras
+                if (newState.xtras.indexOf('annotation')) {
+                    newState.xtras.push('annotation');
+                }
+                else {
+                    newState.xtras.pop('annotation');
+                }
+                ssg.UI.State.update(newState);
                 if (event.target.classList.contains(coreUiElement.state.active)) {
                     // sho source code by adding class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-description');
@@ -499,41 +539,58 @@ var ssg;
             Prism.highlightAll();
             RenderToc(patternConfig);
         };
-        UI.EnableSingleSlider = function (currentSingleItems) {
+        UI.EnableSingleSlider = function (currentSingleItems, filter) {
+            var slideItems = currentSingleItems;
+            var slidePatterns = function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log(event);
+                var currentButton = event.target;
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+                    currentSingleCount -= 1;
+                }
+                ;
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+                    currentSingleCount += 1;
+                }
+                ;
+                if (currentSingleCount > currentSingleItems.length - 1) {
+                    currentSingleCount = 0;
+                }
+                if (currentSingleCount < 0) {
+                    currentSingleCount = currentSingleItems.length - 1;
+                }
+                var curElement = slideItems[currentSingleCount];
+                currentTitle.textContent = curElement.title;
+                var allElements = doc.querySelectorAll('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
+                console.log('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
+                for (var j = 0; j < allElements.length; j++) {
+                    var curPatternElement = allElements[j];
+                    if (curPatternElement.dataset['file'] === curElement.file) {
+                        curPatternElement.classList.remove('hide');
+                    }
+                    else {
+                        curPatternElement.classList.add('hide');
+                    }
+                }
+            };
+            // Check if only one pattern is in current selection
+            if (slideItems.length <= 1) {
+                return;
+            }
             var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
-            currentTitle.textContent = currentSingleItems[0].title;
+            currentTitle.textContent = slideItems[0].title;
+            // var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
             var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
             for (var i = 0; i < slider.length; i++) {
-                slider[i].addEventListener('click', function (event) {
-                    event.preventDefault();
-                    var currentButton = event.target;
-                    if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
-                        currentSingleCount -= 1;
-                    }
-                    ;
-                    if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
-                        currentSingleCount += 1;
-                    }
-                    ;
-                    if (currentSingleCount > currentSingleItems.length - 1) {
-                        currentSingleCount = 0;
-                    }
-                    if (currentSingleCount < 0) {
-                        currentSingleCount = currentSingleItems.length - 1;
-                    }
-                    var curElement = currentSingleItems[currentSingleCount];
-                    currentTitle.textContent = curElement.title;
-                    var allElements = doc.querySelectorAll('div[data-cat=\'' + currentSingleItems[currentSingleCount].category + '\']');
-                    for (var j = 0; j < allElements.length; j++) {
-                        var curPatternElement = allElements[j];
-                        if (curPatternElement.dataset['file'] === curElement.file) {
-                            curPatternElement.classList.remove('hide');
-                        }
-                        else {
-                            curPatternElement.classList.add('hide');
-                        }
-                    }
-                });
+                // remova all previous registered event handler
+                var currentButton = slider[i];
+                // clone current node without event handler
+                var newButton = currentButton.cloneNode(true);
+                // register new Click event
+                newButton.addEventListener('click', slidePatterns);
+                // replace element
+                currentButton.parentNode.replaceChild(newButton, currentButton);
             }
         };
         UI.ShowSliderCtrl = function (show) {
@@ -553,7 +610,7 @@ var ssg;
             // TOC Eevent
             allTocItems = doc.querySelectorAll(coreUiElement.tocSearchBox);
             UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
-            UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView);
+            UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView); // mabye obsolete?
             UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
             UI.Events.registerEvents(viewPortWidth, 'blur', UI.Events.viewPortResizer);
             UI.Events.registerEvents(viewPortWidth, 'focusout', UI.Events.viewPortResizer);

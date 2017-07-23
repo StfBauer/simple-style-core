@@ -114,7 +114,7 @@ namespace ssg.UI {
                 checkSumScreen = 0;
 
             // Check current xtra selection
-            for (let i = state.xtras.length; i > 0; i--) {
+            for (let i = state.xtras.length - 1; i > 0; i--) {
 
                 var curState = state.xtras[i];
 
@@ -177,6 +177,7 @@ namespace ssg.UI {
         var _updateState = (state: UIState) => {
 
             if (_validateState(state)) {
+
                 console.log('>> State is valid');
                 console.log(state);
                 sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
@@ -301,13 +302,68 @@ namespace ssg.UI {
 
     export var Filter = {
 
+        sliderSelection: (filter: string) => {
+            var allElements = doc.querySelectorAll('div[data-cat]'),
+                firstItemFound = false;
+
+            // reset currentSingleItem
+            currentSingleItems = [];
+
+            for (let i = 0; i < allElements.length; i++) {
+
+                var curElement: HTMLElement = <HTMLElement>allElements[i];
+
+                if (curElement.dataset['cat'] === filter) {
+
+                    var curSingleItem = {
+                        title: curElement.getAttribute('title'),
+                        file: curElement.dataset['file'],
+                        category: filter
+                    };
+
+                    currentSingleItems.push(curSingleItem);
+
+                    if (firstItemFound === false) {
+                        currentSingleCount = 0;
+                        firstItemFound = true;
+
+                        if (curElement.classList.contains('hide')) {
+
+                            curElement.classList.remove('hide');
+
+                        }
+
+                    } else {
+
+                        curElement.classList.add('hide')
+
+                    }
+
+                } else {
+
+                    curElement.classList.add('hide');
+
+                }
+
+            }
+            
+            ssg.UI.EnableSingleSlider(currentSingleItems, filter);
+
+            if (currentSingleItems.length > 1) {
+
+                ssg.UI.Utils.hideShowSingleItemSlider(false);
+
+            } else {
+
+                ssg.UI.Utils.hideShowSingleItemSlider(true);
+
+            }
+        },
         elements: (filterValue: string) => {
 
             var newState = ssg.UI.State.current();
             newState.filter = filterValue;
             ssg.UI.State.update(newState);
-
-            console.log(newState);
 
             switch (filterValue) {
                 case "atoms":
@@ -335,64 +391,27 @@ namespace ssg.UI {
                     break;
 
                 case "organism":
+                    console.log("Called Organism");
+                    console.log(currentSingleItems);    
+                    console.log(currentSingleItems = []);
+                    console.log(currentSingleItems);
+                    ssg.UI.Filter.sliderSelection(filterValue);
+                    break;
                 case "templates":
+                    console.log("Called Templates");
+                    console.log(currentSingleItems);    
+                    console.log(currentSingleItems = []);
+                    console.log(currentSingleItems);
+
+                    ssg.UI.Filter.sliderSelection(filterValue);
+                    break;
                 case "pages":
 
-                    var allElements = doc.querySelectorAll('div[data-cat]'),
-                        firstItemFound = false;
-
-                    // reset currentSingleItem
-                    currentSingleItems = [];
-
-                    for (let i = 0; i < allElements.length; i++) {
-
-                        var curElement: HTMLElement = <HTMLElement>allElements[i];
-
-                        if (curElement.dataset['cat'] === filterValue) {
-
-                            var curSingleItem = {
-                                title: curElement.getAttribute('title'),
-                                file: curElement.dataset['file'],
-                                category: filterValue
-                            };
-
-                            currentSingleItems.push(curSingleItem);
-
-                            if (firstItemFound === false) {
-                                currentSingleCount = 0;
-                                firstItemFound = true;
-
-                                if (curElement.classList.contains('hide')) {
-
-                                    curElement.classList.remove('hide');
-
-                                }
-
-                            } else {
-
-                                curElement.classList.add('hide')
-
-                            }
-
-                        } else {
-
-                            curElement.classList.add('hide');
-
-                        }
-
-                    }
-
-                    if (currentSingleItems.length !== 0) {
-
-                        ssg.UI.EnableSingleSlider(currentSingleItems);
-                        ssg.UI.Utils.hideShowSingleItemSlider(false);
-
-                    } else {
-
-                        ssg.UI.Utils.hideShowSingleItemSlider(true);
-
-                    }
-
+                    console.log("Called Pages");
+                    console.log(currentSingleItems);    
+                    console.log(currentSingleItems = []);
+                    console.log(currentSingleItems);
+                    ssg.UI.Filter.sliderSelection(filterValue);
                     break;
 
             }
@@ -450,6 +469,8 @@ namespace ssg.UI {
             curButton.classList.add(coreUiElement.state.active);
             Filter.elements(filter);
 
+            return false;
+
         },
 
         // change view - Add isolated, code, Annotation
@@ -460,8 +481,6 @@ namespace ssg.UI {
 
             var curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
-
-            console.log(filter);
 
             curButton.classList.contains(coreUiElement.state.active) ?
                 curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
@@ -577,6 +596,18 @@ namespace ssg.UI {
         // Show and hides source code
         showSource: (event: Event) => {
             event.preventDefault();
+
+            // Updating State
+            console.log('Updating UI State');
+            var newState = ssg.UI.State.current();
+            // check if code is already included in UI Extras
+            if (newState.xtras.indexOf('code')) {
+                newState.xtras.push('code');
+            } else {
+                newState.xtras.pop('code');
+            }
+            ssg.UI.State.update(newState);
+
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
@@ -597,6 +628,24 @@ namespace ssg.UI {
         showAnnotation: (event: Event) => {
 
             event.preventDefault();
+
+            // Updating State
+            console.log('Updating UI State');
+
+            var newState = ssg.UI.State.current();
+            // check if code is already included in UI Extras
+            if (newState.xtras.indexOf('annotation')) {
+
+                newState.xtras.push('annotation');
+
+            } else {
+
+                newState.xtras.pop('annotation');
+
+            }
+
+            ssg.UI.State.update(newState);
+
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
@@ -847,70 +896,94 @@ namespace ssg.UI {
 
     }
 
-    export var EnableSingleSlider = (currentSingleItems) => {
+    export var EnableSingleSlider = (currentSingleItems, filter) => {
+
+        
+
+        let slideItems = currentSingleItems;
+
+        var slidePatterns = function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+            console.log(event);
+
+            var currentButton: HTMLElement = <HTMLElement>event.target;
+
+            if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+
+                currentSingleCount -= 1;
+
+            };
+
+            if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+
+                currentSingleCount += 1;
+
+            };
+
+            if (currentSingleCount > currentSingleItems.length - 1) {
+
+                currentSingleCount = 0;
+
+            }
+
+            if (currentSingleCount < 0) {
+
+                currentSingleCount = currentSingleItems.length - 1;
+
+            }
+
+            let curElement = slideItems[currentSingleCount];
+
+            currentTitle.textContent = curElement.title;
+            
+            var allElements =
+                doc.querySelectorAll('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
+
+            console.log('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
+
+            for (let j = 0; j < allElements.length; j++) {
+
+                var curPatternElement: HTMLElement = <HTMLElement>allElements[j];
+
+                if (curPatternElement.dataset['file'] === curElement.file) {
+
+                    curPatternElement.classList.remove('hide');
+
+                } else {
+
+                    curPatternElement.classList.add('hide');
+
+                }
+
+            }
+
+        }
+
+
+        // Check if only one pattern is in current selection
+        if (slideItems.length <= 1) {
+            return;
+        }
 
         var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
 
-        currentTitle.textContent = currentSingleItems[0].title;
+        currentTitle.textContent = slideItems[0].title;
 
+        // var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
         var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
 
         for (let i = 0; i < slider.length; i++) {
 
-            slider[i].addEventListener('click', function (event) {
-
-                event.preventDefault();
-
-                var currentButton: HTMLElement = <HTMLElement>event.target;
-
-                if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
-
-                    currentSingleCount -= 1;
-
-                };
-
-                if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
-
-                    currentSingleCount += 1;
-
-                };
-
-                if (currentSingleCount > currentSingleItems.length - 1) {
-
-                    currentSingleCount = 0;
-
-                }
-
-                if (currentSingleCount < 0) {
-
-                    currentSingleCount = currentSingleItems.length - 1;
-
-                }
-
-                let curElement = currentSingleItems[currentSingleCount];
-
-                currentTitle.textContent = curElement.title;
-
-                var allElements =
-                    doc.querySelectorAll('div[data-cat=\'' + currentSingleItems[currentSingleCount].category + '\']');
-
-                for (let j = 0; j < allElements.length; j++) {
-
-                    var curPatternElement: HTMLElement = <HTMLElement>allElements[j];
-
-                    if (curPatternElement.dataset['file'] === curElement.file) {
-
-                        curPatternElement.classList.remove('hide');
-
-                    } else {
-
-                        curPatternElement.classList.add('hide');
-
-                    }
-
-                }
-
-            });
+            // remova all previous registered event handler
+            var currentButton = slider[i];
+            // clone current node without event handler
+            var newButton = currentButton.cloneNode(true);
+            // register new Click event
+            newButton.addEventListener('click', slidePatterns);
+            // replace element
+            currentButton.parentNode.replaceChild(newButton, currentButton);
 
         }
 
@@ -946,7 +1019,7 @@ namespace ssg.UI {
             allTocItems: NodeList = doc.querySelectorAll(coreUiElement.tocSearchBox);
 
         Events.registerEvents(filterButtons, 'click', Events.changeFilter);
-        Events.registerEvents(viewButtons, 'click', Events.changeView);
+        Events.registerEvents(viewButtons, 'click', Events.changeView); // mabye obsolete?
         Events.registerEvents(viewPortButtons, 'click', Events.changeViewPort);
         Events.registerEvents(viewPortWidth, 'blur', Events.viewPortResizer);
         Events.registerEvents(viewPortWidth, 'focusout', Events.viewPortResizer);

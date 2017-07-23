@@ -344,14 +344,26 @@
         {
             "title": "pages",
             "description": "",
-            "filename": "pages",
-            "filepath": "pages/pages.hbs"
+            "filename": "page-1",
+            "filepath": "pages/page-1.hbs"
+        },
+        {
+            "title": "page-2",
+            "description": "",
+            "filename": "page-2",
+            "filepath": "pages/page-2.hbs"
         },
         {
             "title": "templates",
             "description": "",
-            "filename": "templates",
-            "filepath": "templates/templates.hbs"
+            "filename": "template-1",
+            "filepath": "templates/template-1.hbs"
+        },
+        {
+            "title": "template-2",
+            "description": "",
+            "filename": "template-2",
+            "filepath": "templates/template-2.hbs"
         }
     ],
     "folder": [
