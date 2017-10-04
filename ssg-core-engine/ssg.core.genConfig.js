@@ -129,9 +129,9 @@ module.exports = {
         var logData = function () {
 
             console.log(
-                plugins.util.colors.green('Patterns before: ') + statistics);
+                plugins.util.colors.green('Patterns before: '), statistics);
             console.log(
-                plugins.util.colors.green('Patterns after:  ') + patternsData.length);
+                plugins.util.colors.green('Patterns after:  '), patternsData.length);
 
             writeConfigToFile();
         };
@@ -148,7 +148,7 @@ module.exports = {
 
                 exists = fs.statSync(curConfigPath);
 
-            } catch (erro) {
+            } catch (err) {
 
                 exists = null;
                 return;
@@ -160,12 +160,17 @@ module.exports = {
                 // Loading old configuration
                 var config = fs.readFileSync(options.configFile);
 
+                console.log(config);
+
                 // parse json config
                 var configData = JSON.parse(config);
 
+                console.log(configData);
                 // check if configuration data exits
                 patternsData = configData !== undefined &&
                     configData.patterns !== undefined ? configData.patterns : [];
+
+                console.log(patternsData);
 
                 plugins.util.log(
                     'Found',
@@ -229,7 +234,7 @@ module.exports = {
         };
 
         // renames files in pattern config
-        var renamePatter = function (files) {
+        var renamePattern = function (files) {
 
         };
 
@@ -429,6 +434,15 @@ module.exports = {
             }
 
             return filepath;
+        }
+
+        var file = fs.statSync(event.path);
+
+        // in case it is a directory return and do nothing
+        if (file.isDirectory()) {
+
+            return;
+
         }
 
         switch (event.type) {

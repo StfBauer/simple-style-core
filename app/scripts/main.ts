@@ -2,8 +2,6 @@
 // getting global variables to work
 var ssgDoc = ssgDoc || {};
 
-console.log("hello World");
-
 (function() {
 
     var doc = document.querySelector('#ssg-docbar-inner'),

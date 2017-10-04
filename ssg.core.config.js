@@ -45,7 +45,9 @@ module.exports = (() => {
         watches: {
             styles: basepath + '/styles/**/*.scss',
             scripts: basepath + '/scripts/**/*.ts',
+            // basepath + '/_patterns/**/[^_]*.hbs'
             ssg: [
+                basepath + '/_patterns/**',
                 basepath + '/_patterns/**/[^_]*.hbs'
             ],
             documentation: basepath + '/_documentation/**/*.md'

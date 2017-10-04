@@ -81,11 +81,11 @@ var ssg;
                     console.log(exception);
                     checkSumScreen += 1;
                 }
-                console.log('checkSumXtras', checkSumXtras);
-                console.log('filters', checkSumXtras);
-                console.log('screen', checkSumScreen);
-                console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
-                console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
+                // console.log('checkSumXtras', checkSumXtras);
+                // console.log('filters', checkSumXtras);
+                // console.log('screen', checkSumScreen);
+                // console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
+                // console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
                 if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
                     return true;
                 }
@@ -232,23 +232,23 @@ var ssg;
                         break;
                     case "organism":
                         console.log("Called Organism");
-                        console.log(currentSingleItems);
-                        console.log(currentSingleItems = []);
-                        console.log(currentSingleItems);
+                        // console.log(currentSingleItems);    
+                        // console.log(currentSingleItems = []);
+                        // console.log(currentSingleItems);
                         ssg.UI.Filter.sliderSelection(filterValue);
                         break;
                     case "templates":
                         console.log("Called Templates");
-                        console.log(currentSingleItems);
-                        console.log(currentSingleItems = []);
-                        console.log(currentSingleItems);
+                        // console.log(currentSingleItems);    
+                        // console.log(currentSingleItems = []);
+                        // console.log(currentSingleItems);
                         ssg.UI.Filter.sliderSelection(filterValue);
                         break;
                     case "pages":
                         console.log("Called Pages");
-                        console.log(currentSingleItems);
-                        console.log(currentSingleItems = []);
-                        console.log(currentSingleItems);
+                        // console.log(currentSingleItems);    
+                        // console.log(currentSingleItems = []);
+                        // console.log(currentSingleItems);
                         ssg.UI.Filter.sliderSelection(filterValue);
                         break;
                 }
@@ -429,7 +429,22 @@ var ssg;
             // filter single toc element
             filterToc: function (event) {
                 event.preventDefault();
-                var currenToc = event.target, filter = currenToc.dataset['filter'];
+                var currentToc = event.target, filter = currentToc.dataset['filter'], filterCat = (currentToc.parentNode.attributes.getNamedItem("id").value);
+                if (filterCat) {
+                    console.log('filter cat');
+                    var category = filterCat.split('-')[1];
+                    var filterButtons = document.querySelectorAll('.ssg-core-filter .ssg-button');
+                    console.log('Filter Button:   ', filterButtons);
+                    for (var i = filterButtons.length - 1; i >= 0; i--) {
+                        var curFilterButton = filterButtons[i], curFilterStyle = curFilterButton.classList, curDataSet = curFilterButton.dataset['filter'];
+                        if (curFilterStyle.contains('active')) {
+                            curFilterStyle.remove('active');
+                        }
+                        if (curDataSet === category) {
+                            curFilterStyle.add('active');
+                        }
+                    }
+                }
                 // Updating State
                 console.log('Updating UI State');
                 var newState = ssg.UI.State.current();
@@ -538,13 +553,54 @@ var ssg;
             container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
             Prism.highlightAll();
             RenderToc(patternConfig);
+            console.log('1. Rendering');
+            console.log();
+            console.log('--- Apply State');
+            UI.ApplyUIState(ssg.UI.State.current());
+        };
+        UI.ApplyUIState = function (state) {
+            console.log('Apply UI State');
+            console.log(state);
+            if (state.filter !== undefined
+                && state.filter !== 'toc') {
+                console.log("button[data-filter='" + state.filter + "']");
+                var buttons = doc.querySelectorAll(".ssg-button[data-filter]");
+                console.log('Length: ', buttons.length);
+                for (var i = buttons.length - 1; i >= 0; i--) {
+                    var curButton = buttons[i];
+                    if (curButton.dataset !== null
+                        && curButton.dataset !== undefined
+                        && curButton.dataset['filter'] === state.filter) {
+                        if (curButton.classList.contains('active')) {
+                            console.log('deactive');
+                        }
+                        else {
+                            curButton.classList.add('active');
+                            console.log('actived');
+                        }
+                    }
+                    else {
+                        if (curButton.classList.contains('active')) {
+                            curButton.classList.remove('active');
+                        }
+                    }
+                }
+                var notSelItems = doc.querySelectorAll(".ssg-item:not([data-cat='" + state.filter + "'])");
+                for (var i = notSelItems.length - 1; i >= 0; i--) {
+                    notSelItems[i].classList.add('hide');
+                }
+                var selItems = doc.querySelectorAll(".ssg-item[data-cat='" + state.filter + "']");
+                for (var i = selItems.length - 1; i >= 0; i--) {
+                    selItems[i].classList.remove('hide');
+                }
+                console.log(selItems);
+            }
         };
         UI.EnableSingleSlider = function (currentSingleItems, filter) {
             var slideItems = currentSingleItems;
             var slidePatterns = function (event) {
                 event.preventDefault();
                 event.stopPropagation();
-                console.log(event);
                 var currentButton = event.target;
                 if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
                     currentSingleCount -= 1;
@@ -626,7 +682,6 @@ var ssg;
             Promise.all([ssg.UI.Utils.requestData('GET', '/_config/pattern.conf.json')])
                 .then(function (result) {
                 try {
-                    //ssg.UI.patternConfig: PatternConfig = <PatternConfig>JSON.parse(result.toString());
                     patternConfig = JSON.parse(result.toString());
                 }
                 catch (error) {

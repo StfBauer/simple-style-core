@@ -1,1 +1,0 @@
-This is where you can store your templates.

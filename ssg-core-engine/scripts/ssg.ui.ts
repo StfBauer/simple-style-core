@@ -160,11 +160,11 @@ namespace ssg.UI {
 
             }
 
-            console.log('checkSumXtras', checkSumXtras);
-            console.log('filters', checkSumXtras);
-            console.log('screen', checkSumScreen);
-            console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
-            console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
+            // console.log('checkSumXtras', checkSumXtras);
+            // console.log('filters', checkSumXtras);
+            // console.log('screen', checkSumScreen);
+            // console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
+            // console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
 
             if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
                 return true;
@@ -346,7 +346,7 @@ namespace ssg.UI {
                 }
 
             }
-            
+
             ssg.UI.EnableSingleSlider(currentSingleItems, filter);
 
             if (currentSingleItems.length > 1) {
@@ -392,25 +392,25 @@ namespace ssg.UI {
 
                 case "organism":
                     console.log("Called Organism");
-                    console.log(currentSingleItems);    
-                    console.log(currentSingleItems = []);
-                    console.log(currentSingleItems);
+                    // console.log(currentSingleItems);    
+                    // console.log(currentSingleItems = []);
+                    // console.log(currentSingleItems);
                     ssg.UI.Filter.sliderSelection(filterValue);
                     break;
                 case "templates":
                     console.log("Called Templates");
-                    console.log(currentSingleItems);    
-                    console.log(currentSingleItems = []);
-                    console.log(currentSingleItems);
+                    // console.log(currentSingleItems);    
+                    // console.log(currentSingleItems = []);
+                    // console.log(currentSingleItems);
 
                     ssg.UI.Filter.sliderSelection(filterValue);
                     break;
                 case "pages":
 
                     console.log("Called Pages");
-                    console.log(currentSingleItems);    
-                    console.log(currentSingleItems = []);
-                    console.log(currentSingleItems);
+                    // console.log(currentSingleItems);    
+                    // console.log(currentSingleItems = []);
+                    // console.log(currentSingleItems);
                     ssg.UI.Filter.sliderSelection(filterValue);
                     break;
 
@@ -694,8 +694,41 @@ namespace ssg.UI {
         filterToc: (event: Event) => {
 
             event.preventDefault();
-            var currenToc = <HTMLElement>event.target,
-                filter = currenToc.dataset['filter'];
+            var currentToc = <Node>event.target,
+                filter = (<HTMLElement>currentToc).dataset['filter'],
+                filterCat = (currentToc.parentNode.attributes.getNamedItem("id").value);
+
+
+            if (filterCat) {
+
+                console.log('filter cat');
+                var category = filterCat.split('-')[1];
+
+                var filterButtons = document.querySelectorAll('.ssg-core-filter .ssg-button');
+
+                console.log('Filter Button:   ', filterButtons);
+
+                for (let i = filterButtons.length - 1; i >= 0; i--) {
+
+                    let curFilterButton = filterButtons[i],
+                        curFilterStyle = curFilterButton.classList,
+                        curDataSet = (<HTMLElement>curFilterButton).dataset['filter'];
+
+                    if (curFilterStyle.contains('active')) {
+
+                        curFilterStyle.remove('active');
+
+                    }
+
+                    if (curDataSet === category) {
+
+                        curFilterStyle.add('active');
+
+                    }
+
+                }
+
+            }
 
             // Updating State
             console.log('Updating UI State');
@@ -894,11 +927,77 @@ namespace ssg.UI {
 
         RenderToc(patternConfig);
 
+        console.log('1. Rendering');
+        console.log();
+        console.log('--- Apply State');
+        ApplyUIState(ssg.UI.State.current());
+
+    }
+
+    export let ApplyUIState = (state: any) => {
+
+        console.log('Apply UI State');
+        console.log(state);
+
+        if (state.filter !== undefined
+            && state.filter !== 'toc') {
+
+            console.log(`button[data-filter='${state.filter}']`);
+
+            let buttons = doc.querySelectorAll(`.ssg-button[data-filter]`);
+
+            console.log('Length: ', buttons.length);
+
+            for (let i: number = buttons.length - 1; i >= 0; i--) {
+
+                let curButton: HTMLElement = <HTMLElement>buttons[i];
+
+                if (curButton.dataset !== null
+                    && curButton.dataset !== undefined
+                    && curButton.dataset['filter'] === state.filter) {
+
+                    if (curButton.classList.contains('active')) {
+
+                        console.log('deactive');
+
+                    } else {
+
+                        curButton.classList.add('active');
+                        console.log('actived');
+
+                    }
+
+                } else {
+
+                    if (curButton.classList.contains('active')) {
+
+                        curButton.classList.remove('active');
+
+                    }
+
+                }
+
+            }
+
+            var notSelItems = doc.querySelectorAll(`.ssg-item:not([data-cat='${state.filter}'])`);
+            for (let i = notSelItems.length - 1; i >= 0; i--) {
+                notSelItems[i].classList.add('hide');
+            }
+
+
+            var selItems = doc.querySelectorAll(`.ssg-item[data-cat='${state.filter}']`);
+            for (let i = selItems.length - 1; i >= 0; i--) {
+                selItems[i].classList.remove('hide');
+            }
+            console.log(selItems);
+
+        }
+
     }
 
     export var EnableSingleSlider = (currentSingleItems, filter) => {
 
-        
+
 
         let slideItems = currentSingleItems;
 
@@ -906,7 +1005,6 @@ namespace ssg.UI {
 
             event.preventDefault();
             event.stopPropagation();
-            console.log(event);
 
             var currentButton: HTMLElement = <HTMLElement>event.target;
 
@@ -937,7 +1035,7 @@ namespace ssg.UI {
             let curElement = slideItems[currentSingleCount];
 
             currentTitle.textContent = curElement.title;
-            
+
             var allElements =
                 doc.querySelectorAll('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
 
@@ -1038,7 +1136,6 @@ namespace ssg.UI {
             .then(function (result: any): void {
                 try {
 
-                    //ssg.UI.patternConfig: PatternConfig = <PatternConfig>JSON.parse(result.toString());
                     patternConfig = JSON.parse(result.toString());
 
                 } catch (error) {
@@ -1057,8 +1154,6 @@ namespace ssg.UI {
                     PostRender.forEach(element => {
                         element();
                     });
-
-
 
                 }
 
