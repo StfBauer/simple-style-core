@@ -160,12 +160,9 @@ module.exports = {
                 // Loading old configuration
                 var config = fs.readFileSync(options.configFile);
 
-                console.log(config);
-
                 // parse json config
                 var configData = JSON.parse(config);
 
-                console.log(configData);
                 // check if configuration data exits
                 patternsData = configData !== undefined &&
                     configData.patterns !== undefined ? configData.patterns : [];

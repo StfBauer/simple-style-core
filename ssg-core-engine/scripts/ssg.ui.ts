@@ -936,62 +936,121 @@ namespace ssg.UI {
 
     export let ApplyUIState = (state: any) => {
 
-        console.log('Apply UI State');
-        console.log(state);
 
-        if (state.filter !== undefined
-            && state.filter !== 'toc') {
+        let applyFilter: Function = (state: any) => {
+            if (state.filter !== undefined
+                && state.filter !== 'toc') {
 
-            console.log(`button[data-filter='${state.filter}']`);
+                console.log(`button[data-filter='${state.filter}']`);
 
-            let buttons = doc.querySelectorAll(`.ssg-button[data-filter]`);
+                let buttons = doc.querySelectorAll(`.ssg-button[data-filter]`);
 
-            console.log('Length: ', buttons.length);
+                console.log('Length: ', buttons.length);
 
-            for (let i: number = buttons.length - 1; i >= 0; i--) {
+                // Set correct button
+                for (let i: number = buttons.length - 1; i >= 0; i--) {
 
-                let curButton: HTMLElement = <HTMLElement>buttons[i];
+                    let curButton: HTMLElement = <HTMLElement>buttons[i];
 
-                if (curButton.dataset !== null
-                    && curButton.dataset !== undefined
-                    && curButton.dataset['filter'] === state.filter) {
+                    if (curButton.dataset !== null
+                        && curButton.dataset !== undefined
+                        && curButton.dataset['filter'] === state.filter) {
 
-                    if (curButton.classList.contains('active')) {
+                        if (curButton.classList.contains('active')) {
 
-                        console.log('deactive');
+                            console.log('deactive');
+
+                        } else {
+
+                            curButton.classList.add('active');
+                            console.log('actived');
+
+                        }
 
                     } else {
 
-                        curButton.classList.add('active');
-                        console.log('actived');
+                        if (curButton.classList.contains('active')) {
 
-                    }
+                            curButton.classList.remove('active');
 
-                } else {
-
-                    if (curButton.classList.contains('active')) {
-
-                        curButton.classList.remove('active');
+                        }
 
                     }
 
                 }
 
+                let query: string = `.ssg-item[data-cat='${state.filter}']`,
+                    invQuery: string = `.ssg-item:not([data-cat='${state.filter}'])`;
+
+                if (state.filter === 'single') {
+
+                    let filter: string = state.filterSelector.substr(1, state.filterSelector.length - 1);
+
+                    query = `div[data-file='${filter}']`;
+                    invQuery = `div:not([data-file='${filter}'])`;
+
+                    let tocButton = doc.querySelectorAll(`.ssg-button[data-action='ssg-toc']`);
+
+                    if (tocButton !== undefined && tocButton.length === 1) {
+
+                        tocButton[0].classList.add('active');
+
+                    }
+
+                }
+
+                // unselect all
+                var notSelItems = doc.querySelectorAll(invQuery);
+                for (let i = notSelItems.length - 1; i >= 0; i--) {
+                    notSelItems[i].classList.add('hide');
+                }
+
+                // make sure all are selected
+                var selItems = doc.querySelectorAll(query);
+                for (let i = selItems.length - 1; i >= 0; i--) {
+                    selItems[i].classList.remove('hide');
+                }
+
+                console.log(selItems);
+
+            }
+        };
+
+        let applyScreenWidth: Function = (state: any) => {
+
+            let viewPortQuery = `button[data-viewport='${state.screen}']`,
+                viewPortInvQuery = `button.active[data-viewport]`,
+                // Selecting buttons
+                viewPortActiveButton = doc.querySelector(viewPortInvQuery),
+                viewPortButton = doc.querySelector(viewPortQuery),
+                // Width selector
+                widthSelector = <HTMLInputElement>doc.getElementById('ssg-in-width'),
+                contentWidth: HTMLElement = <HTMLElement>doc.querySelector('.ssg-patterns-inner');
+
+            // Set inner screen width of patterns
+            contentWidth.style.width = `${state.screen}px`;
+
+            // View width selector
+            widthSelector.value = state.screen;
+
+            // activate viewport button
+            viewPortButton.classList.add('active');
+
+            if (viewPortButton !== viewPortActiveButton) {
+
+                viewPortActiveButton.classList.remove('active');
+
             }
 
-            var notSelItems = doc.querySelectorAll(`.ssg-item:not([data-cat='${state.filter}'])`);
-            for (let i = notSelItems.length - 1; i >= 0; i--) {
-                notSelItems[i].classList.add('hide');
-            }
+        };
+
+        applyFilter(state);
+        applyScreenWidth(state);
+
+        console.log('Apply UI State');
+        console.log(state);
 
 
-            var selItems = doc.querySelectorAll(`.ssg-item[data-cat='${state.filter}']`);
-            for (let i = selItems.length - 1; i >= 0; i--) {
-                selItems[i].classList.remove('hide');
-            }
-            console.log(selItems);
-
-        }
 
     }
 

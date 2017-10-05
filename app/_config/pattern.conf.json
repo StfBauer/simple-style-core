@@ -47,6 +47,24 @@
             "description": "",
             "filename": "third-atom",
             "filepath": "atoms/third-atom.hbs"
+        },
+        {
+            "title": "first-template",
+            "description": "",
+            "filename": "first-template",
+            "filepath": "templates/first-template.hbs"
+        },
+        {
+            "title": "second-template",
+            "description": "",
+            "filename": "second-template",
+            "filepath": "templates/second-template.hbs"
+        },
+        {
+            "title": "third-template",
+            "description": "",
+            "filename": "third-template",
+            "filepath": "templates/third-template.hbs"
         }
     ],
     "folder": [

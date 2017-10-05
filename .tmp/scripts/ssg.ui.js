@@ -559,42 +559,75 @@ var ssg;
             UI.ApplyUIState(ssg.UI.State.current());
         };
         UI.ApplyUIState = function (state) {
-            console.log('Apply UI State');
-            console.log(state);
-            if (state.filter !== undefined
-                && state.filter !== 'toc') {
-                console.log("button[data-filter='" + state.filter + "']");
-                var buttons = doc.querySelectorAll(".ssg-button[data-filter]");
-                console.log('Length: ', buttons.length);
-                for (var i = buttons.length - 1; i >= 0; i--) {
-                    var curButton = buttons[i];
-                    if (curButton.dataset !== null
-                        && curButton.dataset !== undefined
-                        && curButton.dataset['filter'] === state.filter) {
-                        if (curButton.classList.contains('active')) {
-                            console.log('deactive');
+            var applyFilter = function (state) {
+                if (state.filter !== undefined
+                    && state.filter !== 'toc') {
+                    console.log("button[data-filter='" + state.filter + "']");
+                    var buttons = doc.querySelectorAll(".ssg-button[data-filter]");
+                    console.log('Length: ', buttons.length);
+                    // Set correct button
+                    for (var i = buttons.length - 1; i >= 0; i--) {
+                        var curButton = buttons[i];
+                        if (curButton.dataset !== null
+                            && curButton.dataset !== undefined
+                            && curButton.dataset['filter'] === state.filter) {
+                            if (curButton.classList.contains('active')) {
+                                console.log('deactive');
+                            }
+                            else {
+                                curButton.classList.add('active');
+                                console.log('actived');
+                            }
                         }
                         else {
-                            curButton.classList.add('active');
-                            console.log('actived');
+                            if (curButton.classList.contains('active')) {
+                                curButton.classList.remove('active');
+                            }
                         }
                     }
-                    else {
-                        if (curButton.classList.contains('active')) {
-                            curButton.classList.remove('active');
+                    var query = ".ssg-item[data-cat='" + state.filter + "']", invQuery = ".ssg-item:not([data-cat='" + state.filter + "'])";
+                    if (state.filter === 'single') {
+                        var filter = state.filterSelector.substr(1, state.filterSelector.length - 1);
+                        query = "div[data-file='" + filter + "']";
+                        invQuery = "div:not([data-file='" + filter + "'])";
+                        var tocButton = doc.querySelectorAll(".ssg-button[data-action='ssg-toc']");
+                        if (tocButton !== undefined && tocButton.length === 1) {
+                            tocButton[0].classList.add('active');
                         }
                     }
+                    // unselect all
+                    var notSelItems = doc.querySelectorAll(invQuery);
+                    for (var i = notSelItems.length - 1; i >= 0; i--) {
+                        notSelItems[i].classList.add('hide');
+                    }
+                    // make sure all are selected
+                    var selItems = doc.querySelectorAll(query);
+                    for (var i = selItems.length - 1; i >= 0; i--) {
+                        selItems[i].classList.remove('hide');
+                    }
+                    console.log(selItems);
                 }
-                var notSelItems = doc.querySelectorAll(".ssg-item:not([data-cat='" + state.filter + "'])");
-                for (var i = notSelItems.length - 1; i >= 0; i--) {
-                    notSelItems[i].classList.add('hide');
+            };
+            var applyScreenWidth = function (state) {
+                var viewPortQuery = "button[data-viewport='" + state.screen + "']", viewPortInvQuery = "button.active[data-viewport]", 
+                // Selecting buttons
+                viewPortActiveButton = doc.querySelector(viewPortInvQuery), viewPortButton = doc.querySelector(viewPortQuery), 
+                // Width selector
+                widthSelector = doc.getElementById('ssg-in-width'), contentWidth = doc.querySelector('.ssg-patterns-inner');
+                // Set inner screen width of patterns
+                contentWidth.style.width = state.screen + "px";
+                // View width selector
+                widthSelector.value = state.screen;
+                // activate viewport button
+                viewPortButton.classList.add('active');
+                if (viewPortButton !== viewPortActiveButton) {
+                    viewPortActiveButton.classList.remove('active');
                 }
-                var selItems = doc.querySelectorAll(".ssg-item[data-cat='" + state.filter + "']");
-                for (var i = selItems.length - 1; i >= 0; i--) {
-                    selItems[i].classList.remove('hide');
-                }
-                console.log(selItems);
-            }
+            };
+            applyFilter(state);
+            applyScreenWidth(state);
+            console.log('Apply UI State');
+            console.log(state);
         };
         UI.EnableSingleSlider = function (currentSingleItems, filter) {
             var slideItems = currentSingleItems;
