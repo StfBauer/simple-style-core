@@ -71,7 +71,7 @@ $item-mr: 1em; // margin right
 	@extend .ssg-item;
 
 	position: fixed;
-	width: 100%;
+	width: inherit;
 	margin-top: 0;
 	&-header{
 	}

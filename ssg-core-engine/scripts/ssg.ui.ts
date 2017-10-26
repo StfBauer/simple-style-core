@@ -134,7 +134,10 @@ namespace ssg.UI {
             }
 
             // check if single is current selected filter and item has filter selector
-            if (state.filter === "single" &&
+            if ((state.filter === "single" ||
+                state.filter === "orangism" ||
+                state.filter === "templates" ||
+                state.filter === "pages") &&
                 !state.filterSelector) {
 
                 checkSumFilter += 1;
@@ -142,11 +145,14 @@ namespace ssg.UI {
             }
 
             // remote filter selector when single is selected
-            if (state.filter !== "single") {
+            // if (state.filter === "atom" ||
+            //     state.filter === "molecules" &&
+            //     !state.filterSelector) {
 
-                /// removing filter selector
-                delete state.filterSelector;
-            }
+            //     /// removing filter selector
+            //     delete state.filterSelector;
+
+            // }
 
             // check current screen
             try {
@@ -155,16 +161,10 @@ namespace ssg.UI {
 
             } catch (exception) {
 
-                console.log(exception);
+                console.log("ERROR:" + exception);
                 checkSumScreen += 1;
 
             }
-
-            // console.log('checkSumXtras', checkSumXtras);
-            // console.log('filters', checkSumXtras);
-            // console.log('screen', checkSumScreen);
-            // console.log('combined Checksum', checkSumXtras + checkSumFilter + checkSumScreen);
-            // console.log('combined Checksum', (checkSumXtras + checkSumFilter + checkSumScreen) === 0);
 
             if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
                 return true;
@@ -176,11 +176,11 @@ namespace ssg.UI {
 
         var _updateState = (state: UIState) => {
 
+            var curState = state;
+
             if (_validateState(state)) {
 
-                console.log('>> State is valid');
-                console.log(state);
-                sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
+                sessionStorage.setItem(STATE_KEY, JSON.stringify(curState));
 
             } else {
 
@@ -333,6 +333,13 @@ namespace ssg.UI {
 
                         }
 
+                        let newState = ssg.UI.State.current();
+
+                        newState.filter = filter;
+                        newState.filterSelector = '.' + curElement.dataset['file'];
+
+                        ssg.UI.State.update(newState);
+
                     } else {
 
                         curElement.classList.add('hide')
@@ -361,13 +368,13 @@ namespace ssg.UI {
         },
         elements: (filterValue: string) => {
 
-            var newState = ssg.UI.State.current();
-            newState.filter = filterValue;
-            ssg.UI.State.update(newState);
-
             switch (filterValue) {
                 case "atoms":
                 case "molecules":
+
+                    var newState = ssg.UI.State.current();
+                    newState.filter = filterValue;
+                    ssg.UI.State.update(newState);
 
                     var allElements = doc.querySelectorAll('div[data-cat]');
 
@@ -391,27 +398,21 @@ namespace ssg.UI {
                     break;
 
                 case "organism":
-                    console.log("Called Organism");
-                    // console.log(currentSingleItems);    
-                    // console.log(currentSingleItems = []);
-                    // console.log(currentSingleItems);
-                    ssg.UI.Filter.sliderSelection(filterValue);
-                    break;
-                case "templates":
-                    console.log("Called Templates");
-                    // console.log(currentSingleItems);    
-                    // console.log(currentSingleItems = []);
-                    // console.log(currentSingleItems);
 
                     ssg.UI.Filter.sliderSelection(filterValue);
                     break;
+
+                case "templates":
+
+                    ssg.UI.Filter.sliderSelection(filterValue);
+                    break;
+
                 case "pages":
 
-                    console.log("Called Pages");
-                    // console.log(currentSingleItems);    
-                    // console.log(currentSingleItems = []);
-                    // console.log(currentSingleItems);
                     ssg.UI.Filter.sliderSelection(filterValue);
+                    break;
+
+                default:
                     break;
 
             }
@@ -499,11 +500,9 @@ namespace ssg.UI {
                 widthInput: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
             // Updating State
-            console.log('Updating UI State');
             var newState = ssg.UI.State.current();
             newState.screen = vpData;
             ssg.UI.State.update(newState);
-            console.log('Updating UI State');
 
             // remove current active button
             if (vpActiveButton !== null) {
@@ -598,7 +597,6 @@ namespace ssg.UI {
             event.preventDefault();
 
             // Updating State
-            console.log('Updating UI State');
             var newState = ssg.UI.State.current();
             // check if code is already included in UI Extras
             if (newState.xtras.indexOf('code')) {
@@ -606,6 +604,7 @@ namespace ssg.UI {
             } else {
                 newState.xtras.pop('code');
             }
+
             ssg.UI.State.update(newState);
 
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
@@ -630,8 +629,6 @@ namespace ssg.UI {
             event.preventDefault();
 
             // Updating State
-            console.log('Updating UI State');
-
             var newState = ssg.UI.State.current();
             // check if code is already included in UI Extras
             if (newState.xtras.indexOf('annotation')) {
@@ -701,12 +698,9 @@ namespace ssg.UI {
 
             if (filterCat) {
 
-                console.log('filter cat');
                 var category = filterCat.split('-')[1];
 
                 var filterButtons = document.querySelectorAll('.ssg-core-filter .ssg-button');
-
-                console.log('Filter Button:   ', filterButtons);
 
                 for (let i = filterButtons.length - 1; i >= 0; i--) {
 
@@ -731,13 +725,10 @@ namespace ssg.UI {
             }
 
             // Updating State
-            console.log('Updating UI State');
             var newState = ssg.UI.State.current();
             newState.filter = "single";
             newState.filterSelector = "." + filter;
             ssg.UI.State.update(newState);
-            console.log('Updating UI State');
-
 
             if (filter !== null) {
 
@@ -761,7 +752,6 @@ namespace ssg.UI {
                 }
                 tocElement.classList.remove('show');
                 tocElement.classList.add('hidden');
-                console.log(tocElement);
             }
 
         },
@@ -927,9 +917,6 @@ namespace ssg.UI {
 
         RenderToc(patternConfig);
 
-        console.log('1. Rendering');
-        console.log();
-        console.log('--- Apply State');
         ApplyUIState(ssg.UI.State.current());
 
     }
@@ -938,14 +925,11 @@ namespace ssg.UI {
 
 
         let applyFilter: Function = (state: any) => {
+
             if (state.filter !== undefined
                 && state.filter !== 'toc') {
 
-                console.log(`button[data-filter='${state.filter}']`);
-
                 let buttons = doc.querySelectorAll(`.ssg-button[data-filter]`);
-
-                console.log('Length: ', buttons.length);
 
                 // Set correct button
                 for (let i: number = buttons.length - 1; i >= 0; i--) {
@@ -956,14 +940,9 @@ namespace ssg.UI {
                         && curButton.dataset !== undefined
                         && curButton.dataset['filter'] === state.filter) {
 
-                        if (curButton.classList.contains('active')) {
-
-                            console.log('deactive');
-
-                        } else {
+                        if (!curButton.classList.contains('active')) {
 
                             curButton.classList.add('active');
-                            console.log('actived');
 
                         }
 
@@ -999,6 +978,14 @@ namespace ssg.UI {
 
                 }
 
+                if (state.filter === 'organism' ||
+                    state.filter === 'molecules' ||
+                    state.filter === 'templates') {
+
+                    ssg.UI.Filter.sliderSelection(state.filter);
+
+                }
+
                 // unselect all
                 var notSelItems = doc.querySelectorAll(invQuery);
                 for (let i = notSelItems.length - 1; i >= 0; i--) {
@@ -1011,8 +998,6 @@ namespace ssg.UI {
                     selItems[i].classList.remove('hide');
                 }
 
-                console.log(selItems);
-
             }
         };
 
@@ -1020,25 +1005,56 @@ namespace ssg.UI {
 
             let viewPortQuery = `button[data-viewport='${state.screen}']`,
                 viewPortInvQuery = `button.active[data-viewport]`,
-                // Selecting buttons
+                // selecting buttons
                 viewPortActiveButton = doc.querySelector(viewPortInvQuery),
                 viewPortButton = doc.querySelector(viewPortQuery),
-                // Width selector
+                // width selector
                 widthSelector = <HTMLInputElement>doc.getElementById('ssg-in-width'),
                 contentWidth: HTMLElement = <HTMLElement>doc.querySelector('.ssg-patterns-inner');
 
-            // Set inner screen width of patterns
+            // set inner screen width of patterns
             contentWidth.style.width = `${state.screen}px`;
 
-            // View width selector
+            // view width selector
             widthSelector.value = state.screen;
 
             // activate viewport button
-            viewPortButton.classList.add('active');
 
-            if (viewPortButton !== viewPortActiveButton) {
+            if (viewPortButton !== undefined
+                && viewPortButton !== null) {
 
-                viewPortActiveButton.classList.remove('active');
+                viewPortButton.classList.add('active');
+
+                if (viewPortButton !== viewPortActiveButton) {
+
+                    viewPortActiveButton.classList.remove('active');
+
+                }
+
+            }
+
+        };
+
+        let applyExtras: Function = (state: any) => {
+
+            if (state.xtras.indexOf('annotation')) {
+
+                let notes = doc.querySelectorAll('.ssg-item-description');
+
+                for (let i = notes.length - 1; i >= 0; i--) {
+
+                    let curNote: HTMLElement = <HTMLElement>notes[i]);
+                    curNote.classList.add('show');
+
+                }
+
+                let notesButton = doc.querySelectorAll("button[data-action='ssg-annot']");
+
+                for (let i = notesButton.length - 1; i >= 0; i--) {
+
+                    notesButton[i].classList.add('active');
+
+                }
 
             }
 
@@ -1046,11 +1062,7 @@ namespace ssg.UI {
 
         applyFilter(state);
         applyScreenWidth(state);
-
-        console.log('Apply UI State');
-        console.log(state);
-
-
+        applyExtras(state);
 
     }
 
@@ -1098,15 +1110,20 @@ namespace ssg.UI {
             var allElements =
                 doc.querySelectorAll('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
 
-            console.log('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
-
             for (let j = 0; j < allElements.length; j++) {
 
-                var curPatternElement: HTMLElement = <HTMLElement>allElements[j];
+                let curPatternElement: HTMLElement = <HTMLElement>allElements[j];
 
                 if (curPatternElement.dataset['file'] === curElement.file) {
 
                     curPatternElement.classList.remove('hide');
+
+                    let newState = ssg.UI.State.current();
+
+                    // newState.filter = "single";
+                    newState.filterSelector = '.' + curPatternElement.dataset['file'];
+
+                    ssg.UI.State.update(newState);
 
                 } else {
 
@@ -1119,7 +1136,7 @@ namespace ssg.UI {
         }
 
 
-        // Check if only one pattern is in current selection
+        // check if only one pattern is in current selection
         if (slideItems.length <= 1) {
             return;
         }
