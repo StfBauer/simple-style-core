@@ -1043,7 +1043,7 @@ namespace ssg.UI {
 
                 for (let i = notes.length - 1; i >= 0; i--) {
 
-                    let curNote: HTMLElement = <HTMLElement>notes[i]);
+                    let curNote: HTMLElement = <HTMLElement>notes[i];
                     curNote.classList.add('show');
 
                 }

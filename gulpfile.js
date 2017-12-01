@@ -4,6 +4,7 @@ var config = require('./ssg.core.config'), // import core settings
     $ = require('gulp-load-plugins')({
         lazy: true
     }),
+    del = require('del'),
     ts = require('gulp-typescript'),
     markdown = require('gulp-marked-json'),
     jsoncombine = require('gulp-jsoncombine'),
@@ -217,8 +218,17 @@ gulp.task('ts:core:compile', () => {
 
 });
 
+// Launch options
+gulp.task('pre:serve', ['ssg:precompile', 'doc:markdown']);
+
+gulp.task('clean', () =>{
+    
+    return del(['.tmp']);
+
+});
+
 // Run for starting the web server
-gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile'], () => {
+gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile', 'pre:serve'], () => {
 
     browserSync(config.server);
 
