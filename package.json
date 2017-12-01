@@ -25,6 +25,7 @@
   "dependencies": {
     "browser-sync": "^2.18.13",
     "chalk": "^2.3.0",
+    "del": "^3.0.0",
     "es6-promise": "^4.1.1",
     "glob": "^7.1.2",
     "glob-stream": "^6.1.0",

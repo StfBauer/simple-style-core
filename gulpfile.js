@@ -221,9 +221,17 @@ gulp.task('ts:core:compile', () => {
 // Launch options
 gulp.task('pre:serve', ['ssg:precompile', 'doc:markdown']);
 
-gulp.task('clean', () =>{
+// cleans the temporary directory
+gulp.task('clean:tmp', () =>{
     
     return del(['.tmp']);
+
+});
+
+// cleans distribution directory
+gulp.task('clean:dist', () =>{
+    
+    return del(['dist']);
 
 });
 
