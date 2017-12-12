@@ -240,7 +240,9 @@ gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:
 
     browserSync(config.server);
 
+    // run general watches
     wathches();
+    // run core watches watches
     wathchesCore();
 
 });
