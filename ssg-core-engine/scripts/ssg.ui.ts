@@ -279,7 +279,7 @@ namespace ssg.UI {
 
         };
 
-        export var hideShowSingleItemSlider = (hide: boolean) => {
+        export var hideSingleItemSlider = (hide: boolean) => {
 
             var singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
 
@@ -303,8 +303,11 @@ namespace ssg.UI {
     export var Filter = {
 
         sliderSelection: (filter: string) => {
+
             var allElements = doc.querySelectorAll('div[data-cat]'),
                 firstItemFound = false;
+
+            console.log('Slider Selection:', ssg.UI.State.current());
 
             // reset currentSingleItem
             currentSingleItems = [];
@@ -354,15 +357,15 @@ namespace ssg.UI {
 
             }
 
-            ssg.UI.EnableSingleSlider(currentSingleItems, filter);
+            ssg.UI.EnableSingleSlider(currentSingleItems);
 
             if (currentSingleItems.length > 1) {
 
-                ssg.UI.Utils.hideShowSingleItemSlider(false);
+                ssg.UI.Utils.hideSingleItemSlider(false);
 
             } else {
 
-                ssg.UI.Utils.hideShowSingleItemSlider(true);
+                ssg.UI.Utils.hideSingleItemSlider(true);
 
             }
         },
@@ -394,7 +397,7 @@ namespace ssg.UI {
 
                     }
 
-                    ssg.UI.Utils.hideShowSingleItemSlider(true);
+                    ssg.UI.Utils.hideSingleItemSlider(true);
                     break;
 
                 case "organism":
@@ -693,10 +696,36 @@ namespace ssg.UI {
             event.preventDefault();
             var currentToc = <Node>event.target,
                 filter = (<HTMLElement>currentToc).dataset['filter'],
-                filterCat = (currentToc.parentNode.attributes.getNamedItem("id").value);
+                filterFolder = (<HTMLElement>currentToc).dataset['folder'],
+                filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value),
+                tocButton = doc.querySelector(ssg.UI.btnShowToC);
 
+                console.log(ssg.UI.btnShowToC);
+                console.log(tocButton);
+
+            console.log(filter, filterCat, filterFolder, currentToc);
 
             if (filterCat) {
+
+                if (filterFolder === 'templates' ||
+                    filterFolder === 'organism' ||
+                    filterFolder === 'page') {
+
+                    let selectedItems = doc.querySelectorAll('div[data-cat=' + filterFolder + ']');
+                    console.log(selectedItems);
+
+                    // Updating current state
+                    let curState = ssg.UI.State.current();
+                    curState.filterSelector = '.' + filter;
+                    ssg.UI.State.update(curState);
+
+                    console.log(ssg.UI.State.current());
+
+                    ssg.UI.Filter.sliderSelection(filterFolder);
+
+                } else {
+                    ssg.UI.Utils.hideSingleItemSlider(false)
+                }
 
                 var category = filterCat.split('-')[1];
 
@@ -726,8 +755,8 @@ namespace ssg.UI {
 
             // Updating State
             var newState = ssg.UI.State.current();
-            newState.filter = "single";
-            newState.filterSelector = "." + filter;
+            newState.filter = 'single';
+            newState.filterSelector = '.' + filter;
             ssg.UI.State.update(newState);
 
             if (filter !== null) {
@@ -766,9 +795,9 @@ namespace ssg.UI {
 
                 let searchValue = searchBox.value;
 
-                var resetResult = doc.querySelectorAll('.ssg-toc-item');
+                let resetResult = doc.querySelectorAll('.ssg-toc-item');
 
-                for (var j = resetResult.length - 1; j >= 0; j--) {
+                for (let j = resetResult.length - 1; j >= 0; j--) {
 
                     if (resetResult[j].classList.contains('hide')) {
 
@@ -780,11 +809,11 @@ namespace ssg.UI {
 
                 if (searchValue !== "") {
 
-                    var searchResult = doc.querySelectorAll(".ssg-toc-item:not([data-filter*='" + searchValue + "'])");
+                    let searchResult = doc.querySelectorAll(".ssg-toc-item:not([data-filter*='" + searchValue + "'])");
 
                     if (searchResult !== null) {
 
-                        for (var i = searchResult.length - 1; i >= 0; i--) {
+                        for (let i = searchResult.length - 1; i >= 0; i--) {
 
                             searchResult[i].classList.add('hide');
 
@@ -836,7 +865,9 @@ namespace ssg.UI {
                 let folderpath: string = patterns[j].filepath.split('/')[0];
 
                 let patternTitle: string = '<li class=ssg-toc-item data-filter=\"' +
-                    patterns[j].filename + '\">' +
+                    patterns[j].filename + '\" ' +
+                    ' data-folder=\"' + folderpath + '\" ' +
+                    '>' +
                     patterns[j].title + '</li>';
 
                 let currentSection: HTMLElement = doc.getElementById('ssg-' + folderpath + '-items');
@@ -864,8 +895,8 @@ namespace ssg.UI {
 
         // console.log('..... All Pattern');
 
-        var allContent = "",
-            allToc = "";
+        let allContent = '',
+            allToc = '';
 
         for (let i = patternConfig.patterns.length - 1; i >= 0; i--) {
 
@@ -890,9 +921,9 @@ namespace ssg.UI {
                     // Append parsed content
                     allContent = domContent.body.innerHTML + allContent;
 
-                } catch (Exception) {
+                } catch (exception) {
 
-                    console.log(Exception);
+                    console.log(exception);
 
                 }
 
@@ -906,6 +937,7 @@ namespace ssg.UI {
         var allTempLates = allContentDOM.querySelectorAll('div[data-cat=templates]'),
             allPages = allContentDOM.querySelectorAll('div[data-cat=pages]'),
             allOrganism = allContentDOM.querySelectorAll('div[data-cat=organism]');
+
         Utils.changeItemToSinglePage(allTempLates);
         Utils.changeItemToSinglePage(allPages);
         Utils.changeItemToSinglePage(allOrganism);
@@ -1068,8 +1100,6 @@ namespace ssg.UI {
 
     export var EnableSingleSlider = (currentSingleItems, filter) => {
 
-
-
         let slideItems = currentSingleItems;
 
         var slidePatterns = function (event) {
@@ -1077,29 +1107,42 @@ namespace ssg.UI {
             event.preventDefault();
             event.stopPropagation();
 
+            console.log('--- Filter Seletion:', ssg.UI.State.current());
+            console.log(event);
+
             var currentButton: HTMLElement = <HTMLElement>event.target;
 
-            if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+            if (currentButton !== null) {
 
-                currentSingleCount -= 1;
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
 
-            };
+                    currentSingleCount -= 1;
 
-            if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+                };
 
-                currentSingleCount += 1;
+                if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
 
-            };
+                    currentSingleCount += 1;
 
-            if (currentSingleCount > currentSingleItems.length - 1) {
+                };
 
-                currentSingleCount = 0;
+                if (currentSingleCount > currentSingleItems.length - 1) {
 
-            }
+                    currentSingleCount = 0;
 
-            if (currentSingleCount < 0) {
+                }
 
-                currentSingleCount = currentSingleItems.length - 1;
+                if (currentSingleCount < 0) {
+
+                    currentSingleCount = currentSingleItems.length - 1;
+
+                }
+            } else {
+
+                // check from current state
+                for (let i = 0; currentSingleItems.length; i++) {
+                    console.log(currentSingleItems[0]);
+                }
 
             }
 
@@ -1135,25 +1178,26 @@ namespace ssg.UI {
 
         }
 
-
         // check if only one pattern is in current selection
         if (slideItems.length <= 1) {
             return;
         }
 
-        var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
+        console.log(coreUiElement.singleItemNavTitle)
+
+        let currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
 
         currentTitle.textContent = slideItems[0].title;
 
         // var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
-        var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
+        let slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
 
         for (let i = 0; i < slider.length; i++) {
 
             // remova all previous registered event handler
-            var currentButton = slider[i];
+            let currentButton = slider[i];
             // clone current node without event handler
-            var newButton = currentButton.cloneNode(true);
+            let newButton = currentButton.cloneNode(true);
             // register new Click event
             newButton.addEventListener('click', slidePatterns);
             // replace element
@@ -1161,9 +1205,14 @@ namespace ssg.UI {
 
         }
 
+        // if (filter === null || filter === undefined) {
+        //     console.log("Rolling slidePatterns");
+        //     slidePatterns(null);
+        // }
+
     }
 
-    export var ShowSliderCtrl = (show) => {
+    export var ShowSliderCtrl = (show: boolean) => {
 
         var singleSliderControl = document.querySelector("." + coreUiElement.singleItemNav);
 

@@ -10,8 +10,7 @@
     "class-name": true,
     "comment-format": [
       true,
-      "check-space",
-      "check-lowercase"
+      "check-space"
     ],
     "curly": true,
     "eofline": true,
@@ -96,7 +95,7 @@
       "allow-null-check"
     ],
     "typedef": [
-      true,
+      false,
       "call-signature",
       "parameter",
       "property-declaration",

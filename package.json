@@ -23,10 +23,10 @@
   "author": "Stefan Bauer <stefan.bauer@n8d.at>",
   "license": "MIT",
   "dependencies": {
-    "browser-sync": "^2.18.13",
+    "browser-sync": "^2.21.0",
     "chalk": "^2.3.0",
     "del": "^3.0.0",
-    "es6-promise": "^4.1.1",
+    "es6-promise": "^4.2.2",
     "glob": "^7.1.2",
     "glob-stream": "^6.1.0",
     "gulp": "^3.9.1",
@@ -48,7 +48,7 @@
     "gulp-wrap": "^0.13.0",
     "handlebars": "^4.0.11",
     "plumber": "^0.4.8",
-    "prismjs": "^1.8.4",
+    "prismjs": "^1.9.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   },
