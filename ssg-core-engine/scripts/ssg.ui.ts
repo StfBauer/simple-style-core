@@ -36,13 +36,13 @@ interface UIState {
 
 namespace ssg.UI {
 
-    declare var window: Window,
+    declare let window: Window,
         document: Document,
         ssgCore: any,
         ssg: any,
         Prism: any;
 
-    var win = window,
+    let win = window,
         doc = document,
         ssgCoreTemplates = ssgCore.templates,
         ssgTemplates = ssg.templates,
@@ -88,7 +88,7 @@ namespace ssg.UI {
         }
     };
 
-    export var State = (() => {
+    export let State = (() => {
 
 
         const STATE_KEY = "ssg.UI.State",
@@ -106,17 +106,17 @@ namespace ssg.UI {
         };
 
         // Validate current state entry
-        var _validateState = (state: UIState): boolean => {
+        let _validateState = (state: UIState): boolean => {
 
             // checking if all states are valid
-            var checkSumXtras = 0,
+            let checkSumXtras = 0,
                 checkSumFilter = 0,
                 checkSumScreen = 0;
 
             // Check current xtra selection
             for (let i = state.xtras.length - 1; i > 0; i--) {
 
-                var curState = state.xtras[i];
+                let curState = state.xtras[i];
 
                 if (XTRAS.indexOf(curState) === -1) {
 
@@ -174,9 +174,9 @@ namespace ssg.UI {
 
         };
 
-        var _updateState = (state: UIState) => {
+        let _updateState = (state: UIState) => {
 
-            var curState = state;
+            let curState = state;
 
             if (_validateState(state)) {
 
@@ -224,7 +224,7 @@ namespace ssg.UI {
 
     export namespace Utils {
 
-        export var requestData = (method: string, url: string): Promise<{}> => {
+        export let requestData = (method: string, url: string): Promise<{}> => {
 
             return new Promise(function (resolve: Function, reject: Function) {
 
@@ -258,9 +258,9 @@ namespace ssg.UI {
 
         };
 
-        export var changeItemToSinglePage = (nodes: NodeList) => {
+        export let changeItemToSinglePage = (nodes: NodeList) => {
 
-            var nodeCount = nodes.length;
+            let nodeCount = nodes.length;
 
             while (nodeCount !== 0) {
 
@@ -279,9 +279,9 @@ namespace ssg.UI {
 
         };
 
-        export var hideSingleItemSlider = (hide: boolean) => {
+        export let hideSingleItemSlider = (hide: boolean) => {
 
-            var singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
+            let singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
 
             if (singleItemSelector !== undefined && singleItemSelector !== null) {
 
@@ -300,7 +300,7 @@ namespace ssg.UI {
         }
     };
 
-    export var Filter = {
+    export let Filter = {
 
         sliderSelection: (filter: string) => {
 
@@ -314,11 +314,11 @@ namespace ssg.UI {
 
             for (let i = 0; i < allElements.length; i++) {
 
-                var curElement: HTMLElement = <HTMLElement>allElements[i];
+                let curElement: HTMLElement = <HTMLElement>allElements[i];
 
                 if (curElement.dataset['cat'] === filter) {
 
-                    var curSingleItem = {
+                    let curSingleItem = {
                         title: curElement.getAttribute('title'),
                         file: curElement.dataset['file'],
                         category: filter
@@ -336,17 +336,6 @@ namespace ssg.UI {
 
                         }
 
-                        // var newState = ssg.UI.State.current();
-
-                        // newState.filter = filter;
-                        // console.log('filterSelector:', '.' + curElement.dataset['file']);
-                        // console.log('filterSelector:', newState.filterSelector);
-                        // newState.filterSelector = curElement.dataset['file'];
-                        // console.log('filterSelector:', '.' + newState.filterSelector);
-
-                        // console.log(' ------> State Uodate', newState);
-                        // ssg.UI.State.update(newState);
-                        // console.log(' ------> State Uodate', ssg.UI.State.current());
 
                     } else {
 
@@ -361,8 +350,6 @@ namespace ssg.UI {
                 }
 
             }
-
-            console.log(' --------------- > ', ssg.UI.State.current());
 
             ssg.UI.EnableSingleSlider(currentSingleItems);
 
@@ -382,15 +369,15 @@ namespace ssg.UI {
                 case "atoms":
                 case "molecules":
 
-                    var newState = ssg.UI.State.current();
+                    let newState = ssg.UI.State.current();
                     newState.filter = filterValue;
                     ssg.UI.State.update(newState);
 
-                    var allElements = doc.querySelectorAll('div[data-cat]');
+                    let allElements = doc.querySelectorAll('div[data-cat]');
 
                     for (let i = allElements.length - 1; i >= 0; i--) {
 
-                        var curElement: HTMLElement = <HTMLElement>allElements[i];
+                        let curElement: HTMLElement = <HTMLElement>allElements[i];
 
                         if (curElement.dataset['cat'] === filterValue) {
 
@@ -431,9 +418,9 @@ namespace ssg.UI {
 
     }
 
-    export var initDisco = () => {
+    export let initDisco = () => {
 
-        var disco = setInterval(
+        let disco = setInterval(
             function () {
 
                 let discoButton = document.querySelector(coreUiElement.discoButton + "." + coreUiElement.state.active),
@@ -456,7 +443,7 @@ namespace ssg.UI {
 
     }
 
-    export var Events = {
+    export let Events = {
 
         // change all filter
         changeFilter: (event: Event) => {
@@ -464,7 +451,7 @@ namespace ssg.UI {
             // prevent all default
             event.preventDefault();
 
-            var allButtons = doc.querySelectorAll(coreUiElement.filterButton);
+            let allButtons = doc.querySelectorAll(coreUiElement.filterButton);
 
             for (let i = allButtons.length - 1; i >= 0; i--) {
 
@@ -474,7 +461,7 @@ namespace ssg.UI {
 
             }
 
-            var curButton: HTMLElement = <HTMLElement>event.target,
+            let curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
 
             curButton.classList.add(coreUiElement.state.active);
@@ -490,7 +477,7 @@ namespace ssg.UI {
             // prevent all default
             event.preventDefault();
 
-            var curButton: HTMLElement = <HTMLElement>event.target,
+            let curButton: HTMLElement = <HTMLElement>event.target,
                 filter = curButton.dataset['filter'];
 
             curButton.classList.contains(coreUiElement.state.active) ?
@@ -503,14 +490,14 @@ namespace ssg.UI {
 
             event.preventDefault();
 
-            var vpButton: HTMLElement = <HTMLElement>event.target,
+            let vpButton: HTMLElement = <HTMLElement>event.target,
                 vpActiveButton: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active),
                 vpData = vpButton.dataset['viewport'],
                 vpTarget: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                 widthInput: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
             // Updating State
-            var newState = ssg.UI.State.current();
+            let newState = ssg.UI.State.current();
             newState.screen = vpData;
             ssg.UI.State.update(newState);
 
@@ -579,11 +566,11 @@ namespace ssg.UI {
 
             if (event instanceof KeyboardEvent) {
 
-                var kbEvent: KeyboardEvent = <KeyboardEvent>event;
+                let kbEvent: KeyboardEvent = <KeyboardEvent>event;
 
                 if (kbEvent.keyCode == 13) {
 
-                    var innerPattern: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
+                    let innerPattern: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                         newWidth: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
                     innerPattern.style.width = newWidth.value;
@@ -592,7 +579,7 @@ namespace ssg.UI {
 
             } else {
 
-                var innerPattern: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
+                let innerPattern: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                     newWidth: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
 
                 innerPattern.style.width = newWidth.value;
@@ -607,7 +594,7 @@ namespace ssg.UI {
             event.preventDefault();
 
             // Updating State
-            var newState = ssg.UI.State.current();
+            let newState = ssg.UI.State.current();
             // check if code is already included in UI Extras
             if (newState.xtras.indexOf('code')) {
                 newState.xtras.push('code');
@@ -620,14 +607,14 @@ namespace ssg.UI {
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
-                var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                let codeBlocks = doc.querySelectorAll('.ssg-item-code');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.add(coreUiElement.state.show);
                 }
 
             } else {
                 // hide source code by removing the class
-                var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                let codeBlocks = doc.querySelectorAll('.ssg-item-code');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.remove(coreUiElement.state.show);
                 }
@@ -639,7 +626,7 @@ namespace ssg.UI {
             event.preventDefault();
 
             // Updating State
-            var newState = ssg.UI.State.current();
+            let newState = ssg.UI.State.current();
             // check if code is already included in UI Extras
             if (newState.xtras.indexOf('annotation')) {
 
@@ -656,14 +643,14 @@ namespace ssg.UI {
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
                 // sho source code by adding class
-                var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                let codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.add(coreUiElement.state.show);
                 }
 
             } else {
                 // hide source code by removing the class
-                var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                let codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.remove(coreUiElement.state.show);
                 }
@@ -701,11 +688,18 @@ namespace ssg.UI {
         filterToc: (event: Event) => {
 
             event.preventDefault();
-            var currentToc = <Node>event.target,
+
+            console.log("Filter TOC");
+
+            let currentToc = <Node>event.target,
                 filter = (<HTMLElement>currentToc).dataset['filter'],
                 filterFolder = (<HTMLElement>currentToc).dataset['folder'],
                 filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value),
                 tocButton = doc.querySelector(ssg.UI.btnShowToC);
+
+            if(tocButton){
+                tocButton[0].classList.add('active');
+            }
 
             if (filterCat) {
 
@@ -724,18 +718,20 @@ namespace ssg.UI {
                     ssg.UI.Filter.sliderSelection(filterFolder);
 
                 } else {
-                    ssg.UI.Utils.hideSingleItemSlider(false)
+                    ssg.UI.Utils.hideSingleItemSlider(true);
                 }
 
-                var category = filterCat.split('-')[1];
+                let category = filterCat.split('-')[1];
 
-                var filterButtons = document.querySelectorAll('.ssg-core-filter .ssg-button');
+                let filterButtons = document.querySelectorAll('.ssg-core-filter .ssg-button');
 
                 for (let i = filterButtons.length - 1; i >= 0; i--) {
 
                     let curFilterButton = filterButtons[i],
                         curFilterStyle = curFilterButton.classList,
                         curDataSet = (<HTMLElement>curFilterButton).dataset['filter'];
+
+                    console.log(curFilterStyle, category);
 
                     if (curFilterStyle.contains('active')) {
 
@@ -754,7 +750,7 @@ namespace ssg.UI {
             }
 
             // Updating State
-            var newState = ssg.UI.State.current();
+            let newState = ssg.UI.State.current();
             newState.filter = 'single';
             newState.filterSelector = '.' + filter;
             ssg.UI.State.update(newState);
@@ -898,7 +894,7 @@ namespace ssg.UI {
 
         for (let i = patternConfig.patterns.length - 1; i >= 0; i--) {
 
-            var curPattern = patternConfig.patterns[i],
+            let curPattern = patternConfig.patterns[i],
                 curPatternTitle = curPattern.filename,
                 curTemplate = ssgTemplates[curPatternTitle],
                 parser = new DOMParser();
@@ -915,7 +911,7 @@ namespace ssg.UI {
                 try {
 
                     // Parse Document and check if all elements are properly closed
-                    var domContent = parser.parseFromString(content, 'text/html');
+                    let domContent = parser.parseFromString(content, 'text/html');
                     // Append parsed content
                     allContent = domContent.body.innerHTML + allContent;
 
@@ -956,6 +952,8 @@ namespace ssg.UI {
 
         let applyFilter: Function = (state: any) => {
 
+            console.log("Filter State", state);
+
             if (state.filter !== undefined
                 && state.filter !== 'toc') {
 
@@ -993,15 +991,17 @@ namespace ssg.UI {
 
                 if (state.filter === 'single') {
 
-                    let filter: string = state.filterSelector.substr(1, state.filterSelector.length - 1);
+                    let filter: string = state.filterSelector.substr(1);
 
                     query = `div[data-file='${filter}']`;
                     invQuery = `div:not([data-file='${filter}'])`;
 
                     let tocButton = doc.querySelectorAll(`.ssg-button[data-action='ssg-toc']`);
 
-                    if (tocButton !== undefined && tocButton.length === 1) {
+                    console.log('TOC BUTTON');
 
+                    if (tocButton !== undefined && tocButton.length === 1) {
+                        console.log('TOC BUTTON');
                         tocButton[0].classList.add('active');
 
                     }
@@ -1017,20 +1017,50 @@ namespace ssg.UI {
                 }
 
                 // unselect all
-                var notSelItems = doc.querySelectorAll(invQuery);
+                let notSelItems = doc.querySelectorAll(invQuery);
                 for (let i = notSelItems.length - 1; i >= 0; i--) {
                     notSelItems[i].classList.add('hide');
                 }
 
                 // make sure all are selected
-                var selItems = doc.querySelectorAll(query);
-                for (let i = selItems.length - 1; i >= 0; i--) {
-                    selItems[i].classList.remove('hide');
+                let selItems = doc.querySelectorAll(query);
+
+                if (selItems.length === 1) {
+
+                    let curItem: HTMLElement = <HTMLElement>selItems[0];
+
+                    console.log('Current Category:', curItem.dataset.cat);
+
+                    if (curItem.dataset.cat !== undefined
+                        && curItem.dataset.cat !== null
+                        && (
+                            curItem.dataset.cat === 'templates'
+                            || curItem.dataset.cat === 'pages'
+                            || curItem.dataset.cat === 'organism'
+                        )
+                    ) {
+
+                        ssg.UI.Filter.sliderSelection(curItem.dataset.cat);
+
+                    } else {
+
+                        ssg.UI.Utils.hideSingleItemSlider(true);
+
+                    }
+
+
+                } else {
+
+                    for (let i = selItems.length - 1; i >= 0; i--) {
+                        selItems[i].classList.remove('hide');
+                    }
+
                 }
 
             }
         };
 
+        // apply the correct selected scren width tot the viewport
         let applyScreenWidth: Function = (state: any) => {
 
             let viewPortQuery = `button[data-viewport='${state.screen}']`,
@@ -1096,7 +1126,7 @@ namespace ssg.UI {
 
     }
 
-    export var EnableSingleSlider = (currentSingleItems, filter) => {
+    export let EnableSingleSlider = (currentSingleItems, filter) => {
 
         let slideItems = currentSingleItems;
 
@@ -1190,7 +1220,7 @@ namespace ssg.UI {
 
         currentTitle.textContent = slideItems[0].title;
 
-        // var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
+        // let slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
         let slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
 
         for (let i = 0; i < slider.length; i++) {
@@ -1225,7 +1255,7 @@ namespace ssg.UI {
 
     export let ShowSliderCtrl = (show: boolean) => {
 
-        let singleSliderControl = document.querySelector("." + coreUiElement.singleItemNav);
+        let singleSliderControl = document.querySelector('.' + coreUiElement.singleItemNav);
 
         if (show) {
 
@@ -1239,9 +1269,9 @@ namespace ssg.UI {
 
     }
 
-    export var InitEvents = () => {
+    export let InitEvents = () => {
         // Render Events
-        var filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
+        let filterButtons: NodeList = doc.querySelectorAll(coreUiElement.filterButton),
             viewButtons: NodeList = doc.querySelectorAll(coreUiElement.viewButton),
             viewPortButtons: NodeList = doc.querySelectorAll(coreUiElement.viewPortButton),
             viewPortWidth: NodeList = doc.querySelectorAll(coreUiElement.viewPortWidth),
@@ -1266,7 +1296,7 @@ namespace ssg.UI {
         Events.registerEvents(allTocItems, 'keyup', Events.searchToc);
     }
 
-    export var Init = () => {
+    export let Init = () => {
 
         Promise.all([ssg.UI.Utils.requestData('GET', '/_config/pattern.conf.json')])
             .then(function (result: any): void {
@@ -1300,7 +1330,7 @@ namespace ssg.UI {
 
     }
 
-    export var PostRender = [];
+    export let PostRender = [];
 
 };
 
