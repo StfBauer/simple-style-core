@@ -697,7 +697,7 @@ namespace ssg.UI {
                 filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value),
                 tocButton = doc.querySelector(ssg.UI.btnShowToC);
 
-            if(tocButton){
+            if (tocButton) {
                 tocButton[0].classList.add('active');
             }
 
@@ -890,14 +890,14 @@ namespace ssg.UI {
             tocContainer: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewTocInner);
 
         let allContent = '',
-            allToc = '';
+            allToc = '',
+            parser = new DOMParser();
 
         for (let i = patternConfig.patterns.length - 1; i >= 0; i--) {
 
             let curPattern = patternConfig.patterns[i],
                 curPatternTitle = curPattern.filename,
-                curTemplate = ssgTemplates[curPatternTitle],
-                parser = new DOMParser();
+                curTemplate = ssgTemplates[curPatternTitle];
 
             // Define base filter
             curPattern.baseFilter = curPattern.filepath.split('/')[0];
@@ -955,7 +955,7 @@ namespace ssg.UI {
             console.log("Filter State", state);
 
             if (state.filter !== undefined
-                && state.filter !== 'toc') {
+                && state.filter !== 'single') {
 
                 let buttons = doc.querySelectorAll(`.ssg-button[data-filter]`);
 
@@ -998,10 +998,8 @@ namespace ssg.UI {
 
                     let tocButton = doc.querySelectorAll(`.ssg-button[data-action='ssg-toc']`);
 
-                    console.log('TOC BUTTON');
-
                     if (tocButton !== undefined && tocButton.length === 1) {
-                        console.log('TOC BUTTON');
+
                         tocButton[0].classList.add('active');
 
                     }
@@ -1057,7 +1055,36 @@ namespace ssg.UI {
 
                 }
 
+            } else if (state.filter === 'single') {
+
+                let tocButton = doc.querySelector(coreUiElement.btnShowToC);
+                tocButton.classList.add('active');
+
+                if (state.filterSelector !== undefined &&
+                    state.filterSelector !== null) {
+                    console.log('single filter');
+                    console.log(state.filterSelector);
+
+                    let allAMItems = [].slice.call(
+                            doc.querySelectorAll('div[class=ssg-item')
+                        ),
+                        allOPTItems = [].slice.call(
+                            doc.querySelectorAll('div[class=ssg-item-single')
+                        ),
+                        allItems = allAMItems.concat(allOPTItems);
+
+                    for (let i = allItems.length - 1; i > 0; i--) {
+
+                        console.log(allItems[i]);
+                        let curItem: HTMLElement = <HTMLElement>allItems[i];
+                        curItem.classList.add('hide');
+
+                    }
+
+                }
+
             }
+
         };
 
         // apply the correct selected scren width tot the viewport
@@ -1072,6 +1099,13 @@ namespace ssg.UI {
                 widthSelector = <HTMLInputElement>doc.getElementById('ssg-in-width'),
                 contentWidth: HTMLElement = <HTMLElement>doc.querySelector('.ssg-patterns-inner');
 
+            // If full screeen use actian width
+            if (state.screen === 'full') {
+
+                state.screen = window.innerWidth;
+
+            }
+
             // set inner screen width of patterns
             contentWidth.style.width = `${state.screen}px`;
 
@@ -1079,7 +1113,6 @@ namespace ssg.UI {
             widthSelector.value = state.screen;
 
             // activate viewport button
-
             if (viewPortButton !== undefined
                 && viewPortButton !== null) {
 
@@ -1095,6 +1128,7 @@ namespace ssg.UI {
 
         };
 
+        // applies extras such as shwo Source code
         let applyExtras: Function = (state: any) => {
 
             if (state.xtras.indexOf('annotation')) {
@@ -1238,12 +1272,23 @@ namespace ssg.UI {
 
         console.log('------------ DO SOME CODE HERE -------------');
         console.log(ssg.UI.State.current());
-        // Setting current Item count i case filter using TOC
-        currentSingleCount = currentSingleItems.findIndex(
-            x => x.file === (ssg.UI.State.current()).filterSelector.substring(1));
 
-        // Update from current filter
-        setCurrentItem(currentSingleCount);
+
+        let curState = ssg.UI.State.current();
+
+
+        console.log(curState.filterSelector);
+
+        // Check if TOC have been selected
+        if (curState.filterSelector !== undefined) {
+            // Setting current Item count i case filter using TOC
+            currentSingleCount = currentSingleItems.findIndex(
+                x => x.file === curState.filterSelector.substring(1));
+
+            // Update from current filter
+            setCurrentItem(currentSingleCount);
+
+        }
 
 
         // if (filter === null || filter === undefined) {

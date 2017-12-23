@@ -1,6 +1,27 @@
 a{
     content: 'Hello World';
 }
-
-
-
+.relative{
+    position: relative;
+    background-color: yellow;
+}
+.absolute{
+    position: absolute;
+    background-color: red;
+}
+.static{
+    position: static;
+    background-color: green;
+}
+.fixed{
+    position: fixed;
+    background-color: blue;
+}
+.fl{
+    float: left;
+    background-color: pink;
+}
+.fr{
+    float: right;
+    background-color: black;
+}
