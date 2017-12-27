@@ -1,46 +1,46 @@
 {
     "patterns": [
         {
-            "title": "eight-atom",
+            "title": "asdasdas",
             "description": "",
-            "filename": "eight-atom",
-            "filepath": "atoms/eight-atom.hbs"
+            "filename": "asdasdas",
+            "filepath": "atoms/asdasdas.hbs"
         },
         {
-            "title": "fifth-atom",
+            "title": "asdasdasd",
             "description": "",
-            "filename": "fifth-atom",
-            "filepath": "atoms/fifth-atom.hbs"
+            "filename": "asdasdasd",
+            "filepath": "atoms/asdasdasd.hbs"
         },
         {
-            "title": "first-atom",
+            "title": "asdasdasdasd",
             "description": "",
-            "filename": "first-atom",
-            "filepath": "atoms/first-atom.hbs"
+            "filename": "asdasdasdasd",
+            "filepath": "atoms/asdasdasdasd.hbs"
         },
         {
-            "title": "fourth-atom",
+            "title": "atom-tester-2",
             "description": "",
-            "filename": "fourth-atom",
-            "filepath": "atoms/fourth-atom.hbs"
+            "filename": "atom-tester-2",
+            "filepath": "atoms/atom-tester-2.hbs"
         },
         {
-            "title": "second-atom",
+            "title": "atom-tester",
             "description": "",
-            "filename": "second-atom",
-            "filepath": "atoms/second-atom.hbs"
+            "filename": "atom-tester",
+            "filepath": "atoms/atom-tester.hbs"
         },
         {
-            "title": "seventh-atom",
+            "title": "nan 25",
             "description": "",
-            "filename": "seventh-atom",
-            "filepath": "atoms/seventh-atom.hbs"
+            "filename": "nan 26",
+            "filepath": "atoms/nan 26.hbs"
         },
         {
-            "title": "sixth-atom",
+            "title": "sixth-atom-1",
             "description": "",
-            "filename": "sixth-atom",
-            "filepath": "atoms/sixth-atom.hbs"
+            "filename": "sixth-atom-1",
+            "filepath": "atoms/sixth-atom-1.hbs"
         },
         {
             "title": "third-atom",

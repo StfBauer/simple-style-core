@@ -31,13 +31,19 @@ var wathches = () => {
     // SASS compilation and style changes
     gulp.watch(config.watches.styles, ['sass:compile'], reload);
 
-    // Precompile all patterns
-    gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
-
     // Update configuration
     gulp.watch(config.watches.ssg)
         // item was changed
         .on('change', ssgCoreConfig.fsEvents);
+
+    // Precompile all patterns
+    gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
+
+    try {
+        gulp.watch(config.watches.ssg, ['ssg:config'], reload);
+    } catch (Exception) {
+        console.log(Exception)
+    }
 
     // Watch for documentation changes
     gulp.watch(config.watches.documentation, ['doc:markdown'], reload);
@@ -63,7 +69,7 @@ gulp.task('doc:markdown', () => {
             pedantic: true,
             smartypants: true
         }))
-        .pipe(jsoncombine(config.documentation.path, function (data) {
+        .pipe(jsoncombine(config.documentation.path, function(data) {
 
             var keys = [],
                 name,
@@ -103,9 +109,12 @@ gulp.task('ssg:config', () => {
         configFile: config.ssg.config
     };
 
+    console.log(patternPath);
+
     // parse configuration and log
     gulp.src(patternPath)
-        .pipe(ssgCoreConfig.createConfig(curConfig));
+        .pipe(ssgCoreConfig
+            .createConfig(curConfig));
 
 });
 
@@ -222,15 +231,15 @@ gulp.task('ts:core:compile', () => {
 gulp.task('pre:serve', ['ssg:precompile', 'doc:markdown']);
 
 // cleans the temporary directory
-gulp.task('clean:tmp', () =>{
-    
+gulp.task('clean:tmp', () => {
+
     return del(['.tmp']);
 
 });
 
 // cleans distribution directory
-gulp.task('clean:dist', () =>{
-    
+gulp.task('clean:dist', () => {
+
     return del(['dist']);
 
 });
