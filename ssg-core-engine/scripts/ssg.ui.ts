@@ -2,6 +2,7 @@
 /// <reference path="../../typings/index.d.ts" />
 
 // import * as UIState from './ssg.uistate';
+// tsling:global ssgDoc
 
 // pattern Config Response
 // pattern Item Config Entry
@@ -33,6 +34,7 @@ interface UIState {
     screen: number;
 };
 
+declare var ssgDoc: any;
 
 namespace ssg.UI {
 
@@ -491,7 +493,8 @@ namespace ssg.UI {
             event.preventDefault();
 
             let vpButton: HTMLElement = <HTMLElement>event.target,
-                vpActiveButton: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active),
+                vpActiveButton: HTMLElement = <HTMLElement>doc.querySelector(
+                    coreUiElement.viewPortButton + '.' + coreUiElement.state.active),
                 vpData = vpButton.dataset['viewport'],
                 vpTarget: HTMLElement = <HTMLElement>doc.querySelector(coreUiElement.viewPortTarget),
                 widthInput: HTMLInputElement = <HTMLInputElement>doc.querySelector(coreUiElement.viewPortWidth);
@@ -1065,19 +1068,27 @@ namespace ssg.UI {
                     console.log('single filter');
                     console.log(state.filterSelector);
 
+                    let curFilter = state.filterSelector.substr(1);
+
                     let allAMItems = [].slice.call(
-                            doc.querySelectorAll('div[class=ssg-item')
-                        ),
+                        doc.querySelectorAll('div[class=ssg-item')
+                    ),
                         allOPTItems = [].slice.call(
                             doc.querySelectorAll('div[class=ssg-item-single')
                         ),
                         allItems = allAMItems.concat(allOPTItems);
 
-                    for (let i = allItems.length - 1; i > 0; i--) {
+                    for (let i = allItems.length - 1; i >= 0; i--) {
 
-                        console.log(allItems[i]);
-                        let curItem: HTMLElement = <HTMLElement>allItems[i];
-                        curItem.classList.add('hide');
+                        if (allItems[i].dataset['file'] !== curFilter) {
+
+                            console.log(allItems[i]);
+                            console.log(allItems[i].dataset['file'], state.filterSelector);
+
+                            let curItem: HTMLElement = <HTMLElement>allItems[i];
+                            curItem.classList.add('hide');
+
+                        }
 
                     }
 
@@ -1379,6 +1390,29 @@ namespace ssg.UI {
 
 };
 
-
-
 ssg.UI.Init();
+
+
+/* tslint:disable */
+Handlebars.registerHelper('description', function (block) {
+
+    var description = "",
+        markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
+
+    console.log("Helper called ::: ", markdownKey, ssgDoc);
+
+    if (ssgDoc[markdownKey] !== undefined) {
+        // console.log('MARKDOWN FOUND :::: ');
+        description = ssgDoc[markdownKey].body;
+        console.log(description);
+
+        return new Handlebars.SafeString(description);
+
+    } else {
+        console.log('MARKDOWN NOT FOUND :::: ');
+        // description = block.data.root.description;
+        return block.data.root.description;
+    }
+
+});
+/* tslint:enable */

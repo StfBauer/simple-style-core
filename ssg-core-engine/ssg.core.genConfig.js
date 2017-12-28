@@ -191,7 +191,7 @@ module.exports = {
                 read: false
             })
             .pipe(plugins.plumber())
-            .pipe(plugins.print())
+            // .pipe(plugins.print())
             .pipe(through2.obj(createItem))
             .on('data', handleDuplicates)
             .on('end', logData);

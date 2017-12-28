@@ -1,12 +1,6 @@
 {
     "patterns": [
         {
-            "title": "asdasdas",
-            "description": "",
-            "filename": "asdasdas",
-            "filepath": "atoms/asdasdas.hbs"
-        },
-        {
             "title": "asdasdasd",
             "description": "",
             "filename": "asdasdasd",
@@ -31,7 +25,13 @@
             "filepath": "atoms/atom-tester.hbs"
         },
         {
-            "title": "nan 25",
+            "title": "eight-atom",
+            "description": "",
+            "filename": "eight-atom",
+            "filepath": "atoms/eight-atom.hbs"
+        },
+        {
+            "title": "nan 26",
             "description": "",
             "filename": "nan 26",
             "filepath": "atoms/nan 26.hbs"
@@ -47,6 +47,18 @@
             "description": "",
             "filename": "third-atom",
             "filepath": "atoms/third-atom.hbs"
+        },
+        {
+            "title": "molecule",
+            "description": "",
+            "filename": "molecule",
+            "filepath": "molecules/molecule.hbs"
+        },
+        {
+            "title": "organism",
+            "description": "",
+            "filename": "organism",
+            "filepath": "organism/organism.hbs"
         },
         {
             "title": "first-template",

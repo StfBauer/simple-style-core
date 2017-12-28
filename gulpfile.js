@@ -39,11 +39,11 @@ var wathches = () => {
     // Precompile all patterns
     gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
 
-    try {
-        gulp.watch(config.watches.ssg, ['ssg:config'], reload);
-    } catch (Exception) {
-        console.log(Exception)
-    }
+    // try {
+    //     gulp.watch(config.watches.ssg, ['ssg:config'], reload);
+    // } catch (Exception) {
+    //     console.log(Exception)
+    // }
 
     // Watch for documentation changes
     gulp.watch(config.watches.documentation, ['doc:markdown'], reload);
@@ -108,8 +108,6 @@ gulp.task('ssg:config', () => {
         patterns: patternPath,
         configFile: config.ssg.config
     };
-
-    console.log(patternPath);
 
     // parse configuration and log
     gulp.src(patternPath)
