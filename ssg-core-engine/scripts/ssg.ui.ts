@@ -309,8 +309,6 @@ namespace ssg.UI {
             let allElements = doc.querySelectorAll('div[data-cat]'),
                 firstItemFound = false;
 
-            console.log('Slider Selection:', ssg.UI.State.current());
-
             // reset currentSingleItem
             currentSingleItems = [];
 
@@ -458,7 +456,9 @@ namespace ssg.UI {
             for (let i = allButtons.length - 1; i >= 0; i--) {
 
                 if (allButtons[i].classList.contains(coreUiElement.state.active)) {
+
                     allButtons[i].classList.remove(coreUiElement.state.active);
+
                 }
 
             }
@@ -468,6 +468,21 @@ namespace ssg.UI {
 
             curButton.classList.add(coreUiElement.state.active);
             Filter.elements(filter);
+
+            // Check if toc button is active otherwise remove state.
+            let tocButton = doc.querySelectorAll(coreUiElement.btnShowToC);
+
+            // if toc button was found
+            if (tocButton.length !== 0) {
+                // remove active state in case toc was selected
+
+                if (tocButton[0].classList.contains(coreUiElement.state.active)) {
+
+                    tocButton[0].classList.remove('active');
+
+                }
+
+            };
 
             return false;
 
@@ -692,8 +707,6 @@ namespace ssg.UI {
 
             event.preventDefault();
 
-            console.log("Filter TOC");
-
             let currentToc = <Node>event.target,
                 filter = (<HTMLElement>currentToc).dataset['filter'],
                 filterFolder = (<HTMLElement>currentToc).dataset['folder'],
@@ -717,7 +730,6 @@ namespace ssg.UI {
                     curState.filterSelector = '.' + filter;
                     ssg.UI.State.update(curState);
 
-                    console.log('----------- A slider selection');
                     ssg.UI.Filter.sliderSelection(filterFolder);
 
                 } else {
@@ -733,8 +745,6 @@ namespace ssg.UI {
                     let curFilterButton = filterButtons[i],
                         curFilterStyle = curFilterButton.classList,
                         curDataSet = (<HTMLElement>curFilterButton).dataset['filter'];
-
-                    console.log(curFilterStyle, category);
 
                     if (curFilterStyle.contains('active')) {
 
@@ -955,8 +965,6 @@ namespace ssg.UI {
 
         let applyFilter: Function = (state: any) => {
 
-            console.log("Filter State", state);
-
             if (state.filter !== undefined
                 && state.filter !== 'single') {
 
@@ -1030,8 +1038,6 @@ namespace ssg.UI {
 
                     let curItem: HTMLElement = <HTMLElement>selItems[0];
 
-                    console.log('Current Category:', curItem.dataset.cat);
-
                     if (curItem.dataset.cat !== undefined
                         && curItem.dataset.cat !== null
                         && (
@@ -1065,8 +1071,6 @@ namespace ssg.UI {
 
                 if (state.filterSelector !== undefined &&
                     state.filterSelector !== null) {
-                    console.log('single filter');
-                    console.log(state.filterSelector);
 
                     let curFilter = state.filterSelector.substr(1);
 
@@ -1081,9 +1085,6 @@ namespace ssg.UI {
                     for (let i = allItems.length - 1; i >= 0; i--) {
 
                         if (allItems[i].dataset['file'] !== curFilter) {
-
-                            console.log(allItems[i]);
-                            console.log(allItems[i].dataset['file'], state.filterSelector);
 
                             let curItem: HTMLElement = <HTMLElement>allItems[i];
                             curItem.classList.add('hide');
@@ -1214,8 +1215,6 @@ namespace ssg.UI {
             event.preventDefault();
             event.stopPropagation();
 
-            console.log('Button called');
-
             let currentButton: HTMLElement = <HTMLElement>event.target;
 
             if (currentButton !== null) {
@@ -1243,14 +1242,15 @@ namespace ssg.UI {
                     currentSingleCount = currentSingleItems.length - 1;
 
                 }
-            } else {
-
-                // check from current state
-                for (let i = 0; currentSingleItems.length; i++) {
-                    console.log(currentSingleItems[0]);
-                }
-
             }
+            //  else {
+
+            //     // check from current state
+            //     for (let i = 0; currentSingleItems.length; i++) {
+            //         console.log(currentSingleItems[0]);
+            //     }
+
+            // }
 
             setCurrentItem(currentSingleCount);
 
@@ -1281,14 +1281,7 @@ namespace ssg.UI {
 
         }
 
-        console.log('------------ DO SOME CODE HERE -------------');
-        console.log(ssg.UI.State.current());
-
-
         let curState = ssg.UI.State.current();
-
-
-        console.log(curState.filterSelector);
 
         // Check if TOC have been selected
         if (curState.filterSelector !== undefined) {
@@ -1399,17 +1392,15 @@ Handlebars.registerHelper('description', function (block) {
     var description = "",
         markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
 
-    console.log("Helper called ::: ", markdownKey, ssgDoc);
+    // console.log("Helper called ::: ", markdownKey, ssgDoc);
 
     if (ssgDoc[markdownKey] !== undefined) {
         // console.log('MARKDOWN FOUND :::: ');
         description = ssgDoc[markdownKey].body;
-        console.log(description);
 
         return new Handlebars.SafeString(description);
 
     } else {
-        console.log('MARKDOWN NOT FOUND :::: ');
         // description = block.data.root.description;
         return block.data.root.description;
     }
