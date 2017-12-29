@@ -8,6 +8,7 @@ var config = require('./ssg.core.config'), // import core settings
     ts = require('gulp-typescript'),
     markdown = require('gulp-marked-json'),
     jsoncombine = require('gulp-jsoncombine'),
+    cleanCSS = require('gulp-clean-css'),
     // browersync
     browserSync = require('browser-sync'),
     reload = browserSync.reload, // call reload function
@@ -69,7 +70,7 @@ gulp.task('doc:markdown', () => {
             pedantic: true,
             smartypants: true
         }))
-        .pipe(jsoncombine(config.documentation.path, function(data) {
+        .pipe(jsoncombine(config.documentation.path, function (data) {
 
             var keys = [],
                 name,
@@ -179,17 +180,17 @@ gulp.task('ts:compile', () => {
 
     return gulp.src(config.watches.scripts)
         .pipe(
-            $.plumber()
+        $.plumber()
         )
         .pipe(
-            $.tslint({
-                formatter: "prose"
-            })
+        $.tslint({
+            formatter: "prose"
+        })
         )
         // .pipe($.tslint.report())
         .pipe(ts(config.tsconfig))
         .pipe(
-            gulp.dest(config.target.scripts)
+        gulp.dest(config.target.scripts)
         )
         .pipe(reload({
             stream: true
@@ -207,17 +208,17 @@ gulp.task('ts:core:compile', () => {
 
     return gulp.src(watches)
         .pipe(
-            $.plumber()
+        $.plumber()
         )
         .pipe(
-            $.tslint({
-                formatter: "prose"
-            })
+        $.tslint({
+            formatter: "prose"
+        })
         )
         // .pipe($.tslint.report())
         .pipe(ts(config.tsconfig))
         .pipe(
-            gulp.dest(config.target.scripts)
+        gulp.dest(config.target.scripts)
         )
         .pipe(reload({
             stream: true
@@ -257,7 +258,20 @@ gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:
 // gulp dist build
 gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile'], () => {
 
-    gulp.src('./.tmp/scripts/ssg.*.js')
+    // concat ssg core styles
+    gulp.src('./.tmp/scripts/ssg.ui*.js')
+        .pipe($.plumber())
+        .pipe($.concat('ssg.js'))
+        .pipe($.minify())
+        .pipe(
+        gulp.dest('./dist/ssg-core-ui/scripts/')
+        );
+
+    gulp.src('./.tmp/styles/ssg*.css')
+        .pipe(cleanCSS({ compatibility: 'ie11' }))
+        .pipe(
+        gulp.dest('./dist/ssg-core-ui/styles/')
+        );
 
 
-})
+});
