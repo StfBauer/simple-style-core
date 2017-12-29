@@ -43,6 +43,27 @@ $item-mr: 1em; // margin right
 		&.show{
 			display: block;
 		}
+		@media screen and (min-width: 1024px){
+			column-count: 2;
+			column-gap: 2vw;
+			h1{
+				font-size: 2rem;
+				margin-top: 0;
+			}
+			h2{
+				font-size: 1.5rem;
+			}
+			h3{
+				font-size: 1.25rem;
+			}
+			h4{
+				font-size: 1rem;
+			}
+			p, li{
+				line-height: 125%;
+				font-size: 1rem;
+			}
+		}
 	}
 	.sample{
 		position: static;

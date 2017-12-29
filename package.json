@@ -31,7 +31,6 @@
     "glob-stream": "^6.1.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^4.0.0",
-    "gulp-concat": "^2.6.1",
     "gulp-declare": "^0.3.0",
     "gulp-handlebars": "^4.0.0",
     "gulp-jsoncombine": "^1.0.3",
@@ -53,6 +52,7 @@
     "typescript": "^2.6.2"
   },
   "devDependencies": {
+    "gulp-concat": "^2.6.1",
     "merge-stream": "^1.0.1"
   },
   "repository": {}

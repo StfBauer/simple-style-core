@@ -253,3 +253,11 @@ gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:
     wathchesCore();
 
 });
+
+// gulp dist build
+gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile'], () => {
+
+    gulp.src('./.tmp/scripts/ssg.*.js')
+
+
+})
