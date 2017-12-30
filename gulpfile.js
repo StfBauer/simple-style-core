@@ -255,14 +255,18 @@ gulp.task("serve", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:
 
 });
 
+gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+
 // gulp dist build
 gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile'], () => {
 
     // concat ssg core styles
-    gulp.src('./.tmp/scripts/ssg.ui*.js')
+    gulp.src('./.tmp/scripts/ssg.ui.js')
         .pipe($.plumber())
+        .pipe($.sourcemaps.init())
         .pipe($.concat('ssg.js'))
         .pipe($.minify())
+        .pipe($.sourcemaps.write('.'))
         .pipe(
         gulp.dest('./dist/ssg-core-ui/scripts/')
         );

@@ -134,17 +134,19 @@ namespace ssg.UI {
                 checkSumFilter += 1;
 
             }
-
+            console.log("state filter", state.filter, state, !state.filterSelector);
             // check if single is current selected filter and item has filter selector
-            if ((state.filter === "single" ||
-                state.filter === "orangism" ||
-                state.filter === "templates" ||
-                state.filter === "pages") &&
-                !state.filterSelector) {
+            // if ((state.filter !== "single" ||
+            //     state.filter !== "orangism" ||
+            //     state.filter !== "molecules" ||
+            //     state.filter !== "templates" ||
+            //     state.filter !== "pages") &&
+            //     !state.filterSelector) {
 
-                checkSumFilter += 1;
+            //     checkSumFilter += 1;
+            //     console.log('Hello World');
 
-            }
+            // }
 
             // remote filter selector when single is selected
             // if (state.filter === "atom" ||
@@ -182,7 +184,7 @@ namespace ssg.UI {
 
             if (_validateState(state)) {
 
-                sessionStorage.setItem(STATE_KEY, JSON.stringify(curState));
+                localStorage.setItem(STATE_KEY, JSON.stringify(curState));
 
             } else {
 
@@ -194,7 +196,7 @@ namespace ssg.UI {
 
         (() => {
 
-            let sessionState = sessionStorage.getItem(STATE_KEY);
+            let sessionState = localStorage.getItem(STATE_KEY);
 
             // If session already exists
             if (sessionState) {
@@ -203,7 +205,7 @@ namespace ssg.UI {
 
             } else {
 
-                sessionStorage.setItem(STATE_KEY, JSON.stringify(defState));
+                localStorage.setItem(STATE_KEY, JSON.stringify(defState));
                 _currentUIState = defState;
 
             }
@@ -483,6 +485,20 @@ namespace ssg.UI {
                 }
 
             };
+
+
+            console.log("BEFORE :::", ssg.UI.State.current());
+            console.log(filter);
+
+            let curState = ssg.UI.State.current();
+
+            curState.filter = filter;
+
+            console.log(curState);
+
+            ssg.UI.State.update(curState);
+
+            console.log("AFTER :::", ssg.UI.State.current());
 
             return false;
 
@@ -956,7 +972,11 @@ namespace ssg.UI {
 
         RenderToc(patternConfig);
 
+        // console.log("BEFORE :::", ssg.UI.State.current());
+
         ApplyUIState(ssg.UI.State.current());
+
+        // console.log("AFTER :::", ssg.UI.State.current());
 
     }
 
@@ -1166,6 +1186,7 @@ namespace ssg.UI {
 
         };
 
+        console.log("STATE:::", state);
         applyFilter(state);
         applyScreenWidth(state);
         applyExtras(state);
@@ -1364,6 +1385,12 @@ namespace ssg.UI {
 
                 Render();
                 InitEvents();
+
+                console.log('applying UI filter');
+                console.log(ssg.UI.State.current())
+                ApplyUIState(ssg.UI.State.current());
+                console.log('applying UI filter');
+
                 if (PostRender.length !== 0) {
 
                     PostRender.forEach(element => {
@@ -1384,26 +1411,3 @@ namespace ssg.UI {
 };
 
 ssg.UI.Init();
-
-
-/* tslint:disable */
-Handlebars.registerHelper('description', function (block) {
-
-    var description = "",
-        markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
-
-    // console.log("Helper called ::: ", markdownKey, ssgDoc);
-
-    if (ssgDoc[markdownKey] !== undefined) {
-        // console.log('MARKDOWN FOUND :::: ');
-        description = ssgDoc[markdownKey].body;
-
-        return new Handlebars.SafeString(description);
-
-    } else {
-        // description = block.data.root.description;
-        return block.data.root.description;
-    }
-
-});
-/* tslint:enable */

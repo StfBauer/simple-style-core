@@ -2,7 +2,7 @@
     "patterns": [
         {
             "title": "asdasdasd",
-            "description": "",
+            "description": "Hello World",
             "filename": "asdasdasd",
             "filepath": "atoms/asdasdasd.hbs"
         },
@@ -10,43 +10,62 @@
             "title": "asdasdasdasd",
             "description": "",
             "filename": "asdasdasdasd",
-            "filepath": "atoms/asdasdasdasd.hbs"
+            "filepath": "atoms/asdasdasdasd.hbs",
+            "deleted": true
         },
         {
             "title": "atom-tester-2",
             "description": "",
             "filename": "atom-tester-2",
-            "filepath": "atoms/atom-tester-2.hbs"
+            "filepath": "atoms/atom-tester-2.hbs",
+            "deleted": true
         },
         {
             "title": "atom-tester",
             "description": "",
             "filename": "atom-tester",
-            "filepath": "atoms/atom-tester.hbs"
+            "filepath": "atoms/atom-tester.hbs",
+            "deleted": true
         },
         {
             "title": "eight-atom",
             "description": "",
             "filename": "eight-atom",
-            "filepath": "atoms/eight-atom.hbs"
+            "filepath": "atoms/eight-atom.hbs",
+            "deleted": true
+        },
+        {
+            "title": "help",
+            "description": "",
+            "filename": "help",
+            "filepath": "atoms/help.hbs"
+        },
+        {
+            "title": "moses",
+            "description": "",
+            "filename": "moses",
+            "filepath": "atoms/moses.hbs"
         },
         {
             "title": "nan 26",
             "description": "",
             "filename": "nan 26",
-            "filepath": "atoms/nan 26.hbs"
+            "filepath": "atoms/nan 26.hbs",
+            "deleted": true
         },
         {
             "title": "sixth-atom-1",
             "description": "",
             "filename": "sixth-atom-1",
-            "filepath": "atoms/sixth-atom-1.hbs"
+            "filepath": "atoms/sixth-atom-1.hbs",
+            "deleted": true
         },
         {
             "title": "third-atom",
             "description": "",
             "filename": "third-atom",
-            "filepath": "atoms/third-atom.hbs"
+            "filepath": "atoms/third-atom.hbs",
+            "deleted": true
         },
         {
             "title": "molecule",
