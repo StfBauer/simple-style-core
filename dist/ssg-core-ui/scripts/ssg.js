@@ -45,7 +45,7 @@ var ssg;
             // default UI State;
             var defState = {
                 "filter": "atoms",
-                "xtras": [],
+                "xtras": ['annotation'],
                 "screen": window.screen.availWidth
             };
             // Validate current state entry
@@ -63,24 +63,6 @@ var ssg;
                 if (FILTERS.indexOf(state.filter) === -1) {
                     checkSumFilter += 1;
                 }
-                console.log("state filter", state.filter, state, !state.filterSelector);
-                // check if single is current selected filter and item has filter selector
-                // if ((state.filter !== "single" ||
-                //     state.filter !== "orangism" ||
-                //     state.filter !== "molecules" ||
-                //     state.filter !== "templates" ||
-                //     state.filter !== "pages") &&
-                //     !state.filterSelector) {
-                //     checkSumFilter += 1;
-                //     console.log('Hello World');
-                // }
-                // remote filter selector when single is selected
-                // if (state.filter === "atom" ||
-                //     state.filter === "molecules" &&
-                //     !state.filterSelector) {
-                //     /// removing filter selector
-                //     delete state.filterSelector;
-                // }
                 // check current screen
                 try {
                     parseInt(state.screen.toString());
@@ -282,13 +264,9 @@ var ssg;
                     }
                 }
                 ;
-                console.log("BEFORE :::", ssg.UI.State.current());
-                console.log(filter);
                 var curState = ssg.UI.State.current();
                 curState.filter = filter;
-                console.log(curState);
                 ssg.UI.State.update(curState);
-                console.log("AFTER :::", ssg.UI.State.current());
                 return false;
             },
             // change view - Add isolated, code, Annotation
@@ -361,14 +339,16 @@ var ssg;
             // Show and hides source code
             showSource: function (event) {
                 event.preventDefault();
+                event.stopImmediatePropagation();
                 // Updating State
                 var newState = ssg.UI.State.current();
                 // check if code is already included in UI Extras
-                if (newState.xtras.indexOf('code')) {
+                if (newState.xtras.indexOf('code') === -1) {
                     newState.xtras.push('code');
                 }
                 else {
-                    newState.xtras.pop('code');
+                    var newXtras = newState.xtras.filter(function (e) { return e !== 'code'; });
+                    newState.xtras = newXtras;
                 }
                 ssg.UI.State.update(newState);
                 if (event.target.classList.contains(coreUiElement.state.active)) {
@@ -389,25 +369,27 @@ var ssg;
             // show and hides annotations
             showAnnotation: function (event) {
                 event.preventDefault();
+                event.stopImmediatePropagation();
                 // Updating State
                 var newState = ssg.UI.State.current();
                 // check if code is already included in UI Extras
-                if (newState.xtras.indexOf('annotation')) {
+                if (newState.xtras.indexOf('annotation') === -1) {
                     newState.xtras.push('annotation');
                 }
                 else {
-                    newState.xtras.pop('annotation');
+                    var newXtras = newState.xtras.filter(function (e) { return e !== 'annotation'; });
+                    newState.xtras = newXtras;
                 }
                 ssg.UI.State.update(newState);
                 if (event.target.classList.contains(coreUiElement.state.active)) {
-                    // sho source code by adding class
+                    // show annotation by adding class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
                         codeBlocks[i].classList.add(coreUiElement.state.show);
                     }
                 }
                 else {
-                    // hide source code by removing the class
+                    // hide annotation code by removing the class
                     var codeBlocks = doc.querySelectorAll('.ssg-item-description');
                     for (var i = codeBlocks.length - 1; i >= 0; i--) {
                         codeBlocks[i].classList.remove(coreUiElement.state.show);
@@ -570,9 +552,7 @@ var ssg;
             container.insertAdjacentHTML('afterbegin', allContentDOM.body.innerHTML);
             Prism.highlightAll();
             RenderToc(patternConfig);
-            // console.log("BEFORE :::", ssg.UI.State.current());
             UI.ApplyUIState(ssg.UI.State.current());
-            // console.log("AFTER :::", ssg.UI.State.current());
         };
         UI.ApplyUIState = function (state) {
             var applyFilter = function (state) {
@@ -595,7 +575,7 @@ var ssg;
                             }
                         }
                     }
-                    var query = ".ssg-item[data-cat='" + state.filter + "']", invQuery = ".ssg-item:not([data-cat='" + state.filter + "'])";
+                    var query = "div[class^='ssg-item'][data-cat='" + state.filter + "']", invQuery = "div[class^='ssg-item']:not([data-cat='" + state.filter + "'])";
                     if (state.filter === 'single') {
                         var filter = state.filterSelector.substr(1);
                         query = "div[data-file='" + filter + "']";
@@ -678,7 +658,8 @@ var ssg;
             };
             // applies extras such as shwo Source code
             var applyExtras = function (state) {
-                if (state.xtras.indexOf('annotation')) {
+                // Set annotation button and enable annotations
+                if (state.xtras.indexOf('annotation') !== -1) {
                     var notes = doc.querySelectorAll('.ssg-item-description');
                     for (var i = notes.length - 1; i >= 0; i--) {
                         var curNote = notes[i];
@@ -689,8 +670,19 @@ var ssg;
                         notesButton[i].classList.add('active');
                     }
                 }
+                // Set code button and shows code
+                if (state.xtras.indexOf('code') !== -1) {
+                    var notes = doc.querySelectorAll('.ssg-item-code');
+                    for (var i = notes.length - 1; i >= 0; i--) {
+                        var curNote = notes[i];
+                        curNote.classList.add('show');
+                    }
+                    var notesButton = doc.querySelectorAll("button[data-action='ssg-code']");
+                    for (var i = notesButton.length - 1; i >= 0; i--) {
+                        notesButton[i].classList.add('active');
+                    }
+                }
             };
-            console.log("STATE:::", state);
             applyFilter(state);
             applyScreenWidth(state);
             applyExtras(state);
@@ -735,12 +727,6 @@ var ssg;
                         currentSingleCount = currentSingleItems.length - 1;
                     }
                 }
-                //  else {
-                //     // check from current state
-                //     for (let i = 0; currentSingleItems.length; i++) {
-                //         console.log(currentSingleItems[0]);
-                //     }
-                // }
                 setCurrentItem(currentSingleCount);
             };
             // check if only one pattern is in current selection
@@ -769,10 +755,6 @@ var ssg;
                 // Update from current filter
                 setCurrentItem(currentSingleCount);
             }
-            // if (filter === null || filter === undefined) {
-            //     console.log("Rolling slidePatterns");
-            //     slidePatterns(null);
-            // }
         };
         UI.ShowSliderCtrl = function (show) {
             var singleSliderControl = document.querySelector('.' + coreUiElement.singleItemNav);
@@ -816,10 +798,7 @@ var ssg;
                 .then(function () {
                 UI.Render();
                 UI.InitEvents();
-                console.log('applying UI filter');
-                console.log(ssg.UI.State.current());
                 UI.ApplyUIState(ssg.UI.State.current());
-                console.log('applying UI filter');
                 if (UI.PostRender.length !== 0) {
                     UI.PostRender.forEach(function (element) {
                         element();

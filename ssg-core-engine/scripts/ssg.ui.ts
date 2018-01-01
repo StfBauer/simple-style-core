@@ -103,7 +103,7 @@ namespace ssg.UI {
         // default UI State;
         let defState: UIState = {
             "filter": "atoms",
-            "xtras": [],
+            "xtras": ['annotation'],
             "screen": window.screen.availWidth
         };
 
@@ -134,29 +134,6 @@ namespace ssg.UI {
                 checkSumFilter += 1;
 
             }
-            console.log("state filter", state.filter, state, !state.filterSelector);
-            // check if single is current selected filter and item has filter selector
-            // if ((state.filter !== "single" ||
-            //     state.filter !== "orangism" ||
-            //     state.filter !== "molecules" ||
-            //     state.filter !== "templates" ||
-            //     state.filter !== "pages") &&
-            //     !state.filterSelector) {
-
-            //     checkSumFilter += 1;
-            //     console.log('Hello World');
-
-            // }
-
-            // remote filter selector when single is selected
-            // if (state.filter === "atom" ||
-            //     state.filter === "molecules" &&
-            //     !state.filterSelector) {
-
-            //     /// removing filter selector
-            //     delete state.filterSelector;
-
-            // }
 
             // check current screen
             try {
@@ -486,19 +463,11 @@ namespace ssg.UI {
 
             };
 
-
-            console.log("BEFORE :::", ssg.UI.State.current());
-            console.log(filter);
-
             let curState = ssg.UI.State.current();
 
             curState.filter = filter;
 
-            console.log(curState);
-
             ssg.UI.State.update(curState);
-
-            console.log("AFTER :::", ssg.UI.State.current());
 
             return false;
 
@@ -625,15 +594,23 @@ namespace ssg.UI {
 
         // Show and hides source code
         showSource: (event: Event) => {
+
             event.preventDefault();
+            event.stopImmediatePropagation();
 
             // Updating State
             let newState = ssg.UI.State.current();
+
             // check if code is already included in UI Extras
-            if (newState.xtras.indexOf('code')) {
+            if (newState.xtras.indexOf('code') === -1) {
+
                 newState.xtras.push('code');
+
             } else {
-                newState.xtras.pop('code');
+
+                let newXtras = newState.xtras.filter(e => e !== 'code');
+                newState.xtras = newXtras;
+
             }
 
             ssg.UI.State.update(newState);
@@ -658,17 +635,20 @@ namespace ssg.UI {
         showAnnotation: (event: Event) => {
 
             event.preventDefault();
+            event.stopImmediatePropagation();
 
             // Updating State
             let newState = ssg.UI.State.current();
+
             // check if code is already included in UI Extras
-            if (newState.xtras.indexOf('annotation')) {
+            if (newState.xtras.indexOf('annotation') === -1) {
 
                 newState.xtras.push('annotation');
 
             } else {
 
-                newState.xtras.pop('annotation');
+                let newXtras = newState.xtras.filter(e => e !== 'annotation');
+                newState.xtras = newXtras;
 
             }
 
@@ -676,14 +656,14 @@ namespace ssg.UI {
 
             if ((<HTMLElement>event.target).classList.contains(coreUiElement.state.active)) {
 
-                // sho source code by adding class
+                // show annotation by adding class
                 let codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.add(coreUiElement.state.show);
                 }
 
             } else {
-                // hide source code by removing the class
+                // hide annotation code by removing the class
                 let codeBlocks = doc.querySelectorAll('.ssg-item-description');
                 for (let i = codeBlocks.length - 1; i >= 0; i--) {
                     codeBlocks[i].classList.remove(coreUiElement.state.show);
@@ -972,11 +952,7 @@ namespace ssg.UI {
 
         RenderToc(patternConfig);
 
-        // console.log("BEFORE :::", ssg.UI.State.current());
-
         ApplyUIState(ssg.UI.State.current());
-
-        // console.log("AFTER :::", ssg.UI.State.current());
 
     }
 
@@ -1017,8 +993,8 @@ namespace ssg.UI {
 
                 }
 
-                let query: string = `.ssg-item[data-cat='${state.filter}']`,
-                    invQuery: string = `.ssg-item:not([data-cat='${state.filter}'])`;
+                let query: string = `div[class^='ssg-item'][data-cat='${state.filter}']`,
+                    invQuery: string = `div[class^='ssg-item']:not([data-cat='${state.filter}'])`;
 
                 if (state.filter === 'single') {
 
@@ -1163,7 +1139,8 @@ namespace ssg.UI {
         // applies extras such as shwo Source code
         let applyExtras: Function = (state: any) => {
 
-            if (state.xtras.indexOf('annotation')) {
+            // Set annotation button and enable annotations
+            if (state.xtras.indexOf('annotation') !== -1) {
 
                 let notes = doc.querySelectorAll('.ssg-item-description');
 
@@ -1184,9 +1161,30 @@ namespace ssg.UI {
 
             }
 
+            // Set code button and shows code
+            if (state.xtras.indexOf('code') !== -1) {
+
+                let notes = doc.querySelectorAll('.ssg-item-code');
+
+                for (let i = notes.length - 1; i >= 0; i--) {
+
+                    let curNote: HTMLElement = <HTMLElement>notes[i];
+                    curNote.classList.add('show');
+
+                }
+
+                let notesButton = doc.querySelectorAll("button[data-action='ssg-code']");
+
+                for (let i = notesButton.length - 1; i >= 0; i--) {
+
+                    notesButton[i].classList.add('active');
+
+                }
+
+            }
+
         };
 
-        console.log("STATE:::", state);
         applyFilter(state);
         applyScreenWidth(state);
         applyExtras(state);
@@ -1264,14 +1262,6 @@ namespace ssg.UI {
 
                 }
             }
-            //  else {
-
-            //     // check from current state
-            //     for (let i = 0; currentSingleItems.length; i++) {
-            //         console.log(currentSingleItems[0]);
-            //     }
-
-            // }
 
             setCurrentItem(currentSingleCount);
 
@@ -1314,12 +1304,6 @@ namespace ssg.UI {
             setCurrentItem(currentSingleCount);
 
         }
-
-
-        // if (filter === null || filter === undefined) {
-        //     console.log("Rolling slidePatterns");
-        //     slidePatterns(null);
-        // }
 
     }
 
@@ -1386,10 +1370,7 @@ namespace ssg.UI {
                 Render();
                 InitEvents();
 
-                console.log('applying UI filter');
-                console.log(ssg.UI.State.current())
                 ApplyUIState(ssg.UI.State.current());
-                console.log('applying UI filter');
 
                 if (PostRender.length !== 0) {
 
