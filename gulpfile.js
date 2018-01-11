@@ -40,14 +40,12 @@ var wathches = () => {
     // Precompile all patterns
     gulp.watch(config.watches.ssg, ['ssg:precompile'], reload);
 
-    // try {
-    //     gulp.watch(config.watches.ssg, ['ssg:config'], reload);
-    // } catch (Exception) {
-    //     console.log(Exception)
-    // }
-
     // Watch for documentation changes
     gulp.watch(config.watches.documentation, ['doc:markdown'], reload);
+
+    // reload static files
+    gulp.watch(config.watches.staticFiles)
+        .on('change', reload);
 
 };
 
@@ -261,10 +259,13 @@ gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:compile'], () => {
 
     // concat ssg core styles
-    gulp.src('./.tmp/scripts/ssg.ui.js')
+    gulp.src([
+        './ssg-core-engine/scripts/ssgCore.template.js',
+        './.tmp/scripts/ssg.ui.js',
+        './.tmp/scripts/ssg.ui.helper.js'])
         .pipe($.plumber())
         .pipe($.sourcemaps.init())
-        .pipe($.concat('ssg.js'))
+        .pipe($.concat('ssg.ui.js'))
         .pipe($.minify())
         .pipe($.sourcemaps.write('.'))
         .pipe(

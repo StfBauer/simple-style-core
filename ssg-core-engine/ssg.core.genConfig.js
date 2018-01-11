@@ -236,7 +236,6 @@ module.exports = {
 
         // renames files in pattern config
         var renamePattern = function(files) {
-            console.log('Rename Item:::');
         };
 
         var trimExtension = function(file) {
@@ -324,8 +323,6 @@ module.exports = {
 
         var renamePatternItem = function(files) {
 
-            console.log('Rename Pattern Item:::');
-
             var curConfig = patternConfig.patterns,
                 // Old file
                 oldFile = path.basename(files.old),
@@ -361,8 +358,6 @@ module.exports = {
 
         var deletePatternItem = function(file) {
 
-            console.log('Delete Pattern Item:::');
-
             var filename = path.basename(file),
                 filenameNoExt = trimExtension(filename),
                 relPath = normalizeFilePath(path.relative(appPath, file)),
@@ -390,7 +385,7 @@ module.exports = {
             Handle all file events
         */
         var added = function(file) {
-            console.log('File added');
+
             try {
                 createPatternItem(file);
             } catch (Exception) {
@@ -400,7 +395,7 @@ module.exports = {
 
         // pattern rename handler
         var renamed = function(files) {
-            console.log('File rename');
+
             try {
                 renamePatternItem(files);
             } catch (Exception) {
@@ -410,7 +405,7 @@ module.exports = {
 
         // pattern delete handler
         var deleted = function(file) {
-            console.log('File delete');
+
             try {
                 deletePatternItem(file);
             } catch (Exception) {
@@ -420,8 +415,6 @@ module.exports = {
 
         // pattern change handler
         var changed = function(file) {
-
-            console.log('Rename Pattern Item:::');
 
             var filename = path.basename(file),
                 filenameNoExt = trimExtension(filename),
@@ -458,36 +451,27 @@ module.exports = {
             return filepath;
         }
 
-
-        console.log("Current Page ::: ", event.path);
         // Check if path exists just in case 
         if (fs.existsSync(event.path)) {
             // Getting file stats
             var file = fs.statSync(event.path);
 
             if(file.isDirectory()){
-                console.log('Directory added');
                 return;
             }
         }
 
-        console.log('EVENT TYPE ::: ', event.type);
-
         switch (event.type) {
             case 'added':
-                console.log('ADDED Pattern Item:::');
                 added(event.path);
                 break;
             case 'changed':
-                console.log('CHANGED Pattern Item:::');
                 changed(event.path);
                 break;
             case 'deleted':
-                console.log('DELETED Pattern Item:::');
                 deleted(event.path);
                 break;
             case 'renamed':
-                console.log('RENAMED Pattern Item:::');
                 renamed(event);
                 break;
         }

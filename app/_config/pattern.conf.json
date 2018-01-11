@@ -2,37 +2,9 @@
     "patterns": [
         {
             "title": "asdasdasd",
-            "description": "Hello World",
+            "description": "",
             "filename": "asdasdasd",
             "filepath": "atoms/asdasdasd.hbs"
-        },
-        {
-            "title": "asdasdasdasd",
-            "description": "",
-            "filename": "asdasdasdasd",
-            "filepath": "atoms/asdasdasdasd.hbs",
-            "deleted": true
-        },
-        {
-            "title": "atom-tester-2",
-            "description": "",
-            "filename": "atom-tester-2",
-            "filepath": "atoms/atom-tester-2.hbs",
-            "deleted": true
-        },
-        {
-            "title": "atom-tester",
-            "description": "",
-            "filename": "atom-tester",
-            "filepath": "atoms/atom-tester.hbs",
-            "deleted": true
-        },
-        {
-            "title": "eight-atom",
-            "description": "",
-            "filename": "eight-atom",
-            "filepath": "atoms/eight-atom.hbs",
-            "deleted": true
         },
         {
             "title": "help",
@@ -45,27 +17,6 @@
             "description": "",
             "filename": "moses",
             "filepath": "atoms/moses.hbs"
-        },
-        {
-            "title": "nan 26",
-            "description": "",
-            "filename": "nan 26",
-            "filepath": "atoms/nan 26.hbs",
-            "deleted": true
-        },
-        {
-            "title": "sixth-atom-1",
-            "description": "",
-            "filename": "sixth-atom-1",
-            "filepath": "atoms/sixth-atom-1.hbs",
-            "deleted": true
-        },
-        {
-            "title": "third-atom",
-            "description": "",
-            "filename": "third-atom",
-            "filepath": "atoms/third-atom.hbs",
-            "deleted": true
         },
         {
             "title": "molecule",

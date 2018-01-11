@@ -35,6 +35,7 @@ interface UIState {
 };
 
 declare var ssgDoc: any;
+declare var ssgData: any;
 
 namespace ssg.UI {
 
@@ -913,7 +914,7 @@ namespace ssg.UI {
 
             if (curPattern !== null) {
 
-                curPattern.sample = curTemplate;
+                curPattern.sample = curTemplate !== undefined ? curTemplate(ssgData) : curTemplate;
 
                 let content = ssgCoreTemplates.patternItem(curPattern);
 

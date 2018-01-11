@@ -68,7 +68,7 @@ $item-mr: 1em; // margin right
 	.sample{
 		position: static;
 
-		margin: $item-mr;
+		margin: $item-mr*2 $item-mr;
 	}
 	&-code{
 		font-size: .9em;

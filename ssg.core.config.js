@@ -47,10 +47,14 @@ module.exports = (() => {
             scripts: basepath + '/scripts/**/*.ts',
             // basepath + '/_patterns/**/[^_]*.hbs'
             ssg: [
-                basepath + '/_patterns/**',
+                basepath + '/_patterns/**/*',
                 basepath + '/_patterns/**/[^_]*.hbs'
             ],
-            documentation: basepath + '/_documentation/**/*.md'
+            documentation: basepath + '/_documentation/**/*.md',
+            staticFiles: [
+                appdir + '/_data/**.js*',
+                appdir + '/_scripts/**.js',
+            ]
         },
         watchesCore: {
             styles: coreBasePath + '/styles/**/*.scss',
