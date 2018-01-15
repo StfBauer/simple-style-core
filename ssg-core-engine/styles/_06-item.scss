@@ -45,8 +45,11 @@ $item-mr: 1em; // margin right
 		&.show{
 			display: block;
 		}
+		.inner{
+			max-width: 1024px;
+		}
 		@media screen and (min-width: 1024px){
-			column-count: 2;
+			// column-count: 2;
 			column-gap: 2vw;
 			h1{
 				font-size: 1.5rem;
