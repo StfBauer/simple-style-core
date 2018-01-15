@@ -551,9 +551,22 @@ namespace ssg.UI {
                     default:
 
                         vpTarget.style.width = vpData;
+
                         break;
 
                 }
+
+                // assign special class for documentation
+                let vpCurSize: number = parseInt(vpData, 10);
+
+                if (vpCurSize !== NaN && vpCurSize <= 1024) {
+                    console.log('small view port size');
+                    vpTarget.classList.add('vp-small');
+                } else {
+                    console.log('large view port size');
+                    vpTarget.classList.remove('vp-small');
+                }
+
 
             }
 
@@ -1393,3 +1406,20 @@ namespace ssg.UI {
 };
 
 ssg.UI.Init();
+
+Handlebars.registerHelper('description', function (block) {
+
+    let description = '',
+        markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
+
+    if (ssgDoc[markdownKey] !== undefined) {
+
+        description = ssgDoc[markdownKey].body;
+
+        return new Handlebars.SafeString(description);
+
+    } else {
+        // description = block.data.root.description;
+        return block.data.root.description;
+    }
+})

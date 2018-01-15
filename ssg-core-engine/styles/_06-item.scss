@@ -40,6 +40,8 @@ $item-mr: 1em; // margin right
 		padding: $item-mr;
 
 		background-color: $btn-inactive-bg;
+		border-bottom: 1px $item-gray solid;
+		min-height: 10vh;
 		&.show{
 			display: block;
 		}
@@ -47,21 +49,37 @@ $item-mr: 1em; // margin right
 			column-count: 2;
 			column-gap: 2vw;
 			h1{
-				font-size: 2rem;
-				margin-top: 0;
+				font-size: 1.5rem;
+				&:first-child{
+					margin-top: 0;
+				}
 			}
 			h2{
-				font-size: 1.5rem;
+				font-size: 1.25rem;
+				&:first-child{
+					margin-top: 0;
+				}
 			}
 			h3{
-				font-size: 1.25rem;
+				font-size: 1.125rem;
+				&:first-child{
+					margin-top: 0;
+				}
 			}
 			h4{
 				font-size: 1rem;
+				&:first-child{
+					margin-top: 0;
+				}
 			}
 			p, li{
 				line-height: 125%;
 				font-size: 1rem;
+			}
+			p{
+				&:first-child{
+					margin-top: 0;
+				}
 			}
 		}
 	}
@@ -75,7 +93,9 @@ $item-mr: 1em; // margin right
 
 		display: none;
 
-		margin: $item-mr;
+		padding: $item-mr $item-mr*2;
+		border-bottom: 1px $item-gray solid;
+		border-top: 1px $item-gray solid;
 		&.show{
 			display: block;
 		}
@@ -95,5 +115,11 @@ $item-mr: 1em; // margin right
 	width: inherit;
 	margin-top: 0;
 	&-header{
+	}
+}
+
+.vp-small{
+	.ssg-item-description{
+		column-count: 1;
 	}
 }

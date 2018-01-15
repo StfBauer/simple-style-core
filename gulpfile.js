@@ -14,7 +14,8 @@ var config = require('./ssg.core.config'), // import core settings
     reload = browserSync.reload, // call reload function
     // SSG Core
     ssgCore = require('./ssg-core-engine/ssg.core.precompile'),
-    ssgCoreConfig = require('./ssg-core-engine/ssg.core.genConfig');
+    ssgCoreConfig = require('./ssg-core-engine/ssg.core.genConfig'),
+    ssgCoreHelper = require('./ssg-core-engine/ssg.core.helpers');
 
 gulp.task("test:run", () => {
 
@@ -68,20 +69,21 @@ gulp.task('doc:markdown', () => {
             pedantic: true,
             smartypants: true
         }))
-        .pipe(jsoncombine(config.documentation.path, function (data) {
+        .pipe(jsoncombine(config.documentation.path, function (data, meta) {
 
             var keys = [],
                 name,
                 newDocData = {};
 
-            for (name in data) {
+            for (name in meta) {
 
-                // check for slashes in variable name
-                var newname = name.replace(new RegExp(/\/|\\/g), '_');
+                let current = meta[name];
+
+                let key = ssgCoreHelper.mdGetKey(current);
 
                 // create a new object property with normalized name
-                newDocData[newname] = {
-                    title: data[name].title,
+                newDocData[key] = {
+                    title: data[name].title !== undefined ? data[name].title : '',
                     body: data[name].body
                 }
 
@@ -178,17 +180,17 @@ gulp.task('ts:compile', () => {
 
     return gulp.src(config.watches.scripts)
         .pipe(
-        $.plumber()
+            $.plumber()
         )
         .pipe(
-        $.tslint({
-            formatter: "prose"
-        })
+            $.tslint({
+                formatter: "prose"
+            })
         )
         // .pipe($.tslint.report())
         .pipe(ts(config.tsconfig))
         .pipe(
-        gulp.dest(config.target.scripts)
+            gulp.dest(config.target.scripts)
         )
         .pipe(reload({
             stream: true
@@ -206,17 +208,17 @@ gulp.task('ts:core:compile', () => {
 
     return gulp.src(watches)
         .pipe(
-        $.plumber()
+            $.plumber()
         )
         .pipe(
-        $.tslint({
-            formatter: "prose"
-        })
+            $.tslint({
+                formatter: "prose"
+            })
         )
         // .pipe($.tslint.report())
         .pipe(ts(config.tsconfig))
         .pipe(
-        gulp.dest(config.target.scripts)
+            gulp.dest(config.target.scripts)
         )
         .pipe(reload({
             stream: true
@@ -260,22 +262,25 @@ gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:c
 
     // concat ssg core styles
     gulp.src([
-        './ssg-core-engine/scripts/ssgCore.template.js',
-        './.tmp/scripts/ssg.ui.js',
-        './.tmp/scripts/ssg.ui.helper.js'])
+            './ssg-core-engine/scripts/ssgCore.template.js',
+            './.tmp/scripts/ssg.ui.js',
+            './.tmp/scripts/ssg.ui.helper.js'
+        ])
         .pipe($.plumber())
         .pipe($.sourcemaps.init())
         .pipe($.concat('ssg.ui.js'))
         .pipe($.minify())
         .pipe($.sourcemaps.write('.'))
         .pipe(
-        gulp.dest('./dist/ssg-core-ui/scripts/')
+            gulp.dest('./dist/ssg-core-ui/scripts/')
         );
 
     gulp.src('./.tmp/styles/ssg*.css')
-        .pipe(cleanCSS({ compatibility: 'ie11' }))
+        .pipe(cleanCSS({
+            compatibility: 'ie11'
+        }))
         .pipe(
-        gulp.dest('./dist/ssg-core-ui/styles/')
+            gulp.dest('./dist/ssg-core-ui/styles/')
         );
 
 

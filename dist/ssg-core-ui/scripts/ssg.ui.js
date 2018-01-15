@@ -375,6 +375,16 @@ var ssg;
                             vpTarget.style.width = vpData;
                             break;
                     }
+                    // assign special class for documentation
+                    var vpCurSize = parseInt(vpData, 10);
+                    if (vpCurSize !== NaN && vpCurSize <= 1024) {
+                        console.log('small view port size');
+                        vpTarget.classList.add('vp-small');
+                    }
+                    else {
+                        console.log('large view port size');
+                        vpTarget.classList.remove('vp-small');
+                    }
                 }
                 if (vpData !== 'disco') {
                     // Update width indicator
@@ -874,6 +884,17 @@ var ssg;
 })(ssg || (ssg = {}));
 ;
 ssg.UI.Init();
+Handlebars.registerHelper('description', function (block) {
+    var description = '', markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
+    if (ssgDoc[markdownKey] !== undefined) {
+        description = ssgDoc[markdownKey].body;
+        return new Handlebars.SafeString(description);
+    }
+    else {
+        // description = block.data.root.description;
+        return block.data.root.description;
+    }
+});
 
 Handlebars.registerHelper('description', function (block) {
     var description = "", markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
