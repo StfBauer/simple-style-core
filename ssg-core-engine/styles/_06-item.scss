@@ -2,127 +2,113 @@ $item-gray: darken($btn-inactive-bc, 30%);
 $item-padding: .5em 1em;
 $item-mr: 1em; // margin right
 .ssg-pattern-name,
-.ssg-pattern-label{
+.ssg-pattern-label {
 	display: inline-block;
-
 	margin-top: .75em;
 	margin-right: $item-mr;
 }
 
-%ssg-typo{
-	h1{
-	}
+%ssg-typo {
+	h1 {}
 }
 
-.ssg-item{
+.ssg-item {
 	font-family: $font-primary;
-
 	display: block; // single item
-
 	margin: 0 0 5em 0;
-	&-header{
-	}
-	&-title{
+	&-header {}
+	&-title {
 		font-size: .8em;
 		font-weight: bold;
-
 		padding: $item-padding;
-
 		text-transform: uppercase;
-
 		border-bottom: 1px $item-gray solid;
 	}
-	&-description{
+	&-description {
 		font-size: .8em;
-
 		display: none;
-
 		padding: $item-mr;
-
 		background-color: $btn-inactive-bg;
 		border-bottom: 1px $item-gray solid;
 		min-height: 10vh;
-		&.show{
+		&.show {
 			display: block;
 		}
-		.inner{
-			max-width: 1024px;
-		}
-		@media screen and (min-width: 1024px){
+		@media screen and (min-width: 1024px) {
 			// column-count: 2;
 			column-gap: 2vw;
-			h1{
+			h1 {
 				font-size: 1.5rem;
-				&:first-child{
+				&:first-child {
 					margin-top: 0;
 				}
 			}
-			h2{
+			h2 {
 				font-size: 1.25rem;
-				&:first-child{
+				&:first-child {
 					margin-top: 0;
 				}
 			}
-			h3{
+			h3 {
 				font-size: 1.125rem;
-				&:first-child{
+				&:first-child {
 					margin-top: 0;
 				}
 			}
-			h4{
+			h4 {
 				font-size: 1rem;
-				&:first-child{
+				&:first-child {
 					margin-top: 0;
 				}
 			}
-			p, li{
+			p,
+			li {
 				line-height: 125%;
 				font-size: 1rem;
 			}
-			p{
-				&:first-child{
+			p {
+				&:first-child {
 					margin-top: 0;
 				}
 			}
 		}
 	}
-	.sample{
+	.sample {
 		position: static;
-
 		margin: $item-mr*2 $item-mr;
 	}
-	&-code{
+	&-code {
 		font-size: .9em;
-
 		display: none;
-
 		padding: $item-mr $item-mr*2;
 		border-bottom: 1px $item-gray solid;
 		border-top: 1px $item-gray solid;
-		&.show{
+		&.show {
 			display: block;
 		}
 	} // States
-	&.hide{
+	&.hide {
 		display: none;
 	}
-	&.show{
+	&.show {
 		display: block;
 	}
 }
 
-.ssg-item-single{
+.ssg-item-single {
 	@extend .ssg-item;
-
 	position: fixed;
 	width: inherit;
 	margin-top: 0;
-	&-header{
-	}
+	&-header {}
 }
 
-.vp-small{
-	.ssg-item-description{
+.ssg-docs {
+	max-width: 1024px;
+}
+
+.vp-small {
+	.ssg-item-description {
 		column-count: 1;
 	}
 }
