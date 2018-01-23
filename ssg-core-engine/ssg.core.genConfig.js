@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     plugins = require('gulp-load-plugins')({
         lazy: true
     }),
+    log = require('fancy-log'),
     config = require('../ssg.core.config.js'),
     chalk = require('chalk'),
     browserSync = require('browser-sync'),
@@ -11,6 +12,16 @@ var gulp = require('gulp'),
     path = require('path');
 
 var reload = browserSync.reload;
+
+// filepath
+var normalizeFilePath = function(filepath) {
+    if (filepath.indexOf('\\') !== -1) {
+        filepath = filepath.replace(new RegExp('\\\\', 'g'), '/');
+        filepath = filepath.replace(new RegExp('//', 'g'), '/');
+    }
+
+    return filepath;
+}
 
 module.exports = {
 
@@ -23,13 +34,15 @@ module.exports = {
 
         var handleDuplicates = function(data) {
 
+            var file = normalizeFilePath(data.filepath);
+
             var found = patternsData.filter(function(obj) {
 
-                return obj.filepath === data.filepath;
+                return obj.filepath === file;
 
             });
 
-            var filepath = data.filepath.split('/')[0];
+            var filepath = file.split('/')[0];
 
             if (found.length === 0) {
 
@@ -40,23 +53,24 @@ module.exports = {
         };
 
         var updateConfig = function(event) {
-            console.log('Update Config:::');
             if (event.type === 'deleted') {
-                console.log(event.path);
+                log(event.path);
             }
         };
 
         var createItem = function(file, enc, callback) {
 
-            // console.log('Create Item:::');
+            // log('Create Item:::');
 
             var path = require('path');
 
+            filePath = normalizeFilePath(file.relative);
+
             // init pattern configs
-            var filename = path.basename(file.relative),
-                extension = path.extname(file.relative),
+            var filename = path.basename(filePath),
+                extension = path.extname(filePath),
                 basename = filename.replace(extension, ''),
-                patternpath = path.dirname(file.relative),
+                patternpath = path.dirname(filePath),
                 title = basename.indexOf('_') === 0 ? basename.substr(1) : basename;
 
             // create pattern object
@@ -64,7 +78,7 @@ module.exports = {
                 title: title,
                 description: '',
                 filename: basename,
-                filepath: file.relative
+                filepath: filePath
             };
 
             this.push(data);
@@ -115,13 +129,13 @@ module.exports = {
             fs.writeFile(options.configFile, patterns, function(err) {
 
                 if (err) {
-                    return plugins.util.log(
-                        plugins.util.colors.red(err)
+                    return log(
+                        chalk.red(err)
                     );
                 }
 
-                plugins.util.log(
-                    plugins.util.colors.green('Configuration saved!')
+                log(
+                    chalk.green('Configuration saved!')
                 );
 
                 precompile(config.ssg);
@@ -131,17 +145,17 @@ module.exports = {
 
         var logData = function() {
 
-            console.log(
-                plugins.util.colors.green('Patterns before: '), statistics);
-            console.log(
-                plugins.util.colors.green('Patterns after:  '), patternsData.length);
+            log(
+                chalk.green('Patterns before: '), statistics);
+            log(
+                chalk.green('Patterns after:  '), patternsData.length);
 
             writeConfigToFile();
         };
 
         var loadConfig = (function() {
 
-            plugins.util.log('... Loading current configuration');
+            log('... Loading current configuration');
 
             var curConfigPath = options.configFile;
 
@@ -161,8 +175,9 @@ module.exports = {
             try {
 
                 // Loading old configuration
-                var config = fs.readFileSync(options.configFile);
-
+                var config = fs.readFileSync(options.configFile, "utf8");
+                
+                if(config !== ""){
                 // parse json config
                 var configData = JSON.parse(config);
 
@@ -170,19 +185,18 @@ module.exports = {
                 patternsData = configData !== undefined &&
                     configData.patterns !== undefined ? configData.patterns : [];
 
-                // Pattern Data
-                // console.log(patternsData);
 
-                plugins.util.log(
+                log(
                     'Found',
                     patternsData.length,
                     'pattern(s) in current configuration.');
 
                 statistics = patternsData.length;
+            }
 
             } catch (err) {
 
-                plugins.util.log(plugins.util.colors.red(err));
+                log(chalk.red(err));
 
             }
         }());
@@ -205,22 +219,22 @@ module.exports = {
 
         var patternPrecompile = function() {
 
-            plugins.util.log(
-                plugins.util.colors.green('Precompile Patterns')
+            log(
+                chalk.green('Precompile Patterns')
             );
 
             precompile(config.ssg)
                 .on('error', function(a, b, c) {
 
-                    plugins.util.log(
-                        plugins.util.colors.green('Precompilation failed.')
+                    log(
+                        chalk.green('Precompilation failed.')
                     );
 
                 })
                 .on('end', function() {
 
-                    plugins.util.log(
-                        plugins.util.colors.green('Precompilation finished.')
+                    log(
+                        chalk.green('Precompilation finished.')
                     );
 
                     reload();
@@ -236,6 +250,7 @@ module.exports = {
 
         // renames files in pattern config
         var renamePattern = function(files) {
+            
         };
 
         var trimExtension = function(file) {
@@ -262,13 +277,13 @@ module.exports = {
             fs.writeFile(patternConfigPath, patterns, function(err) {
 
                 if (err) {
-                    return plugins.util.log(
-                        plugins.util.colors.red(err)
+                    return log(
+                        chalk.red(err)
                     );
                 }
 
-                plugins.util.log(
-                    plugins.util.colors.green('Configuration updated')
+                log(
+                    chalk.green('Configuration updated')
                 );
 
                 patternPrecompile();
@@ -311,10 +326,10 @@ module.exports = {
                 patternConfig.patterns = curConfig;
             }
 
-            plugins.util.log(
-                plugins.util.colors.green('Pattern ') +
+            log(
+                chalk.green('Pattern ') +
                 filename +
-                plugins.util.colors.green(' was added')
+                chalk.green(' was added')
             );
 
             saveConfig(patternConfig);
@@ -343,10 +358,10 @@ module.exports = {
 
                 patternConfig.patterns = curConfig;
 
-                plugins.util.log(
-                    plugins.util.colors.cyan('Pattern file ') +
+                log(
+                    chalk.cyan('Pattern file ') +
                     oldFile +
-                    plugins.util.colors.cyan(' was renamed to ') +
+                    chalk.cyan(' was renamed to ') +
                     newFile
                 );
 
@@ -369,10 +384,10 @@ module.exports = {
 
                 deletedPattern[0].deleted = true;
 
-                plugins.util.log(
-                    plugins.util.colors.yellow('Pattern ') +
+                log(
+                    chalk.yellow('Pattern ') +
                     deletedPattern[0].title +
-                    plugins.util.colors.yellow(' was marked for deletetion')
+                    chalk.yellow(' was marked for deletetion')
                 );
 
                 saveConfig(patternConfig);
@@ -389,7 +404,7 @@ module.exports = {
             try {
                 createPatternItem(file);
             } catch (Exception) {
-                console.log(Exception)
+                log(Exception)
             }
         };
 
@@ -399,7 +414,7 @@ module.exports = {
             try {
                 renamePatternItem(files);
             } catch (Exception) {
-                console.log(Exception)
+                log(Exception)
             }
         };
 
@@ -409,7 +424,7 @@ module.exports = {
             try {
                 deletePatternItem(file);
             } catch (Exception) {
-                console.log(Exception)
+                log(Exception)
             }
         };
 
@@ -426,10 +441,10 @@ module.exports = {
             // Check if pattern exists otherwise add it as new pattern
             if (changedItem.length === 1) {
 
-                plugins.util.log(
-                    plugins.util.colors.cyan('Pattern ') +
+                log(
+                    chalk.cyan('Pattern ') +
                     changedItem[0].title +
-                    plugins.util.colors.cyan(' was changed')
+                    chalk.cyan(' was changed')
                 );
 
                 patternPrecompile();
@@ -440,16 +455,6 @@ module.exports = {
             }
 
         };
-
-        // filepath
-        var normalizeFilePath = function(filepath) {
-            if (filepath.indexOf('\\') !== -1) {
-                filepath = filepath.replace(new RegExp('\\\\', 'g'), '/');
-                filepath = filepath.replace(new RegExp('//', 'g'), '/');
-            }
-
-            return filepath;
-        }
 
         // Check if path exists just in case 
         if (fs.existsSync(event.path)) {

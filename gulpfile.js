@@ -269,7 +269,7 @@ gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:c
         .pipe($.plumber())
         .pipe($.sourcemaps.init())
         .pipe($.concat('ssg.ui.js'))
-        .pipe($.minify())
+        // .pipe($.minify())
         .pipe($.sourcemaps.write('.'))
         .pipe(
             gulp.dest('./dist/ssg-core-ui/scripts/')

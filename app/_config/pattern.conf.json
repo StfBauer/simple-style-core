@@ -9,8 +9,8 @@
         {
             "title": "help",
             "description": "",
-            "filename": "help",
-            "filepath": "atoms/help.hbs"
+            "filename": "color",
+            "filepath": "atoms/color.hbs"
         },
         {
             "title": "moses",
