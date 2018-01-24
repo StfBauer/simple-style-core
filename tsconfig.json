@@ -1,13 +1,14 @@
 {
-        "allowJS": true,
-        "compilerOptions": {
-            "target": "ES5",
-            "module": "commonjs",
-            "sourceMap": true,
-            "allowJs": true
-        },
-        "exclude": [
-            "node_modules",
-            ".tmp"
-        ]
-    }
+    "allowJS": true,
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "commonjs",
+        "sourceMap": true,
+        "allowJs": true,
+        "strict": true
+    },
+    "exclude": [
+        "node_modules",
+        ".tmp"
+    ]
+}

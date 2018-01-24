@@ -1,7 +1,8 @@
-Handlebars.registerHelper('description', function (block) {
+declare var ssgDoc: any;
+Handlebars.registerHelper('description', function (block: any) {
 
-    var description = "",
-        markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
+    let description = '',
+        markdownKey = block.data.root.baseFilter + '_' + block.data.root.filename;
 
     if (ssgDoc[markdownKey] !== undefined) {
 
@@ -13,4 +14,4 @@ Handlebars.registerHelper('description', function (block) {
         // description = block.data.root.description;
         return block.data.root.description;
     }
-});
+})

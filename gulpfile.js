@@ -212,7 +212,8 @@ gulp.task('ts:core:compile', () => {
         )
         .pipe(
             $.tslint({
-                formatter: "prose"
+                formatter: "prose",
+                configuration: "./tslint.json"
             })
         )
         // .pipe($.tslint.report())
@@ -269,7 +270,19 @@ gulp.task("dist", ['ts:compile', 'ts:core:compile', 'sass:compile', 'sass:core:c
         .pipe($.plumber())
         .pipe($.sourcemaps.init())
         .pipe($.concat('ssg.ui.js'))
-        // .pipe($.minify())
+        .pipe($.minify({
+            mangle: false,
+            compress: {
+                sequences: true,
+                dead_code: true,
+                conditionals: true,
+                booleans: true,
+                unused: true,
+                if_return: true,
+                join_vars: true,
+                drop_console: true
+            }
+        }))
         .pipe($.sourcemaps.write('.'))
         .pipe(
             gulp.dest('./dist/ssg-core-ui/scripts/')

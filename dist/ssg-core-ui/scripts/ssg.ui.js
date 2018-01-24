@@ -58,10 +58,11 @@ this["ssgCore"]["templates"]["vpresizer"] = Handlebars.template({"compiler":[7,"
     + alias4(((helper = (helper = helpers.height || (depth0 != null ? depth0.height : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"height","hash":{},"data":data}) : helper)))
     + "\">\n	<button id=\"ssg-btn-disco\" class=\"ssg-btn\">Disco</button>\n";
 },"useData":true});
+"use strict";
 /// <reference path="../../typings/index.d.ts" />
 ;
 var ssg;
-(function (ssg_1) {
+(function (ssg) {
     var UI;
     (function (UI) {
         var win = window, doc = document, ssgCoreTemplates = ssgCore.templates, ssgTemplates = ssg.templates, patternConfig = null, currentSingleItems = [], currentSingleCount = 0, currentUIState = ssg.UI.State;
@@ -71,27 +72,27 @@ var ssg;
             1024,
             3500
         ];
-        var coreUiElement = {
+        UI.coreUiElement = {
+            // Buttons
+            btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
+            btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
+            btnShowToC: '.ssg-button[data-action=\'ssg-toc\']',
+            discoButton: '.ssg-button[data-viewport=\'disco\']',
             filterButton: '.ssg-core-filter .ssg-button',
+            patternItem: 'div[class^=ssg-item]',
+            tocItem: '.ssg-toc-item',
             viewButton: '.ssg-core-view .ssg-button',
             viewPortButton: '.ssg-core-viewport .ssg-button',
             viewPortTarget: '.ssg-patterns-inner',
             viewPortWidth: '#ssg-in-width',
             viewToc: '.ssg-toc',
             viewTocInner: '.ssg-toc-inner',
-            // Buttons
-            discoButton: '.ssg-button[data-viewport=\'disco\']',
-            btnShowCode: '.ssg-button[data-action=\'ssg-code\']',
-            btnShowAnnotion: '.ssg-button[data-action=\'ssg-annot\']',
-            btnShowToC: '.ssg-button[data-action=\'ssg-toc\']',
-            tocItem: '.ssg-toc-item',
-            tocSearchBox: '.ssg-toc-searchbox',
-            tocSearchValue: 'toc-searchbox',
-            patternItem: 'div[class^=ssg-item]',
-            singleItemNavTitle: '#ssg-item-nav-label',
             singleItemNav: 'ssg-core-nav',
+            singleItemNavTitle: '#ssg-item-nav-label',
             singleNavLeft: 'ssg-left',
             singleNavRight: 'ssg-right',
+            tocSearchBox: '.ssg-toc-searchbox',
+            tocSearchValue: 'toc-searchbox',
             // States
             state: {
                 active: 'active',
@@ -100,13 +101,13 @@ var ssg;
             }
         };
         UI.State = (function () {
-            var STATE_KEY = "ssg.UI.State", XTRAS = ['isolate', 'code', 'annotation'], FILTERS = ['atoms', 'molecules', 'organism', 'templates', 'pages', 'single'], SCREEN = ['s', 'm', 'l', 'uwd', 'full', 'disco'];
+            var STATE_KEY = 'ssg.UI.State', XTRAS = ['isolate', 'code', 'annotation'], FILTERS = ['atoms', 'molecules', 'organism', 'templates', 'pages', 'single'], SCREEN = ['s', 'm', 'l', 'uwd', 'full', 'disco'];
             var _currentUIState = null;
             // default UI State;
             var defState = {
-                "filter": "atoms",
-                "xtras": ['annotation'],
-                "screen": window.screen.availWidth
+                'filter': 'atoms',
+                'screen': window.screen.availWidth,
+                'xtras': ['annotation']
             };
             // Validate current state entry
             var _validateState = function (state) {
@@ -125,10 +126,10 @@ var ssg;
                 }
                 // check current screen
                 try {
-                    parseInt(state.screen.toString());
+                    parseInt(state.screen.toString(), 10);
                 }
                 catch (exception) {
-                    console.log("ERROR:" + exception);
+                    console.log('ERROR:' + exception);
                     checkSumScreen += 1;
                 }
                 if (checkSumFilter + checkSumXtras + checkSumScreen === 0) {
@@ -142,7 +143,7 @@ var ssg;
                     localStorage.setItem(STATE_KEY, JSON.stringify(curState));
                 }
                 else {
-                    throw "There are some errors with the state";
+                    throw 'There are some errors with the state';
                 }
             };
             (function () {
@@ -171,7 +172,8 @@ var ssg;
                 return new Promise(function (resolve, reject) {
                     var xhr;
                     var loaded = function () {
-                        if (this.status >= 200 && this.status < 300) {
+                        var curStatus = this.status;
+                        if (curStatus >= 200 && curStatus < 300) {
                             resolve(xhr.response);
                         }
                         else {
@@ -206,19 +208,51 @@ var ssg;
                 }
             };
             Utils.hideSingleItemSlider = function (hide) {
-                var singleItemSelector = doc.querySelector("." + coreUiElement.singleItemNav);
+                var singleItemSelector = doc.querySelector('.' + UI.coreUiElement.singleItemNav);
                 if (singleItemSelector !== undefined && singleItemSelector !== null) {
                     if (hide === true) {
-                        singleItemSelector.classList.add(coreUiElement.state.hidden);
+                        singleItemSelector.classList.add(UI.coreUiElement.state.hidden);
                     }
                     else {
-                        singleItemSelector.classList.remove(coreUiElement.state.hidden);
+                        singleItemSelector.classList.remove(UI.coreUiElement.state.hidden);
                     }
                 }
             };
         })(Utils = UI.Utils || (UI.Utils = {}));
         ;
         UI.Filter = {
+            elements: function (filterValue) {
+                switch (filterValue) {
+                    case 'atoms':
+                    case 'molecules':
+                        var newState = ssg.UI.State.current();
+                        newState.filter = filterValue;
+                        ssg.UI.State.update(newState);
+                        var allElements = doc.querySelectorAll('div[data-cat]');
+                        for (var i = allElements.length - 1; i >= 0; i--) {
+                            var curElement = allElements[i];
+                            if (curElement.dataset['cat'] === filterValue) {
+                                curElement.classList.remove('hide');
+                            }
+                            else {
+                                curElement.classList.add('hide');
+                            }
+                        }
+                        ssg.UI.Utils.hideSingleItemSlider(true);
+                        break;
+                    case 'organism':
+                        ssg.UI.Filter.sliderSelection(filterValue);
+                        break;
+                    case 'templates':
+                        ssg.UI.Filter.sliderSelection(filterValue);
+                        break;
+                    case 'pages':
+                        ssg.UI.Filter.sliderSelection(filterValue);
+                        break;
+                    default:
+                        break;
+                }
+            },
             sliderSelection: function (filter) {
                 var allElements = doc.querySelectorAll('div[data-cat]'), firstItemFound = false;
                 // reset currentSingleItem
@@ -227,9 +261,9 @@ var ssg;
                     var curElement = allElements[i];
                     if (curElement.dataset['cat'] === filter) {
                         var curSingleItem = {
-                            title: curElement.getAttribute('title'),
+                            category: filter,
                             file: curElement.dataset['file'],
-                            category: filter
+                            title: curElement.getAttribute('title')
                         };
                         currentSingleItems.push(curSingleItem);
                         if (firstItemFound === false) {
@@ -247,50 +281,18 @@ var ssg;
                         curElement.classList.add('hide');
                     }
                 }
-                ssg.UI.EnableSingleSlider(currentSingleItems);
+                ssg.UI.EnableSingleSlider(currentSingleItems, null);
                 if (currentSingleItems.length > 1) {
                     ssg.UI.Utils.hideSingleItemSlider(false);
                 }
                 else {
                     ssg.UI.Utils.hideSingleItemSlider(true);
                 }
-            },
-            elements: function (filterValue) {
-                switch (filterValue) {
-                    case "atoms":
-                    case "molecules":
-                        var newState = ssg.UI.State.current();
-                        newState.filter = filterValue;
-                        ssg.UI.State.update(newState);
-                        var allElements = doc.querySelectorAll('div[data-cat]');
-                        for (var i = allElements.length - 1; i >= 0; i--) {
-                            var curElement = allElements[i];
-                            if (curElement.dataset['cat'] === filterValue) {
-                                curElement.classList.remove('hide');
-                            }
-                            else {
-                                curElement.classList.add('hide');
-                            }
-                        }
-                        ssg.UI.Utils.hideSingleItemSlider(true);
-                        break;
-                    case "organism":
-                        ssg.UI.Filter.sliderSelection(filterValue);
-                        break;
-                    case "templates":
-                        ssg.UI.Filter.sliderSelection(filterValue);
-                        break;
-                    case "pages":
-                        ssg.UI.Filter.sliderSelection(filterValue);
-                        break;
-                    default:
-                        break;
-                }
             }
         };
         UI.initDisco = function () {
             var disco = setInterval(function () {
-                var discoButton = document.querySelector(coreUiElement.discoButton + "." + coreUiElement.state.active), viewPortInner = doc.querySelector(coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(coreUiElement.viewPortWidth);
+                var discoButton = document.querySelector(UI.coreUiElement.discoButton + '.' + UI.coreUiElement.state.active), viewPortInner = doc.querySelector(UI.coreUiElement.viewPortTarget), viewPortWidth = doc.querySelector(UI.coreUiElement.viewPortWidth);
                 if (discoButton !== null) {
                     var curViewPort = Math.floor(Math.random() * (viewports.length - 0)) + 0;
                     viewPortWidth.value = viewPortInner.style.width = viewports[curViewPort].toString();
@@ -305,21 +307,24 @@ var ssg;
             changeFilter: function (event) {
                 // prevent all default
                 event.preventDefault();
-                var allButtons = doc.querySelectorAll(coreUiElement.filterButton);
+                var allButtons = doc.querySelectorAll(UI.coreUiElement.filterButton);
                 for (var i = allButtons.length - 1; i >= 0; i--) {
-                    if (allButtons[i].classList.contains(coreUiElement.state.active)) {
-                        allButtons[i].classList.remove(coreUiElement.state.active);
+                    if (allButtons[i].classList.contains(UI.coreUiElement.state.active)) {
+                        allButtons[i].classList.remove(UI.coreUiElement.state.active);
                     }
                 }
                 var curButton = event.target, filter = curButton.dataset['filter'];
-                curButton.classList.add(coreUiElement.state.active);
+                curButton.classList.add(UI.coreUiElement.state.active);
+                if (filter === undefined) {
+                    throw 'filter cannot be undefined';
+                }
                 UI.Filter.elements(filter);
                 // Check if toc button is active otherwise remove state.
-                var tocButton = doc.querySelectorAll(coreUiElement.btnShowToC);
+                var tocButton = doc.querySelectorAll(UI.coreUiElement.btnShowToC);
                 // if toc button was found
                 if (tocButton.length !== 0) {
                     // remove active state in case toc was selected
-                    if (tocButton[0].classList.contains(coreUiElement.state.active)) {
+                    if (tocButton[0].classList.contains(UI.coreUiElement.state.active)) {
                         tocButton[0].classList.remove('active');
                     }
                 }
@@ -334,33 +339,33 @@ var ssg;
                 // prevent all default
                 event.preventDefault();
                 var curButton = event.target, filter = curButton.dataset['filter'];
-                curButton.classList.contains(coreUiElement.state.active) ?
-                    curButton.classList.remove(coreUiElement.state.active) : curButton.classList.add(coreUiElement.state.active);
+                curButton.classList.contains(UI.coreUiElement.state.active) ?
+                    curButton.classList.remove(UI.coreUiElement.state.active) : curButton.classList.add(UI.coreUiElement.state.active);
             },
             // adjust view port to differnet width
             changeViewPort: function (event) {
                 event.preventDefault();
-                var vpButton = event.target, vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active), vpData = vpButton.dataset['viewport'], vpTarget = doc.querySelector(coreUiElement.viewPortTarget), widthInput = doc.querySelector(coreUiElement.viewPortWidth);
+                var vpButton = event.target, vpActiveButton = doc.querySelector(UI.coreUiElement.viewPortButton + '.' + UI.coreUiElement.state.active), vpData = vpButton.dataset['viewport'], vpTarget = doc.querySelector(UI.coreUiElement.viewPortTarget), widthInput = doc.querySelector(UI.coreUiElement.viewPortWidth);
                 // Updating State
                 var newState = ssg.UI.State.current();
                 newState.screen = vpData;
                 ssg.UI.State.update(newState);
                 // remove current active button
                 if (vpActiveButton !== null) {
-                    vpActiveButton.classList.remove(coreUiElement.state.active);
+                    vpActiveButton.classList.remove(UI.coreUiElement.state.active);
                 }
                 if (vpActiveButton === vpButton) {
-                    vpButton.classList.remove(coreUiElement.state.active);
+                    vpButton.classList.remove(UI.coreUiElement.state.active);
                     vpData = 'full';
                 }
                 else {
-                    vpButton.classList.add(coreUiElement.state.active);
+                    vpButton.classList.add(UI.coreUiElement.state.active);
                 }
                 // recheck Active Buttons
-                vpActiveButton = doc.querySelector(coreUiElement.viewPortButton + '.' + coreUiElement.state.active);
+                vpActiveButton = doc.querySelector(UI.coreUiElement.viewPortButton + '.' + UI.coreUiElement.state.active);
                 if (vpActiveButton === null) {
                     vpActiveButton = doc.querySelector('.ssg-button[data-viewport=\'full\']');
-                    vpActiveButton.classList.add(coreUiElement.state.active);
+                    vpActiveButton.classList.add(UI.coreUiElement.state.active);
                 }
                 // action what to do
                 if (typeof vpTarget !== undefined) {
@@ -372,121 +377,39 @@ var ssg;
                             ssg.UI.initDisco();
                             break;
                         default:
-                            vpTarget.style.width = vpData;
+                            if (vpData !== undefined && vpData !== null) {
+                                vpTarget.style.width = vpData;
+                            }
                             break;
                     }
-                    // assign special class for documentation
-                    var vpCurSize = parseInt(vpData, 10);
-                    if (vpCurSize !== NaN && vpCurSize <= 1024) {
-                        console.log('small view port size');
-                        vpTarget.classList.add('vp-small');
-                    }
-                    else {
-                        console.log('large view port size');
-                        vpTarget.classList.remove('vp-small');
+                    if (vpData !== undefined && vpData !== null) {
+                        // assign special class for documentation
+                        var vpCurSize = parseInt(vpData, 10);
+                        if (vpCurSize !== NaN && vpCurSize <= 1024) {
+                            console.log('small view port size');
+                            vpTarget.classList.add('vp-small');
+                        }
+                        else {
+                            console.log('large view port size');
+                            vpTarget.classList.remove('vp-small');
+                        }
                     }
                 }
-                if (vpData !== 'disco') {
+                if (vpData !== undefined && vpData !== 'disco') {
                     // Update width indicator
-                    vpTarget = doc.querySelector(coreUiElement.viewPortTarget);
+                    vpTarget = doc.querySelector(UI.coreUiElement.viewPortTarget);
                     widthInput.value = vpData;
-                }
-            },
-            // Resize View Port through manual update of width
-            viewPortResizer: function (event) {
-                if (event instanceof KeyboardEvent) {
-                    var kbEvent = event;
-                    if (kbEvent.keyCode == 13) {
-                        var innerPattern = doc.querySelector(coreUiElement.viewPortTarget), newWidth = doc.querySelector(coreUiElement.viewPortWidth);
-                        innerPattern.style.width = newWidth.value;
-                    }
-                }
-                else {
-                    var innerPattern = doc.querySelector(coreUiElement.viewPortTarget), newWidth = doc.querySelector(coreUiElement.viewPortWidth);
-                    innerPattern.style.width = newWidth.value;
-                }
-            },
-            // Show and hides source code
-            showSource: function (event) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                // Updating State
-                var newState = ssg.UI.State.current();
-                // check if code is already included in UI Extras
-                if (newState.xtras.indexOf('code') === -1) {
-                    newState.xtras.push('code');
-                }
-                else {
-                    var newXtras = newState.xtras.filter(function (e) { return e !== 'code'; });
-                    newState.xtras = newXtras;
-                }
-                ssg.UI.State.update(newState);
-                if (event.target.classList.contains(coreUiElement.state.active)) {
-                    // sho source code by adding class
-                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
-                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.add(coreUiElement.state.show);
-                    }
-                }
-                else {
-                    // hide source code by removing the class
-                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
-                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.remove(coreUiElement.state.show);
-                    }
-                }
-            },
-            // show and hides annotations
-            showAnnotation: function (event) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                // Updating State
-                var newState = ssg.UI.State.current();
-                // check if code is already included in UI Extras
-                if (newState.xtras.indexOf('annotation') === -1) {
-                    newState.xtras.push('annotation');
-                }
-                else {
-                    var newXtras = newState.xtras.filter(function (e) { return e !== 'annotation'; });
-                    newState.xtras = newXtras;
-                }
-                ssg.UI.State.update(newState);
-                if (event.target.classList.contains(coreUiElement.state.active)) {
-                    // show annotation by adding class
-                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
-                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.add(coreUiElement.state.show);
-                    }
-                }
-                else {
-                    // hide annotation code by removing the class
-                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
-                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
-                        codeBlocks[i].classList.remove(coreUiElement.state.show);
-                    }
-                }
-            },
-            // show and collapse table of contents
-            showToc: function (event) {
-                event.preventDefault();
-                var currentButton = event.target, containerToc = doc.querySelector(coreUiElement.viewToc);
-                currentButton !== null && currentButton.classList.contains(coreUiElement.state.active) ?
-                    currentButton.classList.remove(coreUiElement.state.active) : currentButton.classList.add(coreUiElement.state.active);
-                if (containerToc !== null) {
-                    if (containerToc.classList.contains(coreUiElement.state.show)) {
-                        containerToc.classList.add(coreUiElement.state.hidden);
-                        containerToc.classList.remove(coreUiElement.state.show);
-                    }
-                    else {
-                        containerToc.classList.remove(coreUiElement.state.hidden);
-                        containerToc.classList.add(coreUiElement.state.show);
-                    }
                 }
             },
             // filter single toc element
             filterToc: function (event) {
                 event.preventDefault();
-                var currentToc = event.target, filter = currentToc.dataset['filter'], filterFolder = currentToc.dataset['folder'], filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value), tocButton = doc.querySelector(ssg.UI.btnShowToC);
+                var currentToc = event.target;
+                // just in case current toc is null and the parent node is null
+                if (currentToc === null || currentToc.parentNode === null) {
+                    return;
+                }
+                var filter = currentToc.dataset['filter'], filterFolder = currentToc.dataset['folder'], filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value), tocButton = doc.querySelector(ssg.UI.coreUiElement.btnShowToC);
                 if (tocButton) {
                     tocButton[0].classList.add('active');
                 }
@@ -522,7 +445,10 @@ var ssg;
                 newState.filterSelector = '.' + filter;
                 ssg.UI.State.update(newState);
                 if (filter !== null) {
-                    var allElements = doc.querySelectorAll(coreUiElement.patternItem), tocElement = doc.querySelector(coreUiElement.viewToc);
+                    var allElements = doc.querySelectorAll(UI.coreUiElement.patternItem), tocElement = doc.querySelector(UI.coreUiElement.viewToc);
+                    if (tocElement === null) {
+                        throw 'Current toc elment is null';
+                    }
                     for (var i = allElements.length - 1; i >= 0; i--) {
                         var curItem = allElements[i];
                         if (curItem.dataset['file'] === filter) {
@@ -539,7 +465,7 @@ var ssg;
             // search for item in toc
             searchToc: function (event) {
                 event.preventDefault();
-                var searchBox = doc.getElementById(coreUiElement.tocSearchValue);
+                var searchBox = doc.getElementById(UI.coreUiElement.tocSearchValue);
                 if (searchBox !== null) {
                     var searchValue = searchBox.value;
                     var resetResult = doc.querySelectorAll('.ssg-toc-item');
@@ -558,6 +484,97 @@ var ssg;
                     }
                 }
             },
+            // show and hides annotations
+            showAnnotation: function (event) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                // Updating State
+                var newState = ssg.UI.State.current();
+                // check if code is already included in UI Extras
+                if (newState.xtras.indexOf('annotation') === -1) {
+                    newState.xtras.push('annotation');
+                }
+                else {
+                    var newXtras = newState.xtras.filter(function (e) { return e !== 'annotation'; });
+                    newState.xtras = newXtras;
+                }
+                ssg.UI.State.update(newState);
+                if (event.target.classList.contains(UI.coreUiElement.state.active)) {
+                    // show annotation by adding class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.add(UI.coreUiElement.state.show);
+                    }
+                }
+                else {
+                    // hide annotation code by removing the class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-description');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.remove(UI.coreUiElement.state.show);
+                    }
+                }
+            },
+            // Show and hides source code
+            showSource: function (event) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                // Updating State
+                var newState = ssg.UI.State.current();
+                // check if code is already included in UI Extras
+                if (newState.xtras.indexOf('code') === -1) {
+                    newState.xtras.push('code');
+                }
+                else {
+                    var newXtras = newState.xtras.filter(function (e) { return e !== 'code'; });
+                    newState.xtras = newXtras;
+                }
+                ssg.UI.State.update(newState);
+                if (event.target.classList.contains(UI.coreUiElement.state.active)) {
+                    // sho source code by adding class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.add(UI.coreUiElement.state.show);
+                    }
+                }
+                else {
+                    // hide source code by removing the class
+                    var codeBlocks = doc.querySelectorAll('.ssg-item-code');
+                    for (var i = codeBlocks.length - 1; i >= 0; i--) {
+                        codeBlocks[i].classList.remove(UI.coreUiElement.state.show);
+                    }
+                }
+            },
+            // show and collapse table of contents
+            showToc: function (event) {
+                event.preventDefault();
+                var currentButton = event.target, containerToc = doc.querySelector(UI.coreUiElement.viewToc);
+                currentButton !== null && currentButton.classList.contains(UI.coreUiElement.state.active) ?
+                    currentButton.classList.remove(UI.coreUiElement.state.active) : currentButton.classList.add(UI.coreUiElement.state.active);
+                if (containerToc !== null) {
+                    if (containerToc.classList.contains(UI.coreUiElement.state.show)) {
+                        containerToc.classList.add(UI.coreUiElement.state.hidden);
+                        containerToc.classList.remove(UI.coreUiElement.state.show);
+                    }
+                    else {
+                        containerToc.classList.remove(UI.coreUiElement.state.hidden);
+                        containerToc.classList.add(UI.coreUiElement.state.show);
+                    }
+                }
+            },
+            // Resize View Port through manual update of width
+            viewPortResizer: function (event) {
+                if (event instanceof KeyboardEvent) {
+                    var kbEvent = event;
+                    if (kbEvent.keyCode === 13) {
+                        var innerPattern = doc.querySelector(UI.coreUiElement.viewPortTarget), newWidth = doc.querySelector(UI.coreUiElement.viewPortWidth);
+                        innerPattern.style.width = newWidth.value;
+                    }
+                }
+                else {
+                    var innerPattern = doc.querySelector(UI.coreUiElement.viewPortTarget), newWidth = doc.querySelector(UI.coreUiElement.viewPortWidth);
+                    innerPattern.style.width = newWidth.value;
+                }
+            },
             // register specific event on all notes
             registerEvents: function (curElements, eventType, handler) {
                 for (var i = curElements.length - 1; i >= 0; i--) {
@@ -568,8 +585,8 @@ var ssg;
         UI.Render = function () {
             var RenderToc = function (patternConfig) {
                 var patterns = patternConfig.patterns.filter(function (object) {
-                    return object["deleted"] === undefined;
-                }), folder = patternConfig.folder, ssgToc = doc.querySelector(coreUiElement.viewTocInner);
+                    return object['deleted'] === undefined;
+                }), folder = patternConfig.folder, ssgToc = doc.querySelector(UI.coreUiElement.viewTocInner);
                 for (var i = 0; i < folder.length; i++) {
                     var baseElement = '<ul><li id=ssg-' + folder[i].name + ' class=ssg-toc-header>' +
                         folder[i].name +
@@ -588,12 +605,12 @@ var ssg;
                         currentSection.insertAdjacentHTML('beforeend', patternTitle);
                     }
                 }
-                var tocItems = doc.querySelectorAll(coreUiElement.tocItem);
+                var tocItems = doc.querySelectorAll(UI.coreUiElement.tocItem);
                 for (var k = 0; k < tocItems.length; k++) {
                     tocItems[k].addEventListener('click', UI.Events.filterToc);
                 }
             };
-            var container = doc.querySelector(coreUiElement.viewPortTarget), tocContainer = doc.querySelector(coreUiElement.viewTocInner);
+            var container = doc.querySelector(UI.coreUiElement.viewPortTarget), tocContainer = doc.querySelector(UI.coreUiElement.viewTocInner);
             var allContent = '', allToc = '', parser = new DOMParser();
             for (var i = patternConfig.patterns.length - 1; i >= 0; i--) {
                 var curPattern = patternConfig.patterns[i], curPatternTitle = curPattern.filename, curTemplate = ssgTemplates[curPatternTitle];
@@ -669,12 +686,17 @@ var ssg;
                     var selItems = doc.querySelectorAll(query);
                     if (selItems.length === 1) {
                         var curItem = selItems[0];
-                        if (curItem.dataset.cat !== undefined
-                            && curItem.dataset.cat !== null
+                        if (curItem !== undefined &&
+                            curItem !== null &&
+                            curItem.dataset !== undefined &&
+                            curItem.dataset !== null
                             && (curItem.dataset.cat === 'templates'
                                 || curItem.dataset.cat === 'pages'
                                 || curItem.dataset.cat === 'organism')) {
-                            ssg.UI.Filter.sliderSelection(curItem.dataset.cat);
+                            if (curItem.dataset.cat !== undefined
+                                && curItem.dataset.cat !== null) {
+                                ssg.UI.Filter.sliderSelection(curItem.dataset.cat);
+                            }
                         }
                         else {
                             ssg.UI.Utils.hideSingleItemSlider(true);
@@ -687,8 +709,10 @@ var ssg;
                     }
                 }
                 else if (state.filter === 'single') {
-                    var tocButton = doc.querySelector(coreUiElement.btnShowToC);
-                    tocButton.classList.add('active');
+                    var tocButton = doc.querySelector(UI.coreUiElement.btnShowToC);
+                    if (tocButton !== null) {
+                        tocButton.classList.add('active');
+                    }
                     if (state.filterSelector !== undefined &&
                         state.filterSelector !== null) {
                         var curFilter = state.filterSelector.substr(1);
@@ -721,7 +745,7 @@ var ssg;
                 if (viewPortButton !== undefined
                     && viewPortButton !== null) {
                     viewPortButton.classList.add('active');
-                    if (viewPortButton !== viewPortActiveButton) {
+                    if (viewPortButton !== viewPortActiveButton && viewPortActiveButton !== null) {
                         viewPortActiveButton.classList.remove('active');
                     }
                 }
@@ -758,10 +782,15 @@ var ssg;
             applyExtras(state);
         };
         UI.EnableSingleSlider = function (currentSingleItems, filter) {
-            var slideItems = currentSingleItems;
+            var slideItems = currentSingleItems, currentTitle = doc.querySelector(UI.coreUiElement.singleItemNavTitle);
+            if (currentTitle !== null) {
+                currentTitle.textContent = slideItems[0].title;
+            }
             var setCurrentItem = function (index) {
                 var curElement = slideItems[index];
-                currentTitle.textContent = curElement.title;
+                if (currentTitle !== null) {
+                    currentTitle.textContent = curElement.title;
+                }
                 var allElements = doc.querySelectorAll('div[data-cat=\'' + slideItems[currentSingleCount].category + '\']');
                 for (var j = 0; j < allElements.length; j++) {
                     var curPatternElement = allElements[j];
@@ -782,11 +811,11 @@ var ssg;
                 event.stopPropagation();
                 var currentButton = event.target;
                 if (currentButton !== null) {
-                    if (currentButton.dataset['filter'] === coreUiElement.singleNavLeft) {
+                    if (currentButton.dataset['filter'] === UI.coreUiElement.singleNavLeft) {
                         currentSingleCount -= 1;
                     }
                     ;
-                    if (currentButton.dataset['filter'] === coreUiElement.singleNavRight) {
+                    if (currentButton.dataset['filter'] === UI.coreUiElement.singleNavRight) {
                         currentSingleCount += 1;
                     }
                     ;
@@ -803,19 +832,21 @@ var ssg;
             if (slideItems.length <= 1) {
                 return;
             }
-            var currentTitle = doc.querySelector(coreUiElement.singleItemNavTitle);
-            currentTitle.textContent = slideItems[0].title;
             // let slider = doc.querySelectorAll('.ssg-core-nav .ssg-button[data-filter=\'' + filter + '\']');
             var slider = doc.querySelectorAll('.ssg-core-nav .ssg-button');
             for (var i = 0; i < slider.length; i++) {
                 // remova all previous registered event handler
                 var currentButton = slider[i];
-                // clone current node without event handler
-                var newButton = currentButton.cloneNode(true);
-                // register new Click event
-                newButton.addEventListener('click', slidePatterns);
-                // replace element
-                currentButton.parentNode.replaceChild(newButton, currentButton);
+                if (currentButton !== null) {
+                    // clone current node without event handler
+                    var newButton = currentButton.cloneNode(true);
+                    // register new Click event
+                    newButton.addEventListener('click', slidePatterns);
+                    if (currentButton.parentNode !== null) {
+                        // replace element
+                        currentButton.parentNode.replaceChild(newButton, currentButton);
+                    }
+                }
             }
             var curState = ssg.UI.State.current();
             // Check if TOC have been selected
@@ -827,21 +858,23 @@ var ssg;
             }
         };
         UI.ShowSliderCtrl = function (show) {
-            var singleSliderControl = document.querySelector('.' + coreUiElement.singleItemNav);
-            if (show) {
-                singleSliderControl.classList.remove('hidden');
-            }
-            else {
-                singleSliderControl.classList.add('hidden');
+            var singleSliderControl = document.querySelector('.' + UI.coreUiElement.singleItemNav);
+            if (singleSliderControl !== null) {
+                if (show) {
+                    singleSliderControl.classList.remove('hidden');
+                }
+                else {
+                    singleSliderControl.classList.add('hidden');
+                }
             }
         };
         UI.InitEvents = function () {
             // Render Events
-            var filterButtons = doc.querySelectorAll(coreUiElement.filterButton), viewButtons = doc.querySelectorAll(coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(coreUiElement.viewPortWidth), 
+            var filterButtons = doc.querySelectorAll(UI.coreUiElement.filterButton), viewButtons = doc.querySelectorAll(UI.coreUiElement.viewButton), viewPortButtons = doc.querySelectorAll(UI.coreUiElement.viewPortButton), viewPortWidth = doc.querySelectorAll(UI.coreUiElement.viewPortWidth), 
             // Action Buttons
-            showCode = doc.querySelectorAll(coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(coreUiElement.btnShowToC), 
+            showCode = doc.querySelectorAll(UI.coreUiElement.btnShowCode), showAnnot = doc.querySelectorAll(UI.coreUiElement.btnShowAnnotion), showToc = doc.querySelectorAll(UI.coreUiElement.btnShowToC), 
             // TOC Eevent
-            allTocItems = doc.querySelectorAll(coreUiElement.tocSearchBox);
+            allTocItems = doc.querySelectorAll(UI.coreUiElement.tocSearchBox);
             UI.Events.registerEvents(filterButtons, 'click', UI.Events.changeFilter);
             UI.Events.registerEvents(viewButtons, 'click', UI.Events.changeView); // mabye obsolete?
             UI.Events.registerEvents(viewPortButtons, 'click', UI.Events.changeViewPort);
@@ -880,24 +913,14 @@ var ssg;
             });
         };
         UI.PostRender = [];
-    })(UI = ssg_1.UI || (ssg_1.UI = {}));
+    })(UI = ssg.UI || (ssg.UI = {}));
+    ;
 })(ssg || (ssg = {}));
-;
 ssg.UI.Init();
-Handlebars.registerHelper('description', function (block) {
-    var description = '', markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
-    if (ssgDoc[markdownKey] !== undefined) {
-        description = ssgDoc[markdownKey].body;
-        return new Handlebars.SafeString(description);
-    }
-    else {
-        // description = block.data.root.description;
-        return block.data.root.description;
-    }
-});
 
+"use strict";
 Handlebars.registerHelper('description', function (block) {
-    var description = "", markdownKey = block.data.root.baseFilter + '_' + block.data.root.title;
+    var description = '', markdownKey = block.data.root.baseFilter + '_' + block.data.root.filename;
     if (ssgDoc[markdownKey] !== undefined) {
         description = ssgDoc[markdownKey].body;
         return new Handlebars.SafeString(description);
