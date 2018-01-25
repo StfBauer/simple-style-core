@@ -411,7 +411,7 @@ var ssg;
                 }
                 var filter = currentToc.dataset['filter'], filterFolder = currentToc.dataset['folder'], filterCat = (currentToc.parentNode.attributes.getNamedItem('id').value), tocButton = doc.querySelector(ssg.UI.coreUiElement.btnShowToC);
                 if (tocButton) {
-                    tocButton[0].classList.add('active');
+                    tocButton.classList.add('active');
                 }
                 if (filterCat) {
                     if (filterFolder === 'templates' ||

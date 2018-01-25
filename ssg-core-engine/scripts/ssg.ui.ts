@@ -620,7 +620,7 @@ namespace ssg {
                     tocButton: any = doc.querySelector(ssg.UI.coreUiElement.btnShowToC);
 
                 if (tocButton) {
-                    tocButton[0].classList.add('active');
+                    tocButton.classList.add('active');
                 }
 
                 if (filterCat) {
